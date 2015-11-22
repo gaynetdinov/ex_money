@@ -37,7 +37,9 @@ defmodule ExMoney.Mixfile do
       {:phoenix_html, "~> 2.1"},
       {:phoenix_live_reload, "~> 1.0", only: :dev},
       {:cowboy, "~> 1.0"},
-      {:httpoison, "~> 0.8.0"}
+      {:httpoison, "~> 0.8.0"},
+      {:guardian, "~> 0.6.2"},
+      {:comeonin, "~> 1.6"}
    ]
   end
 

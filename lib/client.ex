@@ -6,8 +6,10 @@ defmodule Saltedge do
     #url = "https://www.saltedge.com/api/v2/providers/fakebank_simple_xf"
     #url = "https://www.saltedge.com/api/v2/customers"
     #url = "https://www.saltedge.com/api/v2/logins"
-    url = "https://www.saltedge.com/api/v2/tokens/create"
-    url = "https://www.saltedge.com/api/v2/accounts"
+    #url = "https://www.saltedge.com/api/v2/tokens/create"
+    #url = "https://www.saltedge.com/api/v2/accounts"
+    #url = "https://www.saltedge.com/api/v2/logins"
+    url = "https://www.saltedge.com/api/v2/transactions"
 
     client_id = ""
     service_secret = ""
@@ -18,10 +20,17 @@ defmodule Saltedge do
     {
       "data": {
         "customer_id": "",
-        "fetch_type": "recent"
+        "country_code": "XF",
+        "provider_code": "fakebank_simple_xf",
+        "fetch_type": "recent",
+        "credentials": {
+          "login": "username",
+          "password": "secret"
+        }
       }
     }
     """
+    #req = "#{expires_at}|#{method}|#{url}|#{body}"
     req = "#{expires_at}|#{method}|#{url}|"
 
     headers = [
