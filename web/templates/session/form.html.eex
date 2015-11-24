@@ -1,4 +1,4 @@
-<%= form_for @changeset, @action, [method: :post], fn f -> %>
+<%= form_for @changeset, @action, [method: :post, class: "form-signin"], fn f -> %>
   <%= if f.errors != [] do %>
     <div class="alert alert-danger">
       <p>Oops, something went wrong! Please check the errors below:</p>
@@ -10,17 +10,13 @@
     </div>
   <% end %>
 
-  <div class="form-group">
-    <label>Email</label>
-    <%= email_input f, :email, class: "form-control" %>
-  </div>
+  <h2 class="form-signin-heading">Please sign in</h2>
 
-  <div class="form-group">
-    <label>Password</label>
-    <%= password_input :user, :password, class: "form-control" %>
-  </div>
+  <label for="email" class="sr-only">Email address</label>
+  <%= email_input f, :email, placeholder: "Email address", class: "form-control" %>
 
-  <div class="form-group">
-    <%= submit "Submit", class: "btn btn-primary" %>
-  </div>
+  <label for="password" class="sr-only">Password</label>
+  <%= password_input :user, :password, placeholder: "Password", class: "form-control" %>
+
+  <button class="btn btn-lg btn-primary btn-block" type="submit">Let me in!</button>
 <% end %>
