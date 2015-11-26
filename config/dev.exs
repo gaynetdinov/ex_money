@@ -35,8 +35,8 @@ config :phoenix, :stacktrace_depth, 20
 # Configure your database
 config :ex_money, ExMoney.Repo,
   adapter: Ecto.Adapters.Postgres,
-  username: "fabian",
-  password: "",
+  username: System.get_env("DB_USER") || "fabian",
+  password: System.get_env("DB_PASSWORD") || "",
   database: "ex_money_dev",
   hostname: "localhost",
   pool_size: 10
