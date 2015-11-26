@@ -11,15 +11,17 @@
             <th>Date</th>
             <th>Description</th>
             <th>Amount</th>
+            <th>Account id</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           <%= for transaction <- @transactions do %>
             <tr>
-              <td><%= transaction.date %></td>
+              <td><%= transaction.made_on %></td>
               <td><%= transaction.description %></td>
               <td><%= transaction.amount %></td>
+              <td><%= transaction.saltedge_account_id %></td>
               <td class="text-right">
                 <%= link "Show", to: transaction_path(@conn, :show, transaction), class: "btn btn-default btn-xs" %>
                 <%= link "Edit", to: transaction_path(@conn, :edit, transaction), class: "btn btn-default btn-xs" %>

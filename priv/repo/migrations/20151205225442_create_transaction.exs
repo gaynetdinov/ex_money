@@ -6,7 +6,7 @@ defmodule ExMoney.Repo.Migrations.CreateTransaction do
       add :saltedge_transaction_id, :integer
       add :mode, :string
       add :status, :string
-      add :made_on, :datetime
+      add :made_on, :date
       add :amount, :decimal
       add :currency_code, :string
       add :description, :text
