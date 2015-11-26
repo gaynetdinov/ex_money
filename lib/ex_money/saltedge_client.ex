@@ -35,7 +35,7 @@ defmodule ExMoney.SaltedgeClient do
       }
     }
 
-  iex> ExMoney.SaltedgeClient.request(:post, "logins")
+  iex> ExMoney.SaltedgeClient.request(:post, "logins", body)
   """
   def request(method, endpoint, body \\ "") do
     url = @base_url <> endpoint
