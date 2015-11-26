@@ -40,3 +40,9 @@ config :ex_money, ExMoney.Repo,
   database: "ex_money_dev",
   hostname: "localhost",
   pool_size: 10
+
+# Put Saltedge credentials into dev.secret.exs
+# config :ex_money,
+#   saltedge_client_id: "your client id"
+#   saltedge_service_secret: "your service secret"
+import_config "dev.secret.exs"
