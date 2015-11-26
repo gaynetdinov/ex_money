@@ -4,6 +4,8 @@ defmodule ExMoney.SessionController do
   alias ExMoney.User
   alias ExMoney.Repo
 
+  plug :put_layout, "login.html"
+
   def new(conn, params) do
     changeset = User.login_changeset(%User{})
     render(conn, ExMoney.SessionView, "new.html", changeset: changeset)
