@@ -6,7 +6,7 @@ defmodule ExMoney.UserController do
   alias ExMoney.SessionController
   alias Guardian.Plug.EnsureAuthenticated
 
-  plug EnsureAuthenticated, %{ on_failure: { SessionController, :new } } when not action in [:new, :create]
+  plug EnsureAuthenticated, %{ on_failure: { SessionController, :new } }
 
   plug :scrub_params, "user" when action in [:create, :update]
 

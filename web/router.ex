@@ -31,8 +31,15 @@ defmodule ExMoney.Router do
     post "/login", SessionController, :create, as: :login
     delete "/logout", SessionController, :delete, as: :logout
     get "/logout", SessionController, :delete, as: :logout
+    get "/dashboard", DashboardController, :main, as: :dashboard
 
     resources "/users", UserController
+  end
+
+  scope "/saltedge", as: :saltedge do
+    pipe_through [:browser, :browser_session]
+
+    resources "/logins", ExMoney.Saltedge.LoginController, only: [:new]
   end
 
   scope "/callbacks", as: :callbacks do
@@ -42,10 +49,4 @@ defmodule ExMoney.Router do
     post "/failure", CallbacksController, :failure, as: :failure
     post "/notify", CallbacksController, :notify, as: :notify
   end
-
-
-  # Other scopes may use custom stacks.
-  # scope "/api", ExMoney do
-  #   pipe_through :api
-  # end
 end

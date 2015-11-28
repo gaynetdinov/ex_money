@@ -1,4 +1,4 @@
-defmodule ExMoney.SaltedgeClient do
+defmodule ExMoney.Saltedge.Client do
 
   @client_id Application.get_env(:ex_money, :saltedge_client_id)
   @service_secret Application.get_env(:ex_money, :saltedge_service_secret)

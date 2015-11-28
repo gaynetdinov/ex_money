@@ -1,0 +1,1 @@
+<%= link "Create login", to: saltedge_login_path(@conn, :new) %>

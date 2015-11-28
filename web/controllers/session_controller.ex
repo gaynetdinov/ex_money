@@ -19,7 +19,7 @@ defmodule ExMoney.SessionController do
         conn
         |> put_flash(:info, "Logged in.")
         |> Guardian.Plug.sign_in(user, :token)
-        |> redirect(to: user_path(conn, :index))
+        |> redirect(to: dashboard_path(conn, :main))
       else
         render(conn, "new.html", changeset: changeset)
       end
@@ -32,6 +32,6 @@ defmodule ExMoney.SessionController do
   def delete(conn, _params) do
     Guardian.Plug.sign_out(conn)
     |> put_flash(:info, "Logged out successfully.")
-    |> redirect(to: "/")
+    |> redirect(to: "/login")
   end
 end
