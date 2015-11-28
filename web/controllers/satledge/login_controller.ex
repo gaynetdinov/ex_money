@@ -28,4 +28,11 @@ defmodule ExMoney.Saltedge.LoginController do
 
     redirect conn, external: connect_url
   end
+
+  def sync(conn, _params) do
+    user = Guardian.Plug.current_resource(conn)
+    ExMoney.Saltedge.Login.sync(user.id)
+
+    redirect(conn, to: "/dashboard/logins")
+  end
 end

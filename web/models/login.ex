@@ -1,6 +1,8 @@
 defmodule ExMoney.Login do
   use ExMoney.Web, :model
 
+  alias ExMoney.Login
+
   schema "logins" do
     field :secret, :string
     field :saltedge_login_id, :integer
@@ -28,6 +30,14 @@ defmodule ExMoney.Login do
     timestamps
   end
 
+  def by_user_id(user_id) do
+    from l in Login, where: l.user_id == ^user_id
+  end
+
+  def by_saltedge_login_id(saltedge_login_id) do
+    from l in Login, where: l.saltedge_login_id == ^saltedge_login_id
+  end
+
   def success_callback_changeset(model, params \\ :empty) do
     model
     |> cast(params, ~w(saltedge_login_id), ~w())
@@ -43,32 +53,35 @@ defmodule ExMoney.Login do
     |> cast(params, ~w(stage), ~w())
   end
 
-  #@required_fields ~w(
-  #  secret
-  #  finished
-  #  finished_recent
-  #  partial
-  #  automatic_fetch
-  #  interactive
-  #  provider_score
-  #  provider_name
-  #  last_fail_at
-  #  last_fail_message
-  #  last_fail_error_class
-  #  last_request_at
-  #  last_success_at
-  #  status
-  #  country_code
-  #  interactive_html
-  #  interactive_fields_names
-  #  stage
-  #  store_credentials
-  #)
+  @required_fields ~w(
+    saltedge_login_id
+    secret
+    finished
+    finished_recent
+    partial
+    automatic_fetch
+    interactive
+    provider_name
+    status
+    country_code
+    stage
+    store_credentials
+    user_id
+  )
 
-  #@optional_fields ~w()
+  @optional_fields ~w(
+    interactive_fields_names
+    interactive_html
+    provider_score
+    last_fail_at
+    last_fail_message
+    last_fail_error_class
+    last_request_at
+    last_success_at
+  )
 
-  #def changeset(model, params \\ :empty) do
-  #  model
-  #  |> cast(params, @required_fields, @optional_fields)
-  #end
+  def changeset(model, params \\ :empty) do
+    model
+    |> cast(params, @required_fields, @optional_fields)
+  end
 end

@@ -19,7 +19,7 @@ defmodule ExMoney.SessionController do
         conn
         |> put_flash(:info, "Logged in.")
         |> Guardian.Plug.sign_in(user, :token)
-        |> redirect(to: dashboard_path(conn, :main))
+        |> redirect(to: dashboard_path(conn, :overview))
       else
         render(conn, "new.html", changeset: changeset)
       end
