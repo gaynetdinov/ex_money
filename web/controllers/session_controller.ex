@@ -8,7 +8,7 @@ defmodule ExMoney.SessionController do
 
   def new(conn, params) do
     changeset = User.login_changeset(%User{})
-    render(conn, ExMoney.SessionView, "new.html", changeset: changeset)
+    render(conn, ExMoney.SessionView, "new.html", changeset: changeset, topbar: "login")
   end
 
   def create(conn, params = %{}) do

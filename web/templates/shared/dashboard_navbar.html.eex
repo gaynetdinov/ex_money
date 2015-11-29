@@ -1,0 +1,6 @@
+<div class="col-sm-3 col-md-2 sidebar">
+  <ul class="nav nav-sidebar">
+    <li class=<%= if @navigation == "overview", do: "active"%>><%= link "Overview", to: dashboard_path(@conn, :overview) %></li>
+    <li><a href='#'>Transactions</a></li>
+  </ul>
+</div>

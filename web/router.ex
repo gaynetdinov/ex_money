@@ -35,7 +35,10 @@ defmodule ExMoney.Router do
     scope "/dashboard" do
       get "/", DashboardController, :overview
       get "/overview", DashboardController, :overview
-      get "/logins", DashboardController, :logins
+    end
+
+    scope "/settings" do
+      get "/logins", SettingsController, :logins
     end
 
     resources "/users", UserController

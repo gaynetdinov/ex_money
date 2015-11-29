@@ -4,9 +4,10 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Title</title>
+    <title>ExMoney</title>
 
     <link href="<%= static_path(@conn, "/css/app.css") %>" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
   </head>
   <body>
     <nav class="navbar navbar-inverse navbar-fixed-top">
@@ -18,33 +19,22 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">ExMoney</a>
+          <a class="navbar-brand" href="#">ExMoney - <%= String.capitalize(@topbar) %></a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="#">Dashboard</a></li>
-            <li><a href="#">Settings</a></li>
-            <li><a href="#">Profile</a></li>
-            <li><a href="#">Help</a></li>
+            <li><%= link "Dashboard", to: dashboard_path(@conn, :overview) %></li>
+            <li><%= link "Settings", to: settings_path(@conn, :logins) %></li>
+            <li><a href="https://github.com/gaynetdinov/ex_money">Help</a></li>
           </ul>
         </div>
       </div>
     </nav>
 
     <div class="container-fluid">
-      <div class="row">
-        <div class="col-sm-3 col-md-2 sidebar">
-          <ul class="nav nav-sidebar">
-            <li class=<%= if @navigation == "overview", do: "active"%>><%= link "Overview", to: dashboard_path(@conn, :overview) %></li>
-            <li class=<%= if @navigation == "logins", do: "active"%>><%= link "Logins", to: dashboard_path(@conn, :logins) %></li>
-          </ul>
-        </div>
-        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          <%= @inner %>
-        </div>
-      </div>
+      <%= @inner %>
     </div>
 
-    <script src="<%= static_path(@conn, "/js/app.js") %>></script>
+    <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
   </body>
 </html>

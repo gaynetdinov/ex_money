@@ -1,43 +1,49 @@
-<h1 class="page-header">Dashboard</h1>
-<div class="row placeholders">
-  <div class="col-xs-6 col-sm-3 placeholder">
-    <h4>Balance value</h4>
-    <span class="text-muted">Current balance</span>
-  </div>
-  <div class="col-xs-6 col-sm-3 placeholder">
-    <h4>Expenses current month value</h4>
-    <span class="text-muted">Expenses current month</span>
-  </div>
-  <div class="col-xs-6 col-sm-3 placeholder">
-    <h4>Income current month value</h4>
-    <span class="text-muted">Income current month</span>
-  </div>
-  <div class="col-xs-6 col-sm-3 placeholder">
-    <h4>Budget?</h4>
-    <span class="text-muted">Something else</span>
-  </div>
-</div>
+<div class="row">
+  <%= render ExMoney.SharedView, "dashboard_navbar.html", conn: @conn, navigation: @navigation %>
 
-<h2 class="sub-header">Recent transactions</h2>
-<div class="table-responsive">
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>Header</th>
-        <th>Header</th>
-        <th>Header</th>
-        <th>Header</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>More</td>
-        <td>to</td>
-        <td>come</td>
-        <td>.</td>
-        <td>.</td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+    <h1 class="page-header">Dashboard</h1>
+    <div class="row placeholders">
+      <div class="col-xs-6 col-sm-3 placeholder">
+        <h4>Balance value</h4>
+        <span class="text-muted">Current balance</span>
+      </div>
+      <div class="col-xs-6 col-sm-3 placeholder">
+        <h4>Expenses current month value</h4>
+        <span class="text-muted">Expenses current month</span>
+      </div>
+      <div class="col-xs-6 col-sm-3 placeholder">
+        <h4>Income current month value</h4>
+        <span class="text-muted">Income current month</span>
+      </div>
+      <div class="col-xs-6 col-sm-3 placeholder">
+        <h4>Budget?</h4>
+        <span class="text-muted">Something else</span>
+      </div>
+    </div>
+
+    <h2 class="sub-header">Recent transactions</h2>
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Header</th>
+            <th>Header</th>
+            <th>Header</th>
+            <th>Header</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>More</td>
+            <td>to</td>
+            <td>come</td>
+            <td>.</td>
+            <td>.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
