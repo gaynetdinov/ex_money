@@ -31,7 +31,12 @@ defmodule ExMoney.Router do
     post "/login", SessionController, :create, as: :login
     delete "/logout", SessionController, :delete, as: :logout
     get "/logout", SessionController, :delete, as: :logout
-    get "/dashboard", DashboardController, :main, as: :dashboard
+
+    scope "/dashboard" do
+      get "/", DashboardController, :overview
+      get "/overview", DashboardController, :overview
+      get "/logins", DashboardController, :logins
+    end
 
     resources "/users", UserController
   end
@@ -39,7 +44,11 @@ defmodule ExMoney.Router do
   scope "/saltedge", as: :saltedge do
     pipe_through [:browser, :browser_session]
 
-    resources "/logins", ExMoney.Saltedge.LoginController, only: [:new]
+    scope "/logins" do
+      get "/new", ExMoney.Saltedge.LoginController, :new
+      get "/sync", ExMoney.Saltedge.LoginController, :sync
+    end
+
   end
 
   scope "/callbacks", as: :callbacks do
