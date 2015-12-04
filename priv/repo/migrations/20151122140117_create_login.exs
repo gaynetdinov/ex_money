@@ -27,5 +27,7 @@ defmodule ExMoney.Repo.Migrations.CreateLogin do
 
       timestamps
     end
+
+    create index(:logins, [:saltedge_login_id], unique: true)
   end
 end

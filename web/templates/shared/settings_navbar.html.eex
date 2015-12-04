@@ -2,6 +2,6 @@
   <ul class="nav nav-sidebar">
     <li><a href='#'>Account</a></li>
     <li class=<%= if @navigation == "logins", do: "active"%>><%= link "Saltedge Logins", to: settings_path(@conn, :logins) %></li>
-    <li><a href='#'>Saltedge Accounts</a></li>
+    <li class=<%= if @navigation == "accounts", do: "active"%>><%= link "Saltedge Accounts", to: settings_path(@conn, :accounts) %></li>
   </ul>
 </div>

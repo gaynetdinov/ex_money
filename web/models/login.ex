@@ -26,6 +26,7 @@ defmodule ExMoney.Login do
     field :store_credentials, :boolean, default: false
 
     belongs_to :user, ExMoney.User
+    has_many :accounts, ExMoney.Account
 
     timestamps
   end

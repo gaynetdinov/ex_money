@@ -39,6 +39,7 @@ defmodule ExMoney.Router do
 
     scope "/settings" do
       get "/logins", SettingsController, :logins
+      get "/accounts", SettingsController, :accounts
     end
 
     resources "/users", UserController
@@ -50,6 +51,10 @@ defmodule ExMoney.Router do
     scope "/logins" do
       get "/new", ExMoney.Saltedge.LoginController, :new
       get "/sync", ExMoney.Saltedge.LoginController, :sync
+    end
+
+    scope "/accounts" do
+      get "/sync", ExMoney.Saltedge.AccountController, :sync
     end
 
   end
