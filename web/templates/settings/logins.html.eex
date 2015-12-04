@@ -1,0 +1,28 @@
+<div class="row">
+  <%= render ExMoney.SharedView, "settings_navbar.html", conn: @conn, navigation: @navigation %>
+
+  <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+  <h2 class="sub-header">Logins(<%= link "New", to: saltedge_login_path(@conn, :new) %>, <%= link "Sync", to: saltedge_login_path(@conn, :sync) %>)</h2>
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Id</th>
+          <th>Saltedge id</th>
+          <th>Name</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= for login <- @logins do %>
+          <tr>
+            <td><%= login.id %></td>
+            <td><%= login.saltedge_login_id %></td>
+            <td><%= login.provider_name %></td>
+            <td><%= login.status %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
