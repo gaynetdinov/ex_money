@@ -43,6 +43,7 @@ defmodule ExMoney.Router do
     end
 
     resources "/users", UserController
+    resources "/transactions", TransactionController
   end
 
   scope "/saltedge", as: :saltedge do
