@@ -27,8 +27,8 @@ defmodule ExMoney.Account do
     |> cast(params, @required_fields, @optional_fields)
   end
 
-  def by_saltedge_login_id(login_id) do
-    from l in ExMoney.Account, where: l.saltedge_login_id == ^login_id, limit: 1
+  def by_saltedge_login_id(login_ids) do
+    from l in ExMoney.Account, where: l.saltedge_login_id in ^login_ids
   end
 
   def by_saltedge_account_id(account_id) do

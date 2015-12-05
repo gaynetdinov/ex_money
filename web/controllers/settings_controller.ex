@@ -17,8 +17,11 @@ defmodule ExMoney.SettingsController do
 
   def accounts(conn, params) do
     user = Guardian.Plug.current_resource(conn)
-    login = Login.by_user_id(user.id) |> Repo.one
-    accounts = Account.by_saltedge_login_id(login.saltedge_login_id) |> Repo.all
+    login_ids = Login.by_user_id(user.id)
+    |> Repo.all
+    |> Enum.map(fn(login) -> login.saltedge_login_id end)
+
+    accounts = Account.by_saltedge_login_id(login_ids) |> Repo.all
 
     render conn, "accounts.html", accounts: accounts, navigation: "accounts", topbar: "settings"
   end

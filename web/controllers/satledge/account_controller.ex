@@ -8,13 +8,15 @@ defmodule ExMoney.Saltedge.AccountController do
   alias ExMoney.Login
   alias ExMoney.Account
 
-  plug EnsureAuthenticated, %{ on_failure: { SessionController, :new } }
+  plug EnsureAuthenticated, %{on_failure: {SessionController, :new}}
 
   def sync(conn, _params) do
     user = Guardian.Plug.current_resource(conn)
-    login = Login.by_user_id(user.id) |> Repo.one
+    login_ids = Login.by_user_id(user.id)
+    |> Repo.all
+    |> Enum.map(fn(login) -> login.saltedge_login_id end)
 
-    ExMoney.Saltedge.Account.sync(login.saltedge_login_id)
+    ExMoney.Saltedge.Account.sync(login_ids)
 
     redirect(conn, to: "/settings/accounts")
   end

@@ -9,8 +9,10 @@
         <tr>
           <th>Id</th>
           <th>Saltedge id</th>
+          <th>Saltedge login id</th>
           <th>Name</th>
           <th>Balance</th>
+          <th>Currency</th>
         </tr>
       </thead>
       <tbody>
@@ -18,8 +20,10 @@
           <tr>
             <td><%= account.id %></td>
             <td><%= account.saltedge_account_id %></td>
+            <td><%= account.saltedge_login_id %></td>
             <td><%= account.name %></td>
             <td><%= account.balance %></td>
+            <td><%= account.currency_code %></td>
           </tr>
         <% end %>
       </tbody>
