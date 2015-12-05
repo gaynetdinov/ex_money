@@ -13,5 +13,6 @@ defmodule ExMoney.Repo.Migrations.CreateAccount do
       timestamps
     end
 
+    create index(:accounts, [:saltedge_account_id], unique: true)
   end
 end
