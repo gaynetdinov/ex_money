@@ -27,6 +27,8 @@ defmodule ExMoney.Router do
   scope "/", ExMoney do
     pipe_through [:browser, :browser_session]
 
+    get "/", DashboardController, :overview
+
     get "/login", SessionController, :new, as: :login
     post "/login", SessionController, :create, as: :login
     delete "/logout", SessionController, :delete, as: :logout
