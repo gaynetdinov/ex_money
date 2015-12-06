@@ -3,6 +3,7 @@ defmodule ExMoney.DashboardController do
 
   alias ExMoney.Login
   alias ExMoney.Repo
+  alias ExMoney.Transaction
 
   alias ExMoney.SessionController
   alias Guardian.Plug.EnsureAuthenticated
@@ -10,6 +11,10 @@ defmodule ExMoney.DashboardController do
   plug EnsureAuthenticated, %{ on_failure: { SessionController, :new } }
 
   def overview(conn, _params) do
-    render conn, "overview.html", navigation: "overview", topbar: "dashboard"
+    recent_transactions = Transaction.recent |> Repo.all
+    render conn, "overview.html",
+      navigation: "overview",
+      topbar: "dashboard",
+      recent_transactions: recent_transactions
   end
 end
