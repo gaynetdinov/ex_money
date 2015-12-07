@@ -54,6 +54,11 @@ defmodule ExMoney.Login do
     |> cast(params, ~w(stage), ~w())
   end
 
+  def interactive_callback_changeset(model, params \\ :empty) do
+    model
+    |> cast(params, ~w(stage interactive_fields_names interactive_html), ~w())
+  end
+
   @required_fields ~w(
     saltedge_login_id
     secret

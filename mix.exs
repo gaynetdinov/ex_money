@@ -39,8 +39,10 @@ defmodule ExMoney.Mixfile do
       {:cowboy, "~> 1.0"},
       {:httpoison, "~> 0.8.0"},
       {:guardian, "~> 0.6.2"},
-      {:comeonin, "~> 1.6"}
-   ]
+      {:comeonin, "~> 1.6"},
+      {:ex_machina, "~> 0.5"},
+      {:faker, "~> 0.5", only: :test}
+    ]
   end
 
   # Aliases are shortcut or tasks specific to the current project.

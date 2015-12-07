@@ -24,7 +24,7 @@ defmodule ExMoney.User do
 
   def create_changeset(model, params \\ :empty) do
     model
-    |> cast(params, ~w(name email password))
+    |> cast(params, ~w(name email password), ~w(saltedge_customer_id))
   end
 
   def update_changeset(model, params \\ :empty) do
