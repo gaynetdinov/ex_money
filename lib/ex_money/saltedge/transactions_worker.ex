@@ -28,6 +28,12 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
     {:stop, :normal, :ok, state}
   end
 
+  def handle_cast(:fetch, state) do
+    fetch_transactions()
+
+    {:noreply, state}
+  end
+
   def fetch_transactions() do
     response = ExMoney.Saltedge.Client.request(:get, "transactions")
     transactions = response["data"]
