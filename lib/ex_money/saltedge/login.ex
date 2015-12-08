@@ -8,10 +8,13 @@ defmodule ExMoney.Saltedge.Login do
     Enum.each(logins["data"], fn(login) ->
       login = Map.put(login, "saltedge_login_id", login["id"])
       login = Map.drop(login, ["id"])
+      login = Map.put(login, "user_id", user_id)
       existing_login = Login.by_saltedge_login_id(login["saltedge_login_id"]) |> Repo.one
 
-      if !existing_login do
-        login = Map.put(login, "user_id", user_id)
+      if existing_login do
+        changeset = Login.changeset(existing_login, login)
+        Repo.update!(changeset)
+      else
         changeset = Login.changeset(%Login{}, login)
         Repo.insert!(changeset)
       end
