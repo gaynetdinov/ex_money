@@ -22,7 +22,7 @@ defmodule CallbacksController do
       if changeset.valid? do
         case Repo.insert(changeset) do
           {:ok, login} ->
-            GenServer.cast(:transactions_worker, :fetch)
+            spawn(fn -> ExMoney.Saltedge.Login.sync(user.id) end)
 
             put_resp_content_type(conn, "application/json")
             |> send_resp(200, "ok")
