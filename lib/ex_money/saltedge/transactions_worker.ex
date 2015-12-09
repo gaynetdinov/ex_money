@@ -1,12 +1,15 @@
 defmodule ExMoney.Saltedge.TransactionsWorker do
   use GenServer
 
+  require Logger
+
   alias ExMoney.Repo
   alias ExMoney.Transaction
+  alias ExMoney.Account
 
   @interval 20 * 60 * 1000
 
-  def start_link(opts \\ []) do
+  def start_link(_opts \\ []) do
     GenServer.start_link(__MODULE__, :ok, name: :transactions_worker)
   end
 
@@ -35,6 +38,16 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
   end
 
   def fetch_transactions() do
+    account_ids =
+      Repo.all(Account)
+      |> Enum.map(fn(acc) -> acc.saltedge_account_id end)
+
+    _fetch_transactions(account_ids)
+  end
+
+  defp _fetch_transactions([]), do: Logger.info("There are no accounts.")
+
+  defp _fetch_transactions(_account_ids) do
     response = ExMoney.Saltedge.Client.request(:get, "transactions")
     transactions = response["data"]
 
