@@ -17,12 +17,12 @@ defmodule CallbacksController do
 
     if user do
       changeset = Ecto.Model.build(user, :logins)
-      |> Login.success_callback_changeset(%{saltedge_login_id: login_id})
+      |> Login.success_callback_changeset(%{saltedge_login_id: login_id, user_id: user.id})
 
       if changeset.valid? do
         case Repo.insert(changeset) do
           {:ok, login} ->
-            spawn(fn -> ExMoney.Saltedge.Login.sync(user.id) end)
+            Process.send_after(:login_setup_worker, {:setup, user.id, login_id}, 5000)
 
             put_resp_content_type(conn, "application/json")
             |> send_resp(200, "ok")

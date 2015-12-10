@@ -41,7 +41,7 @@ defmodule ExMoney.Login do
 
   def success_callback_changeset(model, params \\ :empty) do
     model
-    |> cast(params, ~w(saltedge_login_id), ~w())
+    |> cast(params, ~w(saltedge_login_id user_id), ~w())
   end
 
   def failure_callback_changeset(model, params \\ :empty) do

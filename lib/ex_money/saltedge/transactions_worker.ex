@@ -3,26 +3,33 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
 
   require Logger
 
+  import Ecto.Query
+
   alias ExMoney.Repo
   alias ExMoney.Transaction
-  alias ExMoney.Account
 
   @interval 20 * 60 * 1000
 
-  def start_link(_opts \\ []) do
-    GenServer.start_link(__MODULE__, :ok, name: :transactions_worker)
+  def start_link(opts \\ []) do
+    GenServer.start_link(__MODULE__, opts, name: :transactions_worker)
   end
 
-  def init(:ok) do
-    Process.send_after(self(), :timeout, @interval)
+  def init(opts) do
+    Process.send_after(self(), {:fetch, opts[:saltedge_account_id]}, @interval)
 
     {:ok, {}}
   end
 
-  def handle_info(:timeout, state) do
-    fetch_transactions()
+  def handle_info({:fetch, saltedge_account_id}, state) do
+    fetch_transactions(saltedge_account_id)
 
-    Process.send_after(self(), :timeout, @interval)
+    Process.send_after(self(), {:fetch, saltedge_account_id}, @interval)
+
+    {:noreply, state}
+  end
+
+  def handle_cast({:fetch, saltedge_account_id}, state) do
+    fetch_transactions(saltedge_account_id)
 
     {:noreply, state}
   end
@@ -31,26 +38,86 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
     {:stop, :normal, :ok, state}
   end
 
-  def handle_cast(:fetch, state) do
-    fetch_transactions()
+  def fetch_transactions(saltedge_account_id) do
+    # FIXME: set last_transaction_id in cache during import
+    last_transaction = Transaction
+    |> where([tr], tr.saltedge_account_id == ^saltedge_account_id)
+    |> order_by([tr], desc: tr.saltedge_transaction_id)
+    |> limit([tr], 1)
+    |> Repo.one
 
-    {:noreply, state}
+    case last_transaction do
+      nil ->
+        # import all, it's the very first run
+        fetch_all(saltedge_account_id)
+      transaction ->
+        # import only starting +from_id=transaction_id+
+        fetch_recent(saltedge_account_id, transaction.id)
+    end
   end
 
-  def fetch_transactions() do
-    account_ids =
-      Repo.all(Account)
-      |> Enum.map(fn(acc) -> acc.saltedge_account_id end)
+  defp fetch_recent(saltedge_account_id, last_transaction_id) do
+    transactions = fetch_recent(saltedge_account_id, last_transaction_id, []) |> List.flatten
 
-    _fetch_transactions(account_ids)
+    store(transactions)
   end
 
-  defp _fetch_transactions([]), do: Logger.info("There are no accounts.")
+  defp fetch_recent(saltedge_account_id, from_id, acc) do
+    endpoint = "transactions?account_id=#{saltedge_account_id}&from_id=#{from_id}"
 
-  defp _fetch_transactions(_account_ids) do
-    response = ExMoney.Saltedge.Client.request(:get, "transactions")
-    transactions = response["data"]
+    response = ExMoney.Saltedge.Client.request(:get, endpoint)
 
+    case {response["data"], response["meta"]["next_id"]} do
+      {[], _} -> acc
+      {_data, nil} -> acc
+      {data, next_id} ->
+        fetch_recent(
+          saltedge_account_id,
+          next_id,
+          [data | acc]
+        )
+    end
+  end
+
+  defp fetch_all(saltedge_account_id) do
+    to = current_date()
+    from = substract_days(to, 30)
+    transactions = fetch_all(saltedge_account_id, from, to, nil, []) |> List.flatten
+
+    store(transactions)
+  end
+
+  defp fetch_all(saltedge_account_id, from, to, next_id, acc) do
+    endpoint = "transactions?account_id=#{saltedge_account_id}&from_date=#{date_to_string(from)}&to_date=#{date_to_string(to)}"
+    if next_id do
+      endpoint = endpoint <> "&next_id=#{next_id}"
+    end
+
+    response = ExMoney.Saltedge.Client.request(:get, endpoint)
+
+    case {response["data"], response["meta"]["next_id"]} do
+      {[], _} -> acc
+
+      {data, nil} ->
+        fetch_all(
+          saltedge_account_id,
+          substract_days(from, 30),
+          substract_days(from, 1),
+          nil,
+          [data | acc]
+        )
+      {data, next_id} ->
+        fetch_all(
+          saltedge_account_id,
+          from,
+          to,
+          next_id,
+          [data | acc]
+        )
+    end
+  end
+
+  defp store(transactions) do
     Enum.each(transactions, fn(transaction) ->
       transaction = Map.put(transaction, "saltedge_transaction_id", transaction["id"])
       transaction = Map.put(transaction, "saltedge_account_id", transaction["account_id"])
@@ -66,5 +133,21 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
         Repo.insert!(changeset)
       end
     end)
+  end
+
+  defp date_to_string(date) do
+    Tuple.to_list(date) |> Enum.join("-")
+  end
+
+  defp substract_days(date, days) do
+    :calendar.gregorian_days_to_date(
+      :calendar.date_to_gregorian_days(date) - days
+    )
+  end
+
+  defp current_date do
+    {date, _time} = :calendar.local_time()
+
+    date
   end
 end
