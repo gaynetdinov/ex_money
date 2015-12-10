@@ -16,10 +16,23 @@ defmodule ExMoney.Transaction do
     field :saltedge_account_id, :integer
     field :category_id, :integer
 
+    has_one :transaction_info, ExMoney.TransactionInfo
+
     timestamps
   end
 
-  @required_fields ~w(saltedge_transaction_id mode status made_on amount currency_code description category duplicated saltedge_account_id)
+  @required_fields ~w(
+    saltedge_transaction_id
+    mode
+    status
+    made_on
+    amount
+    currency_code
+    description
+    category
+    duplicated
+    saltedge_account_id
+  )
   @optional_fields ~w(category_id)
 
   @doc """
