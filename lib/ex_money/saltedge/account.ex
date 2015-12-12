@@ -9,10 +9,13 @@ defmodule ExMoney.Saltedge.Account do
     Enum.each(accounts, fn(account) ->
       account = Map.put(account, "saltedge_account_id", account["id"])
       account = Map.drop(account, ["id"])
+      account = Map.put(account, "saltedge_login_id", account["login_id"])
       existing_account = Account.by_saltedge_account_id(account["saltedge_account_id"]) |> Repo.one
 
-      if !existing_account do
-        account = Map.put(account, "saltedge_login_id", account["login_id"])
+      if existing_account do
+        changeset = Account.changeset(existing_account, account)
+        Repo.update!(changeset)
+      else
         changeset = Account.changeset(%Account{}, account)
         Repo.insert!(changeset)
       end
