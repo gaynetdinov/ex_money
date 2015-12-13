@@ -52,7 +52,7 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
         fetch_all(saltedge_account_id)
       transaction ->
         # import only starting +from_id=transaction_id+
-        fetch_recent(saltedge_account_id, transaction.id)
+        fetch_recent(saltedge_account_id, transaction.saltedge_transaction_id)
     end
   end
 
