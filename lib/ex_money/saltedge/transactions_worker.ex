@@ -8,7 +8,7 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
   alias ExMoney.Repo
   alias ExMoney.Transaction
 
-  @interval 20 * 60 * 1000
+  @interval 29 * 60 * 1000
 
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: :transactions_worker)
