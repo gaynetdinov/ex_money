@@ -50,10 +50,15 @@ defmodule ExMoney.Saltedge.LoginSetupWorker do
     Enum.each(tail, fn(account_id) ->
       GenServer.cast(:transactions_worker, {:fetch, account_id})
     end)
+
+    Supervisor.start_child(
+      ExMoney.Supervisor,
+      Supervisor.Spec.worker(ExMoney.Saltedge.TransactionsScheduler, [])
+    )
   end
 
   defp _start_transactions_worker(pid, _) do
-    Logger.info("TransactionsWorker was already started with pid #{pid}")
+    Logger.info("TransactionsWorker was already started with pid #{inspect(pid)}")
   end
 
   defp fetch_login(user_id, login_id, attempts) do
