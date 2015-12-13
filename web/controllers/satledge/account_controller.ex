@@ -3,10 +3,8 @@ defmodule ExMoney.Saltedge.AccountController do
 
   alias ExMoney.SessionController
   alias Guardian.Plug.EnsureAuthenticated
-  alias ExMoney.User
   alias ExMoney.Repo
   alias ExMoney.Login
-  alias ExMoney.Account
 
   plug EnsureAuthenticated, %{on_failure: {SessionController, :new}}
 

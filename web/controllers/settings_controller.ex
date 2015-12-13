@@ -9,13 +9,13 @@ defmodule ExMoney.SettingsController do
 
   plug EnsureAuthenticated, %{ on_failure: { SessionController, :new } }
 
-  def logins(conn, params) do
+  def logins(conn, _params) do
     user = Guardian.Plug.current_resource(conn)
     logins = Login.by_user_id(user.id) |> Repo.all
     render conn, "logins.html", logins: logins, navigation: "logins", topbar: "settings"
   end
 
-  def accounts(conn, params) do
+  def accounts(conn, _params) do
     user = Guardian.Plug.current_resource(conn)
     login_ids = Login.by_user_id(user.id)
     |> Repo.all

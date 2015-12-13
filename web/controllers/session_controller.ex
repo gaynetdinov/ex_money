@@ -6,7 +6,7 @@ defmodule ExMoney.SessionController do
 
   plug :put_layout, "login.html"
 
-  def new(conn, params) do
+  def new(conn, _params) do
     changeset = User.login_changeset(%User{})
     render(conn, ExMoney.SessionView, "new.html", changeset: changeset, topbar: "login")
   end

@@ -1,7 +1,6 @@
 defmodule ExMoney.DashboardController do
   use ExMoney.Web, :controller
 
-  alias ExMoney.Login
   alias ExMoney.Repo
   alias ExMoney.Transaction
 

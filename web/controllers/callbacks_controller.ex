@@ -21,7 +21,7 @@ defmodule CallbacksController do
 
       if changeset.valid? do
         case Repo.insert(changeset) do
-          {:ok, login} ->
+          {:ok, _login} ->
             Process.send_after(:login_setup_worker, {:setup, user.id, login_id}, 5000)
 
             put_resp_content_type(conn, "application/json")
@@ -59,7 +59,7 @@ defmodule CallbacksController do
       })
       if changeset.valid? do
         case Repo.insert(changeset) do
-          {:ok, login} ->
+          {:ok, _login} ->
             put_resp_content_type(conn, "application/json")
             |> send_resp(200, "ok")
           {:error, changeset} ->
@@ -97,7 +97,7 @@ defmodule CallbacksController do
 
       if changeset.valid? do
         case Repo.update(changeset) do
-          {:ok, login} ->
+          {:ok, _login} ->
             put_resp_content_type(conn, "application/json")
             |> send_resp(200, "ok")
           {:error, changeset} ->
@@ -122,7 +122,6 @@ defmodule CallbacksController do
     login_id = params["data"]["login_id"]
     stage = params["data"]["stage"]
     html = params["data"]["html"]
-    session_exp = params["data"]["session_expires_at"]
     interactive_fields_names = params["data"]["interactive_fields_names"]
 
     user = User.by_customer_id(customer_id) |> Repo.one
@@ -141,7 +140,7 @@ defmodule CallbacksController do
 
       if changeset.valid? do
         case Repo.update(changeset) do
-          {:ok, login} ->
+          {:ok, _login} ->
             put_resp_content_type(conn, "application/json")
             |> send_resp(200, "ok")
           {:error, changeset} ->
