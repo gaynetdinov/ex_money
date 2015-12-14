@@ -27,13 +27,13 @@ defmodule CallbacksController do
             put_resp_content_type(conn, "application/json")
             |> send_resp(200, "ok")
           {:error, changeset} ->
-            Logger.warn("Success: Could not create Login for customer_id => #{inspect(customer_id)}, changeset => #{inspect(changeset)}")
+            Logger.warn("Success: Could not create Login for customer_id => #{inspect(customer_id)}, errors => #{inspect(changeset.errors)}")
             put_resp_content_type(conn, "application/json")
             |> send_resp(200, "ok")
         end
       else
         # log error
-        Logger.warn("Success: Could not create Login for customer_id => #{inspect(customer_id)}, changeset invalid => #{inspect(changeset)}")
+        Logger.warn("Success: Could not create Login for customer_id => #{inspect(customer_id)}, errors => #{inspect(changeset.errors)}")
         put_resp_content_type(conn, "application/json")
         |> send_resp(200, "ok")
       end
@@ -64,12 +64,12 @@ defmodule CallbacksController do
             |> send_resp(200, "ok")
           {:error, changeset} ->
             # log error
-            Logger.warn("Failure: Could not create Login for customer_id => #{inspect(customer_id)}, changeset => #{inspect(changeset)}")
+            Logger.warn("Failure: Could not create Login for customer_id => #{inspect(customer_id)}, errors => #{inspect(changeset.errors)}")
             put_resp_content_type(conn, "application/json")
             |> send_resp(200, "ok")
         end
       else
-        Logger.warn("Failure: Could not create Login for customer_id => #{inspect(customer_id)}, changeset invalid => #{inspect(changeset)}")
+        Logger.warn("Failure: Could not create Login for customer_id => #{inspect(customer_id)}, errors => #{inspect(changeset.errors)}")
         put_resp_content_type(conn, "application/json")
         |> send_resp(200, "ok")
       end
@@ -101,12 +101,12 @@ defmodule CallbacksController do
             put_resp_content_type(conn, "application/json")
             |> send_resp(200, "ok")
           {:error, changeset} ->
-            Logger.warn("Notify: Could not update Login for customer_id => #{inspect(customer_id)}, changeset => #{inspect(changeset)}")
+            Logger.warn("Notify: Could not update Login for customer_id => #{inspect(customer_id)}, errors => #{inspect(changeset.errors)}")
             put_resp_content_type(conn, "application/json")
             |> send_resp(200, "ok")
         end
       else
-        Logger.warn("Failure: Could not update Login for customer_id => #{inspect(customer_id)}, changeset invalid => #{inspect(changeset)}")
+        Logger.warn("Failure: Could not update Login for customer_id => #{inspect(customer_id)}, errors => #{inspect(changeset.errors)}")
         put_resp_content_type(conn, "application/json")
         |> send_resp(200, "ok")
       end
@@ -144,12 +144,12 @@ defmodule CallbacksController do
             put_resp_content_type(conn, "application/json")
             |> send_resp(200, "ok")
           {:error, changeset} ->
-            Logger.warn("Interactive: Could not update Login for customer_id => #{inspect(customer_id)}, changeset => #{inspect(changeset)}")
+            Logger.warn("Interactive: Could not update Login for customer_id => #{inspect(customer_id)}, errors => #{inspect(changeset.errors)}")
             put_resp_content_type(conn, "application/json")
             |> send_resp(200, "ok")
         end
       else
-        Logger.warn("Interactive: Could not update Login for customer_id => #{inspect(customer_id)}, changeset invalid => #{inspect(changeset)}")
+        Logger.warn("Interactive: Could not update Login for customer_id => #{inspect(customer_id)}, errors => #{inspect(changeset.errors)}")
         put_resp_content_type(conn, "application/json")
         |> send_resp(200, "ok")
       end
