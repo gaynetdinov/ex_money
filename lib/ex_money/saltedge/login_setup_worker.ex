@@ -12,11 +12,7 @@ defmodule ExMoney.Saltedge.LoginSetupWorker do
 
     ExMoney.Saltedge.Account.sync([login.saltedge_login_id])
 
-    account_ids = ExMoney.Account
-    |> where([a], a.saltedge_login_id == ^login.saltedge_login_id)
-    |> ExMoney.Repo.all
-    |> Enum.map(fn(account) -> account.saltedge_account_id end)
-    |> start_transactions_worker
+    restart_transactions_worker
 
     {:stop, :normal, state}
   end
@@ -25,31 +21,11 @@ defmodule ExMoney.Saltedge.LoginSetupWorker do
     {:stop, :normal, :ok, state}
   end
 
-  defp start_transactions_worker([]) do
-    Logger.info("No accounts fetched, TransactionsWorker is not started")
-  end
-
-  defp start_transactions_worker(account_ids) do
-    pid = :erlang.whereis(:transactions_worker)
-
-    _start_transactions_worker(pid, account_ids)
-  end
-
-  defp _start_transactions_worker(:undefined, account_ids) do
-    [head | tail] = account_ids
-
+  defp restart_transactions_worker() do
     Supervisor.restart_child(
       ExMoney.Supervisor,
       ExMoney.Saltedge.TransactionsWorker
     )
-
-    Enum.each(tail, fn(account_id) ->
-      GenServer.cast(:transactions_worker, {:fetch, account_id})
-    end)
-  end
-
-  defp _start_transactions_worker(pid, _) do
-    Logger.info("TransactionsWorker was already started with pid #{inspect(pid)}")
   end
 
   defp fetch_login(user_id, login_id, attempts) do
