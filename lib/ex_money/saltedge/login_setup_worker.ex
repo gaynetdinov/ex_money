@@ -38,23 +38,14 @@ defmodule ExMoney.Saltedge.LoginSetupWorker do
   defp _start_transactions_worker(:undefined, account_ids) do
     [head | tail] = account_ids
 
-    Supervisor.start_child(
+    Supervisor.restart_child(
       ExMoney.Supervisor,
-      Supervisor.Spec.worker(
-        ExMoney.Saltedge.TransactionsWorker,
-        [[saltedge_account_id: head]],
-        restart: :transient
-      )
+      ExMoney.Saltedge.TransactionsWorker
     )
 
     Enum.each(tail, fn(account_id) ->
       GenServer.cast(:transactions_worker, {:fetch, account_id})
     end)
-
-    Supervisor.start_child(
-      ExMoney.Supervisor,
-      Supervisor.Spec.worker(ExMoney.Saltedge.TransactionsScheduler, [])
-    )
   end
 
   defp _start_transactions_worker(pid, _) do

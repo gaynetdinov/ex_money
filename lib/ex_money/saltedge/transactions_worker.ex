@@ -7,6 +7,7 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
 
   alias ExMoney.Repo
   alias ExMoney.Transaction
+  alias ExMoney.Account
 
   @interval 29 * 60 * 1000
 
@@ -15,9 +16,18 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
   end
 
   def init(opts) do
-    Process.send_after(self(), {:fetch, opts[:saltedge_account_id]}, @interval)
+    accounts = Repo.all(Account)
 
-    {:ok, {}}
+    case accounts do
+      [] -> :ignore
+      accounts ->
+        Enum.each(accounts, fn(account) ->
+          Process.send_after(self(), {:fetch, account.saltedge_account_id}, 5000)
+        end)
+
+        {:ok, {}}
+    end
+
   end
 
   def handle_info({:fetch, saltedge_account_id}, state) do

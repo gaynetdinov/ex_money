@@ -8,6 +8,8 @@ defmodule ExMoney do
       supervisor(ExMoney.Endpoint, []),
       worker(ExMoney.Repo, []),
       worker(ExMoney.Saltedge.LoginSetupWorker, []),
+      worker(ExMoney.Saltedge.TransactionsWorker, []),
+      worker(ExMoney.Saltedge.TransactionsScheduler, [])
     ]
 
     opts = [strategy: :one_for_one, name: ExMoney.Supervisor]
