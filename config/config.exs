@@ -15,9 +15,27 @@ config :ex_money, ExMoney.Endpoint,
            adapter: Phoenix.PubSub.PG2]
 
 # Configures Elixir's Logger
-config :logger, :console,
+config :logger,
   format: "$time $metadata[$level] $message\n",
-  metadata: [:request_id]
+  metadata: [:request_id],
+  backends: [
+    :console,
+    {LoggerFileBackend, :info},
+    {LoggerFileBackend, :error},
+    {LoggerFileBackend, :debug}
+  ]
+
+config :logger, :info,
+  path: "log/info.log",
+  level: :info
+
+config :logger, :error,
+  path: "log/error.log",
+  level: :error
+
+config :logger, :debug,
+  path: "log/debug.log",
+  level: :debug
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

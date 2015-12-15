@@ -12,6 +12,7 @@
   "httpoison": {:hex, :httpoison, "0.8.0"},
   "idna": {:hex, :idna, "1.0.2"},
   "joken": {:hex, :joken, "0.15.0"},
+  "logger_file_backend": {:hex, :logger_file_backend, "0.0.5"},
   "mimerl": {:hex, :mimerl, "1.0.0"},
   "phoenix": {:hex, :phoenix, "1.0.3"},
   "phoenix_ecto": {:hex, :phoenix_ecto, "1.2.0"},
