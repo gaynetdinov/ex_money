@@ -11,12 +11,11 @@ defmodule ExMoney.Transaction do
     field :amount, :decimal
     field :currency_code, :string
     field :description, :string
-    field :category, :string
     field :duplicated, :boolean, default: false
     field :saltedge_account_id, :integer
-    field :category_id, :integer
 
     has_one :transaction_info, ExMoney.TransactionInfo
+    belongs_to :category, ExMoney.Category
 
     timestamps
   end
@@ -29,18 +28,11 @@ defmodule ExMoney.Transaction do
     amount
     currency_code
     description
-    category
     duplicated
     saltedge_account_id
   )
   @optional_fields ~w(category_id)
 
-  @doc """
-  Creates a changeset based on the `model` and `params`.
-
-  If no params are provided, an invalid changeset is returned
-  with no validation performed.
-  """
   def changeset(model, params \\ :empty) do
     model
     |> cast(params, @required_fields, @optional_fields)

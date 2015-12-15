@@ -8,6 +8,7 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
   alias ExMoney.Repo
   alias ExMoney.Transaction
   alias ExMoney.Account
+  alias ExMoney.Category
 
   @interval 29 * 60 * 1000
 
@@ -138,7 +139,16 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
         by_saltedge_transaction_id(transaction["saltedge_transaction_id"])
         |> Repo.one
 
-      if !existing_transaction do
+      unless existing_transaction do
+        existing_category = Category.by_name(transaction["category"]) |> Repo.one
+        if existing_category do
+          transaction = Map.put(transaction, "category_id", existing_category.id)
+        else
+          changeset = Category.changeset(%Category{}, %{name: transaction["category"]})
+          category = Repo.insert!(changeset)
+          transaction = Map.put(transaction, "category_id", category.id)
+        end
+
         changeset = Transaction.changeset(%Transaction{}, transaction)
         Repo.insert!(changeset)
       end
