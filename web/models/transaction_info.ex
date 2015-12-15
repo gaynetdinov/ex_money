@@ -30,6 +30,7 @@ defmodule ExMoney.TransactionInfo do
 
   @required_fields ~w()
   @optional_fields ~w(
+    transaction_id
     record_number
     information
     time
