@@ -12,11 +12,11 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
 
   @interval 29 * 60 * 1000
 
-  def start_link(opts \\ []) do
-    GenServer.start_link(__MODULE__, opts, name: :transactions_worker)
+  def start_link(_opts \\ []) do
+    GenServer.start_link(__MODULE__, :ok, name: :transactions_worker)
   end
 
-  def init(opts) do
+  def init(:ok) do
     accounts = Repo.all(Account)
 
     case accounts do

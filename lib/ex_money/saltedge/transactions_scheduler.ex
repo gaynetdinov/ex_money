@@ -32,19 +32,10 @@ defmodule ExMoney.Saltedge.TransactionsScheduler do
   end
 
   def handle_info(:start_worker, state) do
-    account_ids = Repo.all(Account)
-    |> Enum.map(fn(account) -> account.saltedge_account_id end)
-
-    case account_ids do
-      [] -> Logger.warn("No Accounts, TransactionsWorker wasn't started")
-      [head | tail] ->
-        # FIXME: handle start_link answer
-        ExMoney.TransactionsWorker.start_link(saltedge_account_id: head)
-
-        Enum.each(tail, fn(account_id) ->
-          GenServer.cast(:transactions_worker, {:fetch, account_id})
-        end)
-    end
+    Supervisor.restart_child(
+      ExMoney.Supervisor,
+      ExMoney.Saltedge.TransactionsWorker
+    )
 
     Process.send_after(self(), :schedule, @interval)
 
