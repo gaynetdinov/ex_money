@@ -7,6 +7,7 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
 
   alias ExMoney.Repo
   alias ExMoney.Transaction
+  alias ExMoney.TransactionInfo
   alias ExMoney.Account
   alias ExMoney.Category
 
@@ -28,7 +29,6 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
 
         {:ok, {}}
     end
-
   end
 
   def handle_info({:fetch, saltedge_account_id}, state) do
@@ -129,30 +129,46 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
   end
 
   defp store(transactions) do
-    Enum.each(transactions, fn(transaction) ->
-      transaction = Map.put(transaction, "saltedge_transaction_id", transaction["id"])
-      transaction = Map.put(transaction, "saltedge_account_id", transaction["account_id"])
-      transaction = Map.drop(transaction, ["id"])
-      transaction = Map.drop(transaction, ["account_id"])
+    Enum.each(transactions, fn(se_tran) ->
+      se_tran = Map.put(se_tran, "saltedge_transaction_id", se_tran["id"])
+      se_tran = Map.put(se_tran, "saltedge_account_id", se_tran["account_id"])
+      se_tran = Map.drop(se_tran, ["id"])
+      se_tran = Map.drop(se_tran, ["account_id"])
 
       existing_transaction = Transaction.
-        by_saltedge_transaction_id(transaction["saltedge_transaction_id"])
+        by_saltedge_transaction_id(se_tran["saltedge_transaction_id"])
         |> Repo.one
 
       unless existing_transaction do
-        existing_category = Category.by_name(transaction["category"]) |> Repo.one
-        if existing_category do
-          transaction = Map.put(transaction, "category_id", existing_category.id)
-        else
-          changeset = Category.changeset(%Category{}, %{name: transaction["category"]})
-          category = Repo.insert!(changeset)
-          transaction = Map.put(transaction, "category_id", category.id)
-        end
+        se_tran = set_category_id(se_tran)
 
-        changeset = Transaction.changeset(%Transaction{}, transaction)
-        Repo.insert!(changeset)
+        changeset = Transaction.changeset(%Transaction{}, se_tran)
+        Repo.transaction fn ->
+          transaction = Repo.insert!(changeset)
+
+          extra = Map.put(se_tran["extra"], "transaction_id", transaction.id)
+          transaction_info = TransactionInfo.changeset(%TransactionInfo{}, extra)
+
+          Repo.insert!(transaction_info)
+        end
       end
     end)
+  end
+
+  defp set_category_id(transaction) do
+    category = find_or_create_category(transaction["category"])
+
+    Map.put(transaction, "category_id", category.id)
+  end
+
+  defp find_or_create_category(name) do
+    case Category.by_name(name) |> Repo.one do
+      nil ->
+        changeset = Category.changeset(%Category{}, %{name: name})
+        Repo.insert!(changeset)
+
+      existing_category -> existing_category
+    end
   end
 
   defp date_to_string(date) do
