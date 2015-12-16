@@ -80,7 +80,7 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
 
     case {response["data"], response["meta"]["next_id"]} do
       {[], _} -> acc
-      {_data, nil} -> acc
+      {data, nil} -> [data | acc]
       {data, next_id} ->
         fetch_recent(
           saltedge_account_id,
