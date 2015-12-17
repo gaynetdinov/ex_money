@@ -24,6 +24,7 @@ defmodule ExMoney.Login do
     field :interactive_fields_names, {:array, :string}
     field :stage, :string
     field :store_credentials, :boolean, default: false
+    field :last_refreshed_at, Ecto.DateTime
 
     belongs_to :user, ExMoney.User
     has_many :accounts, ExMoney.Account
@@ -113,6 +114,7 @@ defmodule ExMoney.Login do
     last_fail_error_class
     last_request_at
     last_success_at
+    last_refreshed_at
   )
 
   def create_changeset(model, params \\ :empty) do

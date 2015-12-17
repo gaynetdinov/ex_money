@@ -8,45 +8,16 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
   alias ExMoney.Repo
   alias ExMoney.Transaction
   alias ExMoney.TransactionInfo
-  alias ExMoney.Account
   alias ExMoney.Category
-
-  @interval 29 * 60 * 1000
 
   def start_link(_opts \\ []) do
     GenServer.start_link(__MODULE__, :ok, name: :transactions_worker)
   end
 
-  def init(:ok) do
-    accounts = Repo.all(Account)
-
-    case accounts do
-      [] -> :ignore
-      accounts ->
-        Enum.each(accounts, fn(account) ->
-          Process.send_after(self(), {:fetch, account.saltedge_account_id}, 5000)
-        end)
-
-        {:ok, {}}
-    end
-  end
-
   def handle_info({:fetch, saltedge_account_id}, state) do
     fetch_transactions(saltedge_account_id)
 
-    Process.send_after(self(), {:fetch, saltedge_account_id}, @interval)
-
     {:noreply, state}
-  end
-
-  def handle_cast({:fetch, saltedge_account_id}, state) do
-    fetch_transactions(saltedge_account_id)
-
-    {:noreply, state}
-  end
-
-  def handle_call(:stop, _from, state) do
-    {:stop, :normal, :ok, state}
   end
 
   def fetch_transactions(saltedge_account_id) do
