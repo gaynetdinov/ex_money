@@ -23,10 +23,10 @@ defmodule ExMoney.Saltedge.Login do
       existing_login = Login.by_saltedge_login_id(login["saltedge_login_id"]) |> Repo.one
 
       if existing_login do
-        changeset = Login.changeset(existing_login, login)
+        changeset = Login.update_changeset(existing_login, login)
         Repo.update!(changeset)
       else
-        changeset = Login.changeset(%Login{}, login)
+        changeset = Login.create_changeset(%Login{}, login)
         Repo.insert!(changeset)
       end
     end)

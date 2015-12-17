@@ -35,6 +35,30 @@ defmodule ExMoney.CallbacksControllerTest.Success do
     assert login.user_id == user.id
   end
 
+  test "when updates login" do
+    login = create(:login)
+
+    body = [
+      data: [
+        customer_id: login.user.saltedge_customer_id,
+        login_id: login.saltedge_login_id,
+        provider_score: "foo"
+
+      ],
+      meta: [
+        version: "2",
+        time: "2015-12-04T09:54:09Z"
+      ]
+    ]
+
+    conn = post conn(), "/callbacks/success", body
+    login = Repo.one(Login)
+
+    assert conn.status == 200
+    assert response_content_type(conn, :json) == "application/json; charset=utf-8"
+    assert login.provider_score == "foo"
+  end
+
   test "when user is not found by customer_id" do
     body = [
       data: [
@@ -50,8 +74,7 @@ defmodule ExMoney.CallbacksControllerTest.Success do
     conn = post conn(), "/callbacks/success", body
     logins = Repo.all(Login)
 
-    assert conn.status == 200
-    assert response_content_type(conn, :json) == "application/json; charset=utf-8"
+    assert conn.status == 400
     assert logins == []
   end
 end
@@ -111,8 +134,7 @@ defmodule ExMoney.CallbacksControllerTest.Failure do
     conn = post conn(), "/callbacks/failure", body
     logins = Repo.all(Login)
 
-    assert conn.status == 200
-    assert response_content_type(conn, :json) == "application/json; charset=utf-8"
+    assert conn.status == 400
     assert logins == []
   end
 end
@@ -168,8 +190,7 @@ defmodule ExMoney.CallbacksControllerTest.Notify do
     conn = post conn(), "/callbacks/notify", body
     logins = Repo.all(Login)
 
-    assert conn.status == 200
-    assert response_content_type(conn, :json) == "application/json; charset=utf-8"
+    assert conn.status == 400
     assert logins == []
   end
 end
@@ -229,8 +250,7 @@ defmodule ExMoney.CallbacksControllerTest.Interactive do
     conn = post conn(), "/callbacks/interactive", body
     logins = Repo.all(Login)
 
-    assert conn.status == 200
-    assert response_content_type(conn, :json) == "application/json; charset=utf-8"
+    assert conn.status == 400
     assert logins == []
   end
 end

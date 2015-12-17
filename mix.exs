@@ -40,7 +40,7 @@ defmodule ExMoney.Mixfile do
       {:httpoison, "~> 0.8.0"},
       {:guardian, "~> 0.6.2"},
       {:comeonin, "~> 1.6"},
-      {:ex_machina, "~> 0.5"},
+      {:ex_machina, "~> 0.6"},
       {:faker, "~> 0.5", only: :test},
       {:logger_file_backend, "0.0.5"}
     ]

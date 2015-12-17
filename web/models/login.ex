@@ -35,6 +35,13 @@ defmodule ExMoney.Login do
     from l in Login, where: l.user_id == ^user_id
   end
 
+  def by_user_and_saltedge_login(user_id, saltedge_login_id) do
+    from l in Login,
+      where: l.user_id == ^user_id,
+      where: l.saltedge_login_id == ^saltedge_login_id,
+      limit: 1
+  end
+
   def by_saltedge_login_id(saltedge_login_id) do
     from l in Login, where: l.saltedge_login_id == ^saltedge_login_id
   end
@@ -87,8 +94,34 @@ defmodule ExMoney.Login do
     last_success_at
   )
 
-  def changeset(model, params \\ :empty) do
+  @update_fields ~w(
+    finished
+    finished_recent
+    partial
+    automatic_fetch
+    interactive
+    provider_name
+    status
+    country_code
+    stage
+    store_credentials
+    interactive_fields_names
+    interactive_html
+    provider_score
+    last_fail_at
+    last_fail_message
+    last_fail_error_class
+    last_request_at
+    last_success_at
+  )
+
+  def create_changeset(model, params \\ :empty) do
     model
     |> cast(params, @required_fields, @optional_fields)
+  end
+
+  def update_changeset(model, params \\ :empty) do
+    model
+    |> cast(params, ~w(), @update_fields)
   end
 end
