@@ -45,7 +45,7 @@ defmodule ExMoney.Saltedge.LoginsRefreshWorker do
       { "data": { "fetch_type": "recent" }}
     """
 
-    result = ExMoney.Saltedge.Client.request(:put, "logins/#{login.id}/refresh", body)
+    result = ExMoney.Saltedge.Client.request(:put, "logins/#{login.saltedge_login_id}/refresh", body)
     |> Poison.decode!
     Logger.info("Refreshed login #{login.saltedge_login_id} with result => #{inspect(result)}")
 

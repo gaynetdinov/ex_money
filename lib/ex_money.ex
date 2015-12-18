@@ -7,6 +7,7 @@ defmodule ExMoney do
     children = [
       supervisor(ExMoney.Endpoint, []),
       worker(ExMoney.Repo, []),
+      worker(ExMoney.Saltedge.LoginsRefreshWorker, []),
       worker(ExMoney.Saltedge.LoginSetupWorker, []),
       worker(ExMoney.Saltedge.TransactionsWorker, []),
       worker(ExMoney.Saltedge.TransactionsScheduler, [])
