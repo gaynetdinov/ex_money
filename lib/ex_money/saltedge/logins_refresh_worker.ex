@@ -46,7 +46,6 @@ defmodule ExMoney.Saltedge.LoginsRefreshWorker do
     """
 
     result = ExMoney.Saltedge.Client.request(:put, "logins/#{login.saltedge_login_id}/refresh", body)
-    |> Poison.decode!
     Logger.info("Refreshed login #{login.saltedge_login_id} with result => #{inspect(result)}")
 
     case result["data"]["refreshed"] do
