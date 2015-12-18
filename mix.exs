@@ -19,7 +19,7 @@ defmodule ExMoney.Mixfile do
   def application do
     [mod: {ExMoney, []},
      applications: [:phoenix, :phoenix_html, :cowboy, :logger,
-                    :phoenix_ecto, :postgrex, :httpoison]]
+                    :phoenix_ecto, :postgrex, :httpoison, :tzdata]]
   end
 
   # Specifies which paths to compile per environment.
@@ -42,7 +42,8 @@ defmodule ExMoney.Mixfile do
       {:comeonin, "~> 1.6"},
       {:ex_machina, "~> 0.6"},
       {:faker, "~> 0.5", only: :test},
-      {:logger_file_backend, "0.0.5"}
+      {:logger_file_backend, "0.0.5"},
+      {:timex, "0.19.5"}
     ]
   end
 
