@@ -1,11 +1,11 @@
-defmodule ExMoney.Saltedge.TransactionsScheduler do
+defmodule ExMoney.Saltedge.Scheduler do
   use GenServer
   require Logger
 
   @interval 60 * 1000
 
   def start_link(_opts \\ []) do
-    GenServer.start_link(__MODULE__, :ok, name: :transactions_scheduler)
+    GenServer.start_link(__MODULE__, :ok, name: :scheduler)
   end
 
   def init(:ok) do
@@ -18,8 +18,8 @@ defmodule ExMoney.Saltedge.TransactionsScheduler do
     case current_hour() do
       hour when hour >= 0 and hour < 7 ->
         # FIXME: handle genserver answer
-        result = GenServer.call(:transactions_worker, :stop)
-        Logger.info("Time to sleep, TransactionsWorker has been stopped with result => #{inspect(result)}")
+        result = GenServer.call(:login_refresh_worker, :stop)
+        Logger.info("Time to sleep, LoginRefreshWorker has been stopped with result => #{inspect(result)}")
         # Start transactions worker in 7 hours
         Process.send_after(self(), :start_worker, 7 * 60 * 60 * 1000)
 
@@ -32,9 +32,9 @@ defmodule ExMoney.Saltedge.TransactionsScheduler do
   def handle_info(:start_worker, state) do
     result = Supervisor.restart_child(
       ExMoney.Supervisor,
-      ExMoney.Saltedge.TransactionsWorker
+      ExMoney.Saltedge.LoginRefreshWorker
     )
-    Logger.info("Time to wake up, TransactionsWorker has been started with result => #{inspect(result)}")
+    Logger.info("Time to wake up, LoginRefreshWorker has been started with result => #{inspect(result)}")
 
     Process.send_after(self(), :schedule, @interval)
 

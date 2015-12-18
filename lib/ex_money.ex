@@ -7,10 +7,10 @@ defmodule ExMoney do
     children = [
       supervisor(ExMoney.Endpoint, []),
       worker(ExMoney.Repo, []),
-      worker(ExMoney.Saltedge.LoginsRefreshWorker, []),
+      worker(ExMoney.Saltedge.LoginRefreshWorker, []),
       worker(ExMoney.Saltedge.LoginSetupWorker, []),
       worker(ExMoney.Saltedge.TransactionsWorker, []),
-      worker(ExMoney.Saltedge.TransactionsScheduler, [])
+      worker(ExMoney.Saltedge.Scheduler, [])
     ]
 
     opts = [strategy: :one_for_one, name: ExMoney.Supervisor]

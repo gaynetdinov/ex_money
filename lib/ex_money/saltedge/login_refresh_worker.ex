@@ -1,4 +1,4 @@
-defmodule ExMoney.Saltedge.LoginsRefreshWorker do
+defmodule ExMoney.Saltedge.LoginRefreshWorker do
   use GenServer
 
   require Logger
@@ -8,7 +8,7 @@ defmodule ExMoney.Saltedge.LoginsRefreshWorker do
   alias ExMoney.Account
 
   def start_link(_opts \\ []) do
-    GenServer.start_link(__MODULE__, :ok, name: :logins_refresh_worker)
+    GenServer.start_link(__MODULE__, :ok, name: :login_refresh_worker)
   end
 
   def init(:ok) do
