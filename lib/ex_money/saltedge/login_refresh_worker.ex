@@ -40,6 +40,10 @@ defmodule ExMoney.Saltedge.LoginRefreshWorker do
     {:noreply, state}
   end
 
+  def handle_call(:stop, _from, state) do
+    {:stop, :normal, :ok, state}
+  end
+
   defp refresh_login(login) do
     body = """
       { "data": { "fetch_type": "recent" }}
