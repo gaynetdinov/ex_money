@@ -21,8 +21,7 @@ config :logger,
   backends: [
     :console,
     {LoggerFileBackend, :info},
-    {LoggerFileBackend, :error},
-    {LoggerFileBackend, :debug}
+    {LoggerFileBackend, :error}
   ]
 
 config :logger, :info,
@@ -32,10 +31,6 @@ config :logger, :info,
 config :logger, :error,
   path: "log/error.log",
   level: :error
-
-config :logger, :debug,
-  path: "log/debug.log",
-  level: :debug
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
