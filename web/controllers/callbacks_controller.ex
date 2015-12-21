@@ -29,8 +29,6 @@ defmodule CallbacksController do
         if changeset.valid? do
           case Repo.insert(changeset) do
             {:ok, _login} ->
-              Process.send_after(:login_setup_worker, {:setup, user.id, login_id}, 5000)
-
               put_resp_content_type(conn, "application/json")
               |> send_resp(200, "")
             {:error, changeset} ->
@@ -99,7 +97,9 @@ defmodule CallbacksController do
 
     if changeset.valid? do
       case Repo.update(changeset) do
-        {:ok, _login} ->
+        {:ok, login} ->
+          sync_data(user.id, login, stage)
+
           put_resp_content_type(conn, "application/json")
           |> send_resp(200, "ok")
         {:error, changeset} ->
@@ -149,6 +149,17 @@ defmodule CallbacksController do
       put_resp_content_type(conn, "application/json")
       |> send_resp(200, "ok")
     end
+  end
+
+  defp sync_data(_user_id, _login, stage) when stage != "finished", do: :ok
+
+  defp sync_data(user_id, login, _stage) do
+    GenServer.cast(:sync_worker, {:sync, user_id, login.id})
+
+    Login.update_changeset(
+      login,
+      %{last_refreshed_at: :erlang.universaltime()}
+    ) |> Repo.update!
   end
 
   defp set_user_by_customer_id(conn, _opts) do

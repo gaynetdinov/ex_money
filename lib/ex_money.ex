@@ -8,7 +8,6 @@ defmodule ExMoney do
       supervisor(ExMoney.Endpoint, []),
       worker(ExMoney.Repo, []),
       worker(ExMoney.Saltedge.LoginRefreshWorker, [], restart: :transient),
-      worker(ExMoney.Saltedge.LoginSetupWorker, []),
       worker(ExMoney.Saltedge.TransactionsWorker, []),
       worker(ExMoney.Saltedge.Scheduler, [])
     ]
