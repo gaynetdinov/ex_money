@@ -30,7 +30,7 @@ defmodule ExMoney.Saltedge.LoginRefreshWorker do
 
     case Timex.Date.diff(last_refreshed_at, Timex.Date.now, :secs) do
       secs when secs >= 3600 ->
-        refresh_login(login)
+        refresh_login(login, 5)
       secs when secs < 3600 ->
         next_run = 3600 - secs
 
@@ -44,7 +44,7 @@ defmodule ExMoney.Saltedge.LoginRefreshWorker do
     {:stop, :normal, :ok, state}
   end
 
-  defp refresh_login(login) do
+  defp refresh_login(login, attempts) do
     body = """
       { "data": { "fetch_type": "recent" }}
     """
@@ -53,8 +53,15 @@ defmodule ExMoney.Saltedge.LoginRefreshWorker do
     Logger.info("Refreshed login #{login.saltedge_login_id} with result => #{inspect(result)}")
 
     case result["data"]["refreshed"] do
-      false -> Process.send_after(self(), {:refresh, login}, 5000) # FIXME endless loop
-      true -> :ok
+      false when attempts > 0 ->
+        :timer.sleep(5000)
+        refresh_login(login, attempts - 1)
+      false ->
+        Logger.error("After 5 attempts login was not refreshed, reschedule in 1 hour")
+        Process.send_after(self(), {:refresh, login}, 60 * 60 * 1000)
+      true ->
+        Logger.info("Login was successfully refreshed!")
+        :ok
     end
   end
 
