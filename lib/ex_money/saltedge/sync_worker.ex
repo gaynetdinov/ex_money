@@ -9,7 +9,7 @@ defmodule ExMoney.Saltedge.SyncWorker do
     GenServer.start_link(__MODULE__, :ok, name: :sync_worker)
   end
 
-  def handle_cast(:sync, user_id, saltedge_login_id, state) do
+  def handle_cast({:sync, user_id, saltedge_login_id}, state) do
     ExMoney.Saltedge.Login.sync(user_id, saltedge_login_id)
 
     ExMoney.Saltedge.Account.sync([saltedge_login_id])
