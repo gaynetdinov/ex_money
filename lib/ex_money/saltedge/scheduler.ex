@@ -9,7 +9,7 @@ defmodule ExMoney.Saltedge.Scheduler do
   end
 
   def init(:ok) do
-    Process.send_after(self(), :schedule, @interval)
+    Process.send_after(self(), :schedule, 100)
 
     {:ok, {}}
   end

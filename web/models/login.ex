@@ -44,7 +44,9 @@ defmodule ExMoney.Login do
   end
 
   def by_saltedge_login_id(saltedge_login_id) do
-    from l in Login, where: l.saltedge_login_id == ^saltedge_login_id
+    from l in Login,
+      where: l.saltedge_login_id == ^saltedge_login_id,
+      limit: 1
   end
 
   def success_callback_changeset(model, params \\ :empty) do

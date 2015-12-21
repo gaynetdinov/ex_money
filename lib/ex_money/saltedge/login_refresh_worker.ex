@@ -53,31 +53,9 @@ defmodule ExMoney.Saltedge.LoginRefreshWorker do
     Logger.info("Refreshed login #{login.saltedge_login_id} with result => #{inspect(result)}")
 
     case result["data"]["refreshed"] do
-      true ->
-        login = Login.update_changeset(
-          login,
-          %{last_refreshed_at: :erlang.universaltime()}
-        ) |> Repo.update!
-
-        sync_transactions(login, login.stage)
-      false ->
-        Process.send_after(self(), {:refresh, login}, 5000)
+      false -> Process.send_after(self(), {:refresh, login}, 5000) # FIXME endless loop
+      true -> :ok
     end
-  end
-
-  # Saltedge is still fetching date from bank, let's try in 5 secs.
-  defp sync_transactions(login, stage) when stage != "finish" do
-    Process.send_after(self(), {:refresh, login}, 5000)
-  end
-
-  # Yey, stage is finished, let's sync transactions then.
-  defp sync_transactions(login, _stage) do
-    accounts = Account.by_saltedge_login_id([login.saltedge_login_id])
-    |> Repo.all
-
-    Enum.each(accounts, fn(account) ->
-      Process.send_after(:transactions_worker, {:fetch, account.saltedge_account_id}, 1000)
-    end)
   end
 
   # Use now - 61 minutes to trigger syncing when last_refreshed_at is nil
