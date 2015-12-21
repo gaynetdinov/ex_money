@@ -44,7 +44,7 @@ defmodule CallbacksController do
         end
       login ->
         changeset = Login.update_changeset(login, params["data"])
-        result = Repo.update(changeset)
+        {result, _} = Repo.update(changeset)
         Logger.info("Success: Login was updated with result => #{inspect(result)}")
         put_resp_content_type(conn, "application/json")
         |> send_resp(200, "")
@@ -151,7 +151,7 @@ defmodule CallbacksController do
     end
   end
 
-  defp sync_data(_user_id, _login, stage) when stage != "finished", do: :ok
+  defp sync_data(_user_id, _login, stage) when stage != "finish", do: :ok
 
   defp sync_data(user_id, login, _stage) do
     GenServer.cast(:sync_worker, {:sync, user_id, login.id})
