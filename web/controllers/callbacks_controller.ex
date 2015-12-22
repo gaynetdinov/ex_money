@@ -154,7 +154,7 @@ defmodule CallbacksController do
   defp sync_data(_user_id, _login, stage) when stage != "finish", do: :ok
 
   defp sync_data(user_id, login, _stage) do
-    GenServer.cast(:sync_worker, {:sync, user_id, login.id})
+    GenServer.cast(:sync_worker, {:sync, user_id, login.saltedge_login_id})
 
     Login.update_changeset(
       login,
