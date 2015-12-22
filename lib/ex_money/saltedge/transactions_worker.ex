@@ -179,7 +179,7 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
 
   defp find_last_transaction(saltedge_account_id) do
     # FIXME: set last_transaction_id in cache during import
-    Transaction.oldest(saltedge_account_id)
+    Transaction.newest(saltedge_account_id)
     |> Repo.one
   end
 end
