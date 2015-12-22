@@ -5,7 +5,8 @@ defmodule ExMoney.Saltedge.LoginRefreshWorker do
 
   alias ExMoney.Repo
   alias ExMoney.Login
-  alias ExMoney.Account
+
+  @interval 3_600_000
 
   def start_link(_opts \\ []) do
     GenServer.start_link(__MODULE__, :ok, name: :login_refresh_worker)
@@ -31,6 +32,8 @@ defmodule ExMoney.Saltedge.LoginRefreshWorker do
     case Timex.Date.diff(last_refreshed_at, Timex.Date.now, :secs) do
       secs when secs >= 3600 ->
         refresh_login(login, 5)
+
+        Process.send_after(self(), {:refresh, login}, @interval)
       secs when secs < 3600 ->
         next_run = 3600 - secs
 
@@ -57,11 +60,9 @@ defmodule ExMoney.Saltedge.LoginRefreshWorker do
         :timer.sleep(5000)
         refresh_login(login, attempts - 1)
       false ->
-        Logger.error("After 5 attempts login was not refreshed, reschedule in 1 hour")
-        Process.send_after(self(), {:refresh, login}, 60 * 60 * 1000)
+        Logger.error("After 5 attempts login was not refreshed")
       true ->
         Logger.info("Login was successfully refreshed!")
-        :ok
     end
   end
 
