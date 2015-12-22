@@ -19,7 +19,7 @@ defmodule ExMoney.Saltedge.LoginRefreshWorker do
       [] -> :ignore
       logins ->
         Enum.each(logins, fn(login) ->
-          Process.send_after(self(), {:refresh, login}, 1000)
+          Process.send_after(self(), {:refresh, login}, 100)
         end)
 
         {:ok, {}}

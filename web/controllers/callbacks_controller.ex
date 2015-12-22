@@ -7,9 +7,8 @@ defmodule CallbacksController do
   alias ExMoney.Login
   alias ExMoney.Repo
 
-  import Ecto.Query
-
-  plug :set_user_by_customer_id
+  plug :set_user
+  plug :set_login when action in [:success, :notify, :interactive]
 
   def success(conn, params) do
     Logger.info("CallbackController#success: #{inspect(params)}")
@@ -18,10 +17,9 @@ defmodule CallbacksController do
     login_id = params["data"]["login_id"]
 
     user = conn.assigns[:user]
-    login = Login.by_user_and_saltedge_login(user.id, login_id) |> Repo.one
 
     # FIXME WHAT A MESS
-    case login do
+    case conn.assigns[:login] do
       nil ->
         changeset = Ecto.Model.build(user, :logins)
         |> Login.success_callback_changeset(%{saltedge_login_id: login_id, user_id: user.id})
@@ -29,6 +27,8 @@ defmodule CallbacksController do
         if changeset.valid? do
           case Repo.insert(changeset) do
             {:ok, _login} ->
+              Process.send_after(:historical_data_worker, {:fetch, login_id}, 3600 * 1000)
+
               put_resp_content_type(conn, "application/json")
               |> send_resp(200, "")
             {:error, changeset} ->
@@ -51,47 +51,13 @@ defmodule CallbacksController do
     end
   end
 
-  def failure(conn, params) do
-    Logger.info("CallbackController#failure: #{inspect(params)}")
-    customer_id = params["data"]["customer_id"]
-    login_id = params["data"]["login_id"]
-    user = conn.assigns[:user]
-
-    changeset = Ecto.Model.build(user, :logins)
-    |> Login.failure_callback_changeset(%{
-      saltedge_login_id: login_id,
-      last_fail_error_class: params["data"]["error_class"],
-      last_fail_message: params["data"]["message"]
-    })
-    if changeset.valid? do
-      case Repo.insert(changeset) do
-        {:ok, _login} ->
-          put_resp_content_type(conn, "application/json")
-          |> send_resp(200, "ok")
-        {:error, changeset} ->
-          # log error
-          Logger.infi("Failure: Could not create Login for customer_id => #{inspect(customer_id)}, errors => #{inspect(changeset.errors)}")
-          put_resp_content_type(conn, "application/json")
-          |> send_resp(200, "ok")
-      end
-    else
-      Logger.info("Failure: Could not create Login for customer_id => #{inspect(customer_id)}, errors => #{inspect(changeset.errors)}")
-      put_resp_content_type(conn, "application/json")
-      |> send_resp(200, "ok")
-    end
-  end
-
   def notify(conn, params) do
     Logger.info("CallbackController#notify: #{inspect(params)}")
     customer_id = params["data"]["customer_id"]
-    login_id = params["data"]["login_id"]
     stage = params["data"]["stage"]
-    user = conn.assigns[:user]
 
-    login = Login
-    |> where([l], l.user_id == ^user.id)
-    |> where([l], l.saltedge_login_id == ^login_id)
-    |> Repo.one
+    user = conn.assigns[:user]
+    login = conn.assigns[:login]
 
     changeset = Login.notify_callback_changeset(login, %{stage: stage})
 
@@ -117,16 +83,11 @@ defmodule CallbacksController do
   def interactive(conn, params) do
     Logger.info("CallbackController#interactive: #{inspect(params)}")
     customer_id = params["data"]["customer_id"]
-    login_id = params["data"]["login_id"]
-    user = conn.assigns[:user]
     stage = params["data"]["stage"]
     html = params["data"]["html"]
     interactive_fields_names = params["data"]["interactive_fields_names"]
 
-    login = Login
-    |> where([l], l.user_id == ^user.id)
-    |> where([l], l.saltedge_login_id == ^login_id)
-    |> Repo.one
+    login = conn.assigns[:login]
 
     changeset = Login.interactive_callback_changeset(login, %{
       stage: stage,
@@ -151,6 +112,36 @@ defmodule CallbacksController do
     end
   end
 
+  def failure(conn, params) do
+    Logger.info("CallbackController#failure: #{inspect(params)}")
+    customer_id = params["data"]["customer_id"]
+    login_id = params["data"]["login_id"]
+    user = conn.assigns[:user]
+
+    changeset = Ecto.Model.build(user, :logins)
+    |> Login.failure_callback_changeset(%{
+      saltedge_login_id: login_id,
+      last_fail_error_class: params["data"]["error_class"],
+      last_fail_message: params["data"]["message"]
+    })
+    if changeset.valid? do
+      case Repo.insert(changeset) do
+        {:ok, _login} ->
+          put_resp_content_type(conn, "application/json")
+          |> send_resp(200, "ok")
+        {:error, changeset} ->
+          # log error
+          Logger.info("Failure: Could not create Login for customer_id => #{inspect(customer_id)}, errors => #{inspect(changeset.errors)}")
+          put_resp_content_type(conn, "application/json")
+          |> send_resp(200, "ok")
+      end
+    else
+      Logger.info("Failure: Could not create Login for customer_id => #{inspect(customer_id)}, errors => #{inspect(changeset.errors)}")
+      put_resp_content_type(conn, "application/json")
+      |> send_resp(200, "ok")
+    end
+  end
+
   defp sync_data(_user_id, _login, stage) when stage != "finish", do: :ok
 
   defp sync_data(user_id, login, _stage) do
@@ -162,7 +153,7 @@ defmodule CallbacksController do
     ) |> Repo.update!
   end
 
-  defp set_user_by_customer_id(conn, _opts) do
+  defp set_user(conn, _opts) do
     case conn.params["data"]["customer_id"] do
       nil -> send_resp(conn, 400, "customer_id is missing") |> halt
       customer_id ->
@@ -174,5 +165,14 @@ defmodule CallbacksController do
           user -> assign(conn, :user, user)
         end
     end
+  end
+
+  defp set_login(conn, _opts) do
+    login = Login.by_user_and_saltedge_login(
+      conn.assigns[:user].id,
+      conn.params["data"]["login_id"]
+    ) |> Repo.one
+
+    assign(conn, :login, login)
   end
 end
