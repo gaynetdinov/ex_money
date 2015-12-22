@@ -50,7 +50,7 @@ defmodule ExMoney.Transaction do
   def oldest(saltedge_account_id) do
     from tr in Transaction,
     where: tr.saltedge_account_id == ^saltedge_account_id,
-    order_by: [asc: tr.saltedge_transaction_id],
+    order_by: [desc: tr.saltedge_transaction_id],
     limit: 1
   end
 

@@ -41,7 +41,7 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
   def handle_call({:fetch_recent, saltedge_account_id}, _from, state) do
     last_transaction = find_last_transaction(saltedge_account_id)
 
-    {:ok, transactions_count} = fetch_recent(saltedge_account_id, last_transaction.saltedge_transaction_id)
+    {:ok, transactions_count} = fetch_recent(saltedge_account_id, last_transaction)
 
     {:reply, {:ok, transactions_count}, state}
   end
@@ -54,8 +54,15 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
     {:reply, {:ok, Enum.count(transactions)}, state}
   end
 
-  defp fetch_recent(saltedge_account_id, last_transaction_id) do
-    transactions = fetch_recent(saltedge_account_id, last_transaction_id, []) |> List.flatten
+  defp fetch_recent(saltedge_account_id, nil) do
+    Logger.warn("There are no transactions in DB for account with id #{saltedge_account_id}")
+
+    {:ok, 0}
+  end
+
+  defp fetch_recent(saltedge_account_id, last_transaction) do
+    transactions = fetch_recent(saltedge_account_id, last_transaction.saltedge_transaction_id, [])
+    |> List.flatten
 
     store(transactions)
 
