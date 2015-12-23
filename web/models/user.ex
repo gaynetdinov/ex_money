@@ -37,7 +37,7 @@ defmodule ExMoney.User do
   def login_changeset(model, params) do
     model
     |> cast(params, ~w(email password), ~w())
-    #|> validate_password
+    |> validate_password
   end
 
   before_insert :maybe_update_password
