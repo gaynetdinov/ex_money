@@ -59,8 +59,8 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
   end
 
   defp fetch_all(saltedge_account_id) do
-    to = current_date()
-    from = substract_days(to, 30)
+    to = Timex.Date.local
+    from = Timex.Date.shift(to, months: -1)
 
     transactions = fetch_all(saltedge_account_id, from, to, [])
 
@@ -73,9 +73,9 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
     case fetch_custom(saltedge_account_id, from, to, nil, []) do
       [] -> List.flatten(acc)
       transactions_chunk ->
-        to = substract_days(from, 30)
-        from = substract_days(from, 1)
-        fetch_all(saltedge_account_id, from, to, [transactions_chunk | acc])
+        new_from = Timex.Date.shift(from, months: -1)
+        new_to = Timex.Date.shift(from, days: -1)
+        fetch_all(saltedge_account_id, new_from, new_to, [transactions_chunk | acc])
     end
   end
 
@@ -149,20 +149,9 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
     end
   end
 
-  defp substract_days(date, days) do
-    :calendar.gregorian_days_to_date(
-      :calendar.date_to_gregorian_days(date) - days
-    )
-  end
-
-  defp current_date do
-    {date, _time} = :calendar.local_time()
-
-    date
-  end
-
   defp date_to_string(date) do
-    Tuple.to_list(date) |> Enum.join("-")
+    {:ok, str_date} = Timex.DateFormat.format(date, "%Y-%m-%d", :strftime)
+    str_date
   end
 
   defp find_last_transaction(saltedge_account_id) do
