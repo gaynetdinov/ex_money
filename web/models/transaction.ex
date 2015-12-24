@@ -46,7 +46,8 @@ defmodule ExMoney.Transaction do
 
   def recent() do
     from tr in Transaction,
-      limit: 20,
+      limit: 50,
+      preload: [:transaction_info, :category],
       order_by: [desc: tr.made_on]
   end
 

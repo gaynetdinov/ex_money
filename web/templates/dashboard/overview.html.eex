@@ -23,33 +23,20 @@
     </div>
 
     <h2 class="sub-header">Recent transactions</h2>
-    <div class="table-responsive">
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Description</th>
-            <th>Amount</th>
-            <th>Account id</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <%= for transaction <- @recent_transactions do %>
+    <%= for {date, transactions} <- @recent_transactions do %>
+      <div class="panel panel-default">
+        <div class="panel-heading"><%= date %></div>
+
+        <table class="table">
+          <%= for transaction <- transactions do %>
             <tr>
-              <td><%= transaction.made_on %></td>
-              <td><%= transaction.description %></td>
-              <td><%= transaction.amount %></td>
-              <td><%= transaction.saltedge_account_id %></td>
-              <td class="text-right">
-                <%= link "Show", to: transaction_path(@conn, :show, transaction), class: "btn btn-default btn-xs" %>
-                <%= link "Edit", to: transaction_path(@conn, :edit, transaction), class: "btn btn-default btn-xs" %>
-                <%= link "Delete", to: transaction_path(@conn, :delete, transaction), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %>
-              </td>
+              <td width="50%"><%= transaction.transaction_info.payee %></td>
+              <td width="25%"><%= transaction.category.name %></td>
+              <td width="25%" align="right"><%= transaction.amount %></td>
             </tr>
           <% end %>
-        </tbody>
-      </table>
-    </div>
+        </table>
+      </div>
+    <% end %>
   </div>
 </div>
