@@ -39,24 +39,28 @@ defmodule ExMoney.Transaction do
   end
 
   def by_saltedge_transaction_id(transaction_id) do
-    from tr in Transaction, where: tr.saltedge_transaction_id == ^transaction_id, limit: 1
+    from tr in Transaction,
+      where: tr.saltedge_transaction_id == ^transaction_id,
+      limit: 1
   end
 
   def recent() do
-    from tr in Transaction, limit: 20, order_by: [desc: tr.made_on]
+    from tr in Transaction,
+      limit: 20,
+      order_by: [desc: tr.made_on]
   end
 
   # FIXME cache instead of db
   def newest(saltedge_account_id) do
     from tr in Transaction,
-    where: tr.saltedge_account_id == ^saltedge_account_id,
-    order_by: [desc: tr.saltedge_transaction_id],
-    limit: 1
+      where: tr.saltedge_account_id == ^saltedge_account_id,
+      order_by: [desc: tr.made_on],
+      limit: 1
   end
 
   def newest do
     from tr in Transaction,
-    order_by: [desc: tr.saltedge_transaction_id],
-    limit: 1
+      order_by: [desc: tr.made_on],
+      limit: 1
   end
 end

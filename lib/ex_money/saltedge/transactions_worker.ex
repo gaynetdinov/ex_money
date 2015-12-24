@@ -3,8 +3,6 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
 
   require Logger
 
-  import Ecto.Query
-
   alias ExMoney.Repo
   alias ExMoney.Transaction
   alias ExMoney.TransactionInfo
@@ -14,59 +12,33 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
     GenServer.start_link(__MODULE__, :ok, name: :transactions_worker)
   end
 
-  def handle_cast({:fetch_all, saltedge_account_id}, state) do
-    to = current_date()
-    from = substract_days(to, 30)
-    fetch_all(saltedge_account_id, from, to, [])
-
-    {:noreply, state}
-  end
-
-  def handle_cast({:fetch_recent, saltedge_account_id}, state) do
-    last_transaction = find_last_transaction(saltedge_account_id)
-
-    fetch_recent(saltedge_account_id, last_transaction.saltedge_transaction_id)
-
-    {:noreply, state}
-  end
-
-  def handle_info({:fetch_recent, saltedge_account_id}, state) do
-    last_transaction = find_last_transaction(saltedge_account_id)
-
-    fetch_recent(saltedge_account_id, last_transaction.saltedge_transaction_id)
-
-    {:noreply, state}
-  end
-
   def handle_call({:fetch_recent, saltedge_account_id}, _from, state) do
     last_transaction = find_last_transaction(saltedge_account_id)
 
-    {:ok, transactions_count} = fetch_recent(saltedge_account_id, last_transaction)
+    {:ok, stored_transactions, fetched_transactions} = fetch_recent(saltedge_account_id, last_transaction)
 
-    {:reply, {:ok, transactions_count}, state}
+    {:reply, {:ok, stored_transactions, fetched_transactions}, state}
   end
 
-  def handle_call({:fetch_custom, saltedge_account_id, from, to}, _from, state) do
-    transactions = fetch_custom(saltedge_account_id, from, to, nil, [])
+  def handle_call({:fetch_all, saltedge_account_id}, _from, state) do
+    {:ok, stored_transactions, fetched_transactions} = fetch_all(saltedge_account_id)
 
-    store(transactions)
-
-    {:reply, {:ok, Enum.count(transactions)}, state}
+    {:reply, {:ok, stored_transactions, fetched_transactions}, state}
   end
 
   defp fetch_recent(saltedge_account_id, nil) do
     Logger.warn("There are no transactions in DB for account with id #{saltedge_account_id}")
 
-    {:ok, 0}
+    {:ok, 0, 0}
   end
 
   defp fetch_recent(saltedge_account_id, last_transaction) do
     transactions = fetch_recent(saltedge_account_id, last_transaction.saltedge_transaction_id, [])
     |> List.flatten
 
-    store(transactions)
+    stored_transactions = store(transactions)
 
-    {:ok, Enum.count(transactions)}
+    {:ok, stored_transactions, Enum.count(transactions)}
   end
 
   defp fetch_recent(saltedge_account_id, from_id, acc) do
@@ -86,22 +58,31 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
     end
   end
 
-  defp fetch_all(saltedge_account_id, from, to, acc) do
-    transactions_chunk = fetch_custom(saltedge_account_id, from, to, nil, [])
+  defp fetch_all(saltedge_account_id) do
+    to = current_date()
+    from = substract_days(to, 30)
 
-    transactions = case transactions_chunk do
+    transactions = fetch_all(saltedge_account_id, from, to, [])
+
+    stored_transactions = store(transactions)
+
+    {:ok, stored_transactions, Enum.count(transactions)}
+  end
+
+  defp fetch_all(saltedge_account_id, from, to, acc) do
+    case fetch_custom(saltedge_account_id, from, to, nil, []) do
       [] -> List.flatten(acc)
       transactions_chunk ->
         to = substract_days(from, 30)
         from = substract_days(from, 1)
         fetch_all(saltedge_account_id, from, to, [transactions_chunk | acc])
     end
-
-    store(transactions)
   end
 
   defp fetch_custom(saltedge_account_id, from, to, next_id, acc) do
-    endpoint = "transactions?account_id=#{saltedge_account_id}&from_date=#{from}&to_date=#{to}"
+    from_str = date_to_string(from)
+    to_str = date_to_string(to)
+    endpoint = "transactions?account_id=#{saltedge_account_id}&from_date=#{from_str}&to_date=#{to_str}"
     if next_id do
       endpoint = endpoint <> "&next_id=#{next_id}"
     end
@@ -123,7 +104,7 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
   end
 
   defp store(transactions) do
-    Enum.each(transactions, fn(se_tran) ->
+    Enum.reduce(transactions, 0, fn(se_tran, acc) ->
       se_tran = Map.put(se_tran, "saltedge_transaction_id", se_tran["id"])
       se_tran = Map.put(se_tran, "saltedge_account_id", se_tran["account_id"])
       se_tran = Map.drop(se_tran, ["id"])
@@ -144,8 +125,11 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
           transaction_info = TransactionInfo.changeset(%TransactionInfo{}, extra)
 
           Repo.insert!(transaction_info)
+          acc = acc + 1
         end
       end
+
+      acc
     end)
   end
 
@@ -175,6 +159,10 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
     {date, _time} = :calendar.local_time()
 
     date
+  end
+
+  defp date_to_string(date) do
+    Tuple.to_list(date) |> Enum.join("-")
   end
 
   defp find_last_transaction(saltedge_account_id) do
