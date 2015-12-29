@@ -3,6 +3,7 @@ defmodule ExMoney.DashboardController do
 
   alias ExMoney.Repo
   alias ExMoney.Transaction
+  alias ExMoney.Account
 
   alias ExMoney.SessionController
   alias Guardian.Plug.EnsureAuthenticated
@@ -19,9 +20,17 @@ defmodule ExMoney.DashboardController do
       Ecto.Date.compare(date_1, date_2) != :lt
     end)
 
+    last_month_transactions = Transaction.last_month
+    |> Repo.all
+
+    accounts = Account.show_on_dashboard
+    |> Repo.all
+
     render conn, "overview.html",
       navigation: "overview",
       topbar: "dashboard",
-      recent_transactions: recent_transactions
+      recent_transactions: recent_transactions,
+      last_month_transactions: last_month_transactions,
+      accounts: accounts
   end
 end

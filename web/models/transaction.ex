@@ -45,10 +45,23 @@ defmodule ExMoney.Transaction do
   end
 
   def recent() do
+    current_date = Timex.Date.local
+    from = first_day_of_month(current_date)
+
     from tr in Transaction,
-      limit: 50,
+      where: tr.made_on >= ^from,
       preload: [:transaction_info, :category],
       order_by: [desc: tr.made_on]
+  end
+
+  def last_month() do
+    current_date = Timex.Date.local
+    from = first_day_of_month(current_date)
+    to = last_day_of_month(current_date)
+
+    from tr in Transaction,
+      where: tr.made_on >= ^from,
+      where: tr.made_on <= ^to
   end
 
   # FIXME cache instead of db
@@ -63,5 +76,19 @@ defmodule ExMoney.Transaction do
     from tr in Transaction,
       order_by: [desc: tr.made_on],
       limit: 1
+  end
+
+  defp first_day_of_month(date) do
+    Timex.Date.from({{date.year, date.month, 0}, {0, 0, 0}})
+    |> Timex.DateFormat.format("%Y-%m-%d", :strftime)
+    |> elem(1)
+  end
+
+  defp last_day_of_month(date) do
+    days_in_month = Timex.Date.days_in_month(date)
+
+    Timex.Date.from({{date.year, date.month, days_in_month}, {23, 59, 59}})
+    |> Timex.DateFormat.format("%Y-%m-%d", :strftime)
+    |> elem(1)
   end
 end

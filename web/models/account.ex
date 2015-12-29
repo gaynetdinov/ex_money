@@ -7,6 +7,7 @@ defmodule ExMoney.Account do
     field :nature, :string
     field :balance, :decimal
     field :currency_code, :string
+    field :show_on_dashboard, :boolean
 
     belongs_to :login, ExMoney.Login, foreign_key: :saltedge_login_id
 
@@ -33,5 +34,9 @@ defmodule ExMoney.Account do
 
   def by_saltedge_account_id(account_id) do
     from l in ExMoney.Account, where: l.saltedge_account_id == ^account_id, limit: 1
+  end
+
+  def show_on_dashboard() do
+    from acc in ExMoney.Account, where: acc.show_on_dashboard == true
   end
 end

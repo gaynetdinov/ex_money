@@ -4,21 +4,15 @@
   <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
     <h1 class="page-header">Dashboard</h1>
     <div class="row placeholders">
+      <%= for account <- @accounts do %>
+        <div class="col-xs-6 col-sm-3 placeholder">
+          <h4><%= account.balance %> &#8364;</h4>
+          <span class="text-muted"><%= account.name %></span>
+        </div>
+      <% end %>
       <div class="col-xs-6 col-sm-3 placeholder">
-        <h4>Balance value</h4>
-        <span class="text-muted">Current balance</span>
-      </div>
-      <div class="col-xs-6 col-sm-3 placeholder">
-        <h4>Expenses current month value</h4>
-        <span class="text-muted">Expenses current month</span>
-      </div>
-      <div class="col-xs-6 col-sm-3 placeholder">
-        <h4>Income current month value</h4>
-        <span class="text-muted">Income current month</span>
-      </div>
-      <div class="col-xs-6 col-sm-3 placeholder">
-        <h4>Budget?</h4>
-        <span class="text-muted">Something else</span>
+        <h4><%= balance(@last_month_transactions) %> &#8364;</h4>
+        <span class="text-muted">Balance this month</span>
       </div>
     </div>
 
@@ -29,7 +23,7 @@
           <div class="panel-heading">
             <div class="row">
               <div class="col-xs-6"><%= date %></div>
-              <div class="col-xs-6" align="right"><%= day_balance(transactions) %> &#8364;</div>
+              <div class="col-xs-6" align="right"><%= balance(transactions) %> &#8364;</div>
             </div>
           </div>
 
