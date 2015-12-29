@@ -22,21 +22,28 @@
       </div>
     </div>
 
-    <h2 class="sub-header">Recent transactions</h2>
-    <%= for {date, transactions} <- @recent_transactions do %>
-      <div class="panel panel-default">
-        <div class="panel-heading"><%= date %></div>
+    <div class="row">
+      <h2 class="sub-header">Recent transactions</h2>
+      <%= for {date, transactions} <- @recent_transactions do %>
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <div class="row">
+              <div class="col-xs-6"><%= date %></div>
+              <div class="col-xs-6" align="right"><%= day_balance(transactions) %> &#8364;</div>
+            </div>
+          </div>
 
-        <table class="table">
-          <%= for transaction <- transactions do %>
-            <tr>
-              <td width="50%"><%= transaction.transaction_info.payee %></td>
-              <td width="25%"><%= transaction.category.name %></td>
-              <td width="25%" align="right"><%= transaction.amount %></td>
-            </tr>
-          <% end %>
-        </table>
-      </div>
-    <% end %>
+          <table class="table recent-transactions-table">
+            <%= for transaction <- transactions do %>
+              <tr>
+                <td width="50%"><%= transaction.transaction_info.payee %></td>
+                <td width="25%"><%= transaction.category.name %></td>
+                <td width="25%" align="right"><%= transaction.amount %></td>
+              </tr>
+            <% end %>
+          </table>
+        </div>
+      <% end %>
+    </div>
   </div>
 </div>

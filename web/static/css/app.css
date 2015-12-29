@@ -103,3 +103,8 @@ body {
   display: inline-block;
   border-radius: 50%;
 }
+
+.recent-transactions-table {
+  table-layout: fixed;
+  word-wrap: break-word;
+}
