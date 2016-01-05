@@ -25,7 +25,7 @@ defmodule ExMoney.Saltedge.HistoricalDataWorker do
     end
 
     result = Supervisor.restart_child(
-      ExMoney.Supervisor,
+      ExMoney.Saltedge.FetchSupervisor,
       ExMoney.Saltedge.LoginRefreshWorker
     )
     Logger.info("HistoricalDataWorker restarted LoginRefreshWorker with result => #{inspect(result)}")
