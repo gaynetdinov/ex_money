@@ -1,12 +1,10 @@
 defmodule ExMoney.Saltedge.AccountController do
   use ExMoney.Web, :controller
 
-  alias ExMoney.SessionController
-  alias Guardian.Plug.EnsureAuthenticated
   alias ExMoney.Repo
   alias ExMoney.Login
 
-  plug EnsureAuthenticated, %{on_failure: {SessionController, :new}}
+  plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.Unauthenticated
 
   def sync(conn, _params) do
     user = Guardian.Plug.current_resource(conn)
