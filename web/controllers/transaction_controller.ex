@@ -3,6 +3,7 @@ defmodule ExMoney.TransactionController do
 
   alias ExMoney.Transaction
 
+  plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.Unauthenticated
   plug :scrub_params, "transaction" when action in [:create, :update]
 
   def index(conn, _params) do

@@ -1,13 +1,11 @@
 defmodule ExMoney.SettingsController do
   use ExMoney.Web, :controller
 
-  alias ExMoney.SessionController
-  alias Guardian.Plug.EnsureAuthenticated
   alias ExMoney.Login
   alias ExMoney.Account
   alias ExMoney.Repo
 
-  plug EnsureAuthenticated, %{ on_failure: { SessionController, :new } }
+  plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.Unauthenticated
 
   def logins(conn, _params) do
     user = Guardian.Plug.current_resource(conn)

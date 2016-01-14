@@ -1,4 +1,4 @@
-defmodule ExMoney.GuardianSerializer do
+defmodule ExMoney.Guardian.Serializer do
   @behaviour Guardian.Serializer
 
   alias ExMoney.Repo

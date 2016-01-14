@@ -5,10 +5,7 @@ defmodule ExMoney.DashboardController do
   alias ExMoney.Transaction
   alias ExMoney.Account
 
-  alias ExMoney.SessionController
-  alias Guardian.Plug.EnsureAuthenticated
-
-  plug EnsureAuthenticated, %{ on_failure: { SessionController, :new } }
+  plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.Unauthenticated
 
   def overview(conn, _params) do
     recent_transactions = Transaction.recent

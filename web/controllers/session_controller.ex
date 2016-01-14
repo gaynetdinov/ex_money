@@ -18,7 +18,7 @@ defmodule ExMoney.SessionController do
       if changeset.valid? do
         conn
         |> put_flash(:info, "Logged in.")
-        |> Guardian.Plug.sign_in(user, :token)
+        |> Guardian.Plug.sign_in(user)
         |> redirect(to: dashboard_path(conn, :overview))
       else
         render(conn, "new.html", changeset: changeset)

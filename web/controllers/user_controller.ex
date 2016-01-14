@@ -3,11 +3,7 @@ defmodule ExMoney.UserController do
 
   alias ExMoney.User
 
-  alias ExMoney.SessionController
-  alias Guardian.Plug.EnsureAuthenticated
-
-  plug EnsureAuthenticated, %{ on_failure: { SessionController, :new } }
-
+  plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.Unauthenticated
   plug :scrub_params, "user" when action in [:create, :update]
 
   def index(conn, _params) do
