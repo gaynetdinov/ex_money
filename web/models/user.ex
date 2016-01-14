@@ -25,11 +25,13 @@ defmodule ExMoney.User do
   def create_changeset(model, params \\ :empty) do
     model
     |> cast(params, ~w(name email password), ~w(saltedge_customer_id))
+    |> maybe_update_password
   end
 
   def update_changeset(model, params \\ :empty) do
     model
     |> cast(params, ~w(), ~w(name email password saltedge_customer_id))
+    |> maybe_update_password
   end
 
   def login_changeset(model), do: model |> cast(%{}, ~w(), ~w(email password))
@@ -39,9 +41,6 @@ defmodule ExMoney.User do
     |> cast(params, ~w(email password), ~w())
     |> validate_password
   end
-
-  before_insert :maybe_update_password
-  before_update :maybe_update_password
 
   defp maybe_update_password(changeset) do
     case Ecto.Changeset.fetch_change(changeset, :password) do
