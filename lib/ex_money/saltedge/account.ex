@@ -1,6 +1,5 @@
 defmodule ExMoney.Saltedge.Account do
-  alias ExMoney.Account
-  alias ExMoney.Repo
+  alias ExMoney.{Account, Repo}
 
   def sync(saltedge_login_ids) do
     accounts = ExMoney.Saltedge.Client.request(:get, "accounts")["data"]

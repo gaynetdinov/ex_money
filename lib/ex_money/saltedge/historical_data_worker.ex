@@ -3,8 +3,7 @@ defmodule ExMoney.Saltedge.HistoricalDataWorker do
 
   require Logger
 
-  alias ExMoney.Repo
-  alias ExMoney.Login
+  alias ExMoney.{Repo, Login}
 
   def start_link(_opts \\ []) do
     GenServer.start_link(__MODULE__, :ok, name: :historical_data_worker)

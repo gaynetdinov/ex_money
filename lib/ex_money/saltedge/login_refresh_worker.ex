@@ -3,8 +3,7 @@ defmodule ExMoney.Saltedge.LoginRefreshWorker do
 
   require Logger
 
-  alias ExMoney.Repo
-  alias ExMoney.Login
+  alias ExMoney.{Repo, Login}
 
   @interval 3_600_000
 

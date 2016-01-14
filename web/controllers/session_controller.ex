@@ -1,8 +1,7 @@
 defmodule ExMoney.SessionController do
   use ExMoney.Web, :controller
 
-  alias ExMoney.User
-  alias ExMoney.Repo
+  alias ExMoney.{Repo, User}
 
   plug :put_layout, "login.html"
 

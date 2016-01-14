@@ -3,10 +3,7 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
 
   require Logger
 
-  alias ExMoney.Repo
-  alias ExMoney.Transaction
-  alias ExMoney.TransactionInfo
-  alias ExMoney.Category
+  alias ExMoney.{Repo, Transaction, TransactionInfo, Category}
 
   def start_link(_opts \\ []) do
     GenServer.start_link(__MODULE__, :ok, name: :transactions_worker)

@@ -1,8 +1,7 @@
 defmodule ExMoney.Saltedge.LoginController do
   use ExMoney.Web, :controller
 
-  alias ExMoney.User
-  alias ExMoney.Repo
+  alias ExMoney.{Repo, User}
 
   plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.Unauthenticated
 

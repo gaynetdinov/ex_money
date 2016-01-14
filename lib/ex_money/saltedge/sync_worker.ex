@@ -2,8 +2,7 @@ defmodule ExMoney.Saltedge.SyncWorker do
   use GenServer
   require Logger
 
-  alias ExMoney.Account
-  alias ExMoney.Repo
+  alias ExMoney.{Account, Repo}
 
   def start_link(_opts \\ []) do
     GenServer.start_link(__MODULE__, :ok, name: :sync_worker)

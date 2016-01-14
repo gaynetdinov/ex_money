@@ -3,9 +3,7 @@ defmodule CallbacksController do
 
   require Logger
 
-  alias ExMoney.User
-  alias ExMoney.Login
-  alias ExMoney.Repo
+  alias ExMoney.{Repo, User, Login}
 
   plug :set_user
   plug :set_login when action in [:success, :notify, :interactive]

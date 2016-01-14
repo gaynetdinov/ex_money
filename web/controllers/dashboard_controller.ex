@@ -1,9 +1,7 @@
 defmodule ExMoney.DashboardController do
   use ExMoney.Web, :controller
 
-  alias ExMoney.Repo
-  alias ExMoney.Transaction
-  alias ExMoney.Account
+  alias ExMoney.{Repo, Transaction, Account}
 
   plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.Unauthenticated
 

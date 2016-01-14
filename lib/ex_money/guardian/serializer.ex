@@ -1,8 +1,7 @@
 defmodule ExMoney.Guardian.Serializer do
   @behaviour Guardian.Serializer
 
-  alias ExMoney.Repo
-  alias ExMoney.User
+  alias ExMoney.{Repo, User}
 
   def for_token(user = %User{}), do: { :ok, "User:#{user.id}" }
   def for_token(_), do: { :error, "Unknown resource type" }
