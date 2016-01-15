@@ -1,0 +1,6 @@
+<h2>Edit transaction</h2>
+
+<%= render "form.html", changeset: @changeset,
+                        action: transaction_path(@conn, :update, @transaction) %>
+
+<%= link "Back", to: transaction_path(@conn, :index) %>

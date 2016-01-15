@@ -1,0 +1,8 @@
+<h2>Show transaction</h2>
+
+<ul>
+
+</ul>
+
+<%= link "Edit", to: transaction_path(@conn, :edit, @transaction) %>
+<%= link "Back", to: transaction_path(@conn, :index) %>
