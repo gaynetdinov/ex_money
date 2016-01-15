@@ -2,7 +2,7 @@ defmodule ExMoney.AccountController do
   use ExMoney.Web, :controller
   use Guardian.Phoenix.Controller
 
-  alias ExMoney.{Repo, Login, Account}
+  alias ExMoney.{Repo, Account}
 
   plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.Unauthenticated
   plug :scrub_params, "account" when action in [:create, :update]

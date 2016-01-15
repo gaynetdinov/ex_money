@@ -1,14 +1,28 @@
 defmodule ExMoney.TransactionController do
   use ExMoney.Web, :controller
 
-  alias ExMoney.Transaction
+  alias ExMoney.{Transaction, Repo, Paginator}
+  import Ecto.Query
 
   plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.Unauthenticated
   plug :scrub_params, "transaction" when action in [:create, :update]
 
-  def index(conn, _params) do
-    transactions = Repo.all(Transaction)
-    render(conn, "index.html", transactions: transactions, topbar: "dashboard", navigation: "transactions")
+  def index(conn, params) do
+    user = Guardian.Plug.current_resource(conn)
+
+    paginator = Transaction.by_user_id(user.id)
+    |> order_by(desc: :made_on)
+    |> preload(:transaction_info)
+    |> Paginator.paginate(params)
+
+    render(
+      conn, :index,
+      topbar: "dashboard",
+      navigation: "transactions",
+      transactions: paginator.entries,
+      page_number: paginator.page_number,
+      total_pages: paginator.total_pages
+    )
   end
 
   def new(conn, _params) do
