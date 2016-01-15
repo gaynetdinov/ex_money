@@ -1,7 +1,7 @@
 defmodule ExMoney.SettingsController do
   use ExMoney.Web, :controller
 
-  alias ExMoney.{Repo, Login, Account}
+  alias ExMoney.{Repo, Login}
 
   plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.Unauthenticated
 

@@ -8,10 +8,6 @@ defmodule ExMoney.AccountController do
   plug :scrub_params, "account" when action in [:create, :update]
 
   def index(conn, _params, user, _claims) do
-    login_ids = Login.by_user_id(user.id)
-    |> Repo.all
-    |> Enum.map(fn(login) -> login.saltedge_login_id end)
-
     accounts = Account.by_user_id(user.id) |> Repo.all
 
     render(conn, "index.html", accounts: accounts, navigation: "accounts", topbar: "settings")
