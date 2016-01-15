@@ -10,6 +10,7 @@ defmodule ExMoney.User do
     field :password, :string, virtual: true
 
     has_many :logins, ExMoney.Login
+    has_many :accounts, ExMoney.Account
 
     timestamps
   end

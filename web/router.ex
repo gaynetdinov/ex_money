@@ -41,7 +41,7 @@ defmodule ExMoney.Router do
 
     scope "/settings" do
       get "/logins", SettingsController, :logins
-      get "/accounts", SettingsController, :accounts
+      resources "/accounts", AccountController
     end
 
     resources "/users", UserController

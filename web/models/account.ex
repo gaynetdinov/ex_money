@@ -10,22 +10,22 @@ defmodule ExMoney.Account do
     field :show_on_dashboard, :boolean
 
     belongs_to :login, ExMoney.Login, foreign_key: :saltedge_login_id
+    belongs_to :user, ExMoney.User
 
     timestamps
   end
 
-  @required_fields ~w(name nature balance currency_code saltedge_login_id saltedge_account_id)
+  @required_fields ~w(name nature balance currency_code saltedge_login_id saltedge_account_id user_id)
   @optional_fields ~w()
 
-  @doc """
-  Creates a changeset based on the `model` and `params`.
-
-  If no params are provided, an invalid changeset is returned
-  with no validation performed.
-  """
   def changeset(model, params \\ :empty) do
     model
     |> cast(params, @required_fields, @optional_fields)
+  end
+
+  def changeset_for_custom_account(model, params \\ :empty) do
+    model
+    |> cast(params, ~w(name balance currency_code user_id), ~w())
   end
 
   def by_saltedge_login_id(login_ids) do
@@ -38,5 +38,9 @@ defmodule ExMoney.Account do
 
   def show_on_dashboard() do
     from acc in ExMoney.Account, where: acc.show_on_dashboard == true
+  end
+
+  def by_user_id(user_id) do
+    from a in ExMoney.Account, where: a.user_id == ^user_id
   end
 end

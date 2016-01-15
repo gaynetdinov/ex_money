@@ -2,7 +2,9 @@
   <%= render ExMoney.SharedView, "settings_navbar.html", conn: @conn, navigation: @navigation %>
 
   <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-  <h2 class="sub-header">Accounts(<%= link "Sync", to: saltedge_account_path(@conn, :sync) %>)</h2>
+    <h2 class="sub-header">
+      Accounts [<%= link "New", to: account_path(@conn, :new) %>]
+    </h2>
   <div class="table-responsive">
     <table class="table table-striped">
       <thead>
@@ -30,3 +32,4 @@
     </table>
   </div>
 </div>
+

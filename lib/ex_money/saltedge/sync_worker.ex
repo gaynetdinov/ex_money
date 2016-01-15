@@ -13,7 +13,7 @@ defmodule ExMoney.Saltedge.SyncWorker do
   def handle_cast({:sync, user_id, saltedge_login_id}, state) do
     ExMoney.Saltedge.Login.sync(user_id, saltedge_login_id)
 
-    ExMoney.Saltedge.Account.sync([saltedge_login_id])
+    ExMoney.Saltedge.Account.sync(user_id, saltedge_login_id)
 
     fetch_type = fetch_type(state)
     Account.by_saltedge_login_id([saltedge_login_id])
