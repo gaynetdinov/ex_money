@@ -9,28 +9,38 @@
         <thead>
           <tr>
             <th>Date</th>
+            <th>Payee</th>
             <th>Description</th>
             <th>Amount</th>
             <th>Account id</th>
-            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           <%= for transaction <- @transactions do %>
             <tr>
               <td><%= transaction.made_on %></td>
+              <td><%= transaction.transaction_info.payee %></td>
               <td><%= transaction.description %></td>
               <td><%= transaction.amount %></td>
               <td><%= transaction.saltedge_account_id %></td>
-              <td class="text-right">
-                <%= link "Show", to: transaction_path(@conn, :show, transaction), class: "btn btn-default btn-xs" %>
-                <%= link "Edit", to: transaction_path(@conn, :edit, transaction), class: "btn btn-default btn-xs" %>
-                <%= link "Delete", to: transaction_path(@conn, :delete, transaction), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %>
-              </td>
             </tr>
           <% end %>
         </tbody>
       </table>
     </div>
+    <nav>
+      <ul class="pager">
+        <li class="previous <%= disabled_previous_page?(@page_number, @total_pages) %>">
+          <a href="<%= build_previous_page_url(@page_number) %>">
+            <span aria-hidden="true">&larr;</span> Older
+          </a>
+        </li>
+        <li class="next <%= disabled_next_page?(@page_number, @total_pages) %>">
+          <a href="<%= build_next_page_url(@page_number, @total_pages)%>">
+            Newer <span aria-hidden="true">&rarr;</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
   </div>
 </div>

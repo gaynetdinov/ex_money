@@ -16,6 +16,7 @@ defmodule ExMoney.Transaction do
 
     has_one :transaction_info, ExMoney.TransactionInfo
     belongs_to :category, ExMoney.Category
+    belongs_to :user, ExMoney.User
 
     timestamps
   end
@@ -30,12 +31,18 @@ defmodule ExMoney.Transaction do
     description
     duplicated
     saltedge_account_id
+    user_id
   )
   @optional_fields ~w(category_id)
 
   def changeset(model, params \\ :empty) do
     model
     |> cast(params, @required_fields, @optional_fields)
+  end
+
+  def by_user_id(user_id) do
+    from tr in Transaction,
+      where: tr.user_id == ^user_id
   end
 
   def by_saltedge_transaction_id(transaction_id) do
