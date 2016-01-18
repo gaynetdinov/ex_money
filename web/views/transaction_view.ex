@@ -30,4 +30,19 @@ defmodule ExMoney.TransactionView do
       false -> "transactions?page=#{previous_page}"
     end
   end
+
+  def payee(transaction) do
+    case transaction.transaction_info do
+      nil -> ""
+      ti -> ti.payee
+    end
+  end
+
+  def account(transaction) do
+    if transaction.saltedge_account_id do
+      transaction.saltedge_account.name
+    else
+      transaction.account.name
+    end
+  end
 end

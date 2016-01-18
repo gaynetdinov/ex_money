@@ -12,11 +12,14 @@ defmodule ExMoney.Transaction do
     field :currency_code, :string
     field :description, :string
     field :duplicated, :boolean, default: false
-    field :saltedge_account_id, :integer
 
     has_one :transaction_info, ExMoney.TransactionInfo
     belongs_to :category, ExMoney.Category
     belongs_to :user, ExMoney.User
+    belongs_to :account, ExMoney.Account
+    belongs_to :saltedge_account, ExMoney.Account,
+      foreign_key: :saltedge_account_id,
+      references: :saltedge_account_id
 
     timestamps
   end
@@ -38,6 +41,11 @@ defmodule ExMoney.Transaction do
   def changeset(model, params \\ :empty) do
     model
     |> cast(params, @required_fields, @optional_fields)
+  end
+
+  def changeset_custom(model, params \\ :empty) do
+    model
+    |> cast(params, ~w(description amount category_id account_id made_on user_id), ~w())
   end
 
   def by_user_id(user_id) do

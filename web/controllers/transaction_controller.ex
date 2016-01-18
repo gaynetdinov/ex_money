@@ -1,7 +1,7 @@
 defmodule ExMoney.TransactionController do
   use ExMoney.Web, :controller
 
-  alias ExMoney.{Transaction, Repo, Paginator}
+  alias ExMoney.{Transaction, Repo, Paginator, Account, Category}
   import Ecto.Query
 
   plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.Unauthenticated
@@ -12,7 +12,7 @@ defmodule ExMoney.TransactionController do
 
     paginator = Transaction.by_user_id(user.id)
     |> order_by(desc: :made_on)
-    |> preload(:transaction_info)
+    |> preload([:transaction_info, :account, :saltedge_account])
     |> Paginator.paginate(params)
 
     render(
@@ -27,11 +27,28 @@ defmodule ExMoney.TransactionController do
 
   def new(conn, _params) do
     changeset = Transaction.changeset(%Transaction{})
-    render(conn, "new.html", changeset: changeset, topbar: "dashboard", navigation: "transactions")
+    accounts = Account.only_custom
+    |> Repo.all
+
+    categories = Category
+    |> select([c], {c.name, c.id})
+    |> order_by([c], c.name)
+    |> Repo.all
+
+    render(
+      conn, :new,
+      changeset: changeset,
+      topbar: "dashboard",
+      navigation: "transactions",
+      accounts: accounts,
+      categories: categories
+    )
   end
 
   def create(conn, %{"transaction" => transaction_params}) do
-    changeset = Transaction.changeset(%Transaction{}, transaction_params)
+    user = Guardian.Plug.current_resource(conn)
+    transaction_params = Map.put(transaction_params, "user_id", user.id)
+    changeset = Transaction.changeset_custom(%Transaction{}, transaction_params)
 
     case Repo.insert(changeset) do
       {:ok, _transaction} ->
