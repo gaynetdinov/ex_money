@@ -61,7 +61,7 @@ defmodule ExMoney.Transaction do
 
   def recent() do
     current_date = Timex.Date.local
-    from = first_day_of_month(current_date)
+    from = Timex.Date.shift(current_date, days: -30)
 
     from tr in Transaction,
       where: tr.made_on >= ^from,
