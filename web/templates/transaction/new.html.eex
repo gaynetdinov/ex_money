@@ -1,6 +1,16 @@
-<h2>New transaction</h2>
+<div class="row">
+  <%= render ExMoney.SharedView, "dashboard_navbar.html", conn: @conn, navigation: @navigation %>
 
-<%= render "form.html", changeset: @changeset,
-                        action: transaction_path(@conn, :create) %>
+  <div class="col-sm-9 col-sm-offset-3 col-md-6 col-md-offset-2 main">
+    <h2>New transaction</h2>
 
-<%= link "Back", to: transaction_path(@conn, :index) %>
+    <%= render "form.html",
+      changeset: @changeset,
+      action: transaction_path(@conn, :create),
+      accounts: @accounts,
+      categories: @categories
+    %>
+
+    <%= link "Back", to: transaction_path(@conn, :index) %>
+  </div>
+</div>

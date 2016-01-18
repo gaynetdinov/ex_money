@@ -2,7 +2,7 @@
   <%= render ExMoney.SharedView, "dashboard_navbar.html", conn: @conn, navigation: @navigation %>
 
   <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-    <h1 class="page-header">Transactions</h1>
+    <h1 class="page-header">Transactions [<%= link "New", to: transaction_path(@conn, :new) %>]</h1>
 
     <div class="table-responsive">
       <table class="table table-striped">
@@ -12,17 +12,17 @@
             <th>Payee</th>
             <th>Description</th>
             <th>Amount</th>
-            <th>Account id</th>
+            <th>Account</th>
           </tr>
         </thead>
         <tbody>
           <%= for transaction <- @transactions do %>
             <tr>
               <td><%= transaction.made_on %></td>
-              <td><%= transaction.transaction_info.payee %></td>
+              <td><%= payee(transaction) %></td>
               <td><%= transaction.description %></td>
               <td><%= transaction.amount %></td>
-              <td><%= transaction.saltedge_account_id %></td>
+              <td><%= account(transaction) %></td>
             </tr>
           <% end %>
         </tbody>

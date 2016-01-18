@@ -43,4 +43,11 @@ defmodule ExMoney.Account do
   def by_user_id(user_id) do
     from a in ExMoney.Account, where: a.user_id == ^user_id
   end
+
+  def only_custom do
+    from a in ExMoney.Account,
+      where: is_nil(a.saltedge_account_id),
+      select: {a.name, a.id},
+      order_by: a.name
+  end
 end
