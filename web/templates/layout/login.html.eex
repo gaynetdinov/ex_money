@@ -7,6 +7,7 @@
 
     <title>Signin Template for Bootstrap</title>
 
+    <link href="<%= static_path(@conn, "/css/vendor.css") %>" rel="stylesheet">
     <link href="<%= static_path(@conn, "/css/app.css") %>" rel="stylesheet">
   </head>
 
