@@ -122,8 +122,8 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
           transaction_info = TransactionInfo.changeset(%TransactionInfo{}, extra)
 
           Repo.insert!(transaction_info)
-          acc + 1
         end
+        acc + 1
       else
         acc
       end
@@ -139,7 +139,7 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
   defp find_or_create_category(name) do
     case Category.by_name(name) |> Repo.one do
       nil ->
-        changeset = Category.changeset(%Category{}, %{name: name})
+        changeset = Category.create_changeset(%Category{}, %{name: name})
         Repo.insert!(changeset)
 
       existing_category -> existing_category

@@ -1,0 +1,33 @@
+.container {
+  width: 100%;
+  background: #fff;
+  padding: 15px;
+  overflow: hidden;
+  float: left;
+}
+
+.horizontal .progress-bar {
+  float: left;
+  height: 45px;
+  width: 100%;
+}
+
+.horizontal .progress-track {
+  position: relative;
+  width: 100%;
+  height: 20px;
+  background: #ebebeb;
+}
+
+.horizontal .progress-fill {
+  position: relative;
+  height: 20px;
+  width: 50%;
+  text-align: left;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.reduced-margin {
+  margin: 15px 0;
+}

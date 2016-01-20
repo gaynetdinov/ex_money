@@ -3,6 +3,8 @@ defmodule ExMoney.Transaction do
 
   alias ExMoney.Transaction
 
+  import Ecto.Query
+
   schema "transactions" do
     field :saltedge_transaction_id, :integer
     field :mode, :string
@@ -45,7 +47,21 @@ defmodule ExMoney.Transaction do
 
   def changeset_custom(model, params \\ :empty) do
     model
-    |> cast(params, ~w(description amount category_id account_id made_on user_id), ~w())
+    |> cast(params, ~w(amount category_id account_id made_on user_id), ~w(description ))
+    |> negate_amount_for_expense(params)
+  end
+
+  def negate_amount_for_expense(changeset, :empty), do: changeset
+  def negate_amount_for_expense(changeset, %{"type" => "income"}) do
+    changeset
+  end
+
+  def negate_amount_for_expense(changeset, %{"type" => "expense"}) do
+    case Ecto.Changeset.fetch_change(changeset, :amount) do
+      {:ok, amount} ->
+        Ecto.Changeset.put_change(changeset, :amount, Decimal.mult(amount, Decimal.new(-1)))
+      :error -> changeset
+    end
   end
 
   def by_user_id(user_id) do
@@ -69,14 +85,32 @@ defmodule ExMoney.Transaction do
       order_by: [desc: tr.made_on]
   end
 
-  def last_month() do
-    current_date = Timex.Date.local
-    from = first_day_of_month(current_date)
-    to = last_day_of_month(current_date)
-
+  def by_month(from, to) do
     from tr in Transaction,
       where: tr.made_on >= ^from,
       where: tr.made_on <= ^to
+  end
+
+  def expenses_by_month(from, to) do
+    Transaction.by_month(from ,to)
+    |> where([tr], tr.amount < 0)
+    |> preload([:transaction_info, :category])
+  end
+
+  def income_by_month(from ,to) do
+    Transaction.by_month(from ,to)
+    |> where([tr], tr.amount > 0)
+    |> preload([:transaction_info, :category])
+  end
+
+  def by_month_by_category(from, to) do
+    from tr in Transaction,
+      join: c in assoc(tr, :category),
+      where: tr.made_on >= ^from,
+      where: tr.made_on <= ^to,
+      group_by: [c.name, c.css_color],
+      select: {c.name, c.css_color, sum(tr.amount)},
+      having: sum(tr.amount) < 0
   end
 
   # FIXME cache instead of db
@@ -91,19 +125,5 @@ defmodule ExMoney.Transaction do
     from tr in Transaction,
       order_by: [desc: tr.made_on],
       limit: 1
-  end
-
-  defp first_day_of_month(date) do
-    Timex.Date.from({{date.year, date.month, 0}, {0, 0, 0}})
-    |> Timex.DateFormat.format("%Y-%m-%d", :strftime)
-    |> elem(1)
-  end
-
-  defp last_day_of_month(date) do
-    days_in_month = Timex.Date.days_in_month(date)
-
-    Timex.Date.from({{date.year, date.month, days_in_month}, {23, 59, 59}})
-    |> Timex.DateFormat.format("%Y-%m-%d", :strftime)
-    |> elem(1)
   end
 end

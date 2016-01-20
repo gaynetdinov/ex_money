@@ -15,7 +15,9 @@ defmodule ExMoney.DashboardController do
       Ecto.Date.compare(date_1, date_2) != :lt
     end)
 
-    last_month_transactions = Transaction.last_month
+    from = Timex.Date.local |> first_day_of_month
+    to = Timex.Date.local |> last_day_of_month
+    last_month_transactions = Transaction.by_month(from, to)
     |> Repo.all
 
     accounts = Account.show_on_dashboard
@@ -27,5 +29,19 @@ defmodule ExMoney.DashboardController do
       recent_transactions: recent_transactions,
       last_month_transactions: last_month_transactions,
       accounts: accounts
+  end
+
+  defp first_day_of_month(date) do
+    Timex.Date.from({{date.year, date.month, 0}, {0, 0, 0}})
+    |> Timex.DateFormat.format("%Y-%m-%d", :strftime)
+    |> elem(1)
+  end
+
+  defp last_day_of_month(date) do
+    days_in_month = Timex.Date.days_in_month(date)
+
+    Timex.Date.from({{date.year, date.month, days_in_month}, {23, 59, 59}})
+    |> Timex.DateFormat.format("%Y-%m-%d", :strftime)
+    |> elem(1)
   end
 end

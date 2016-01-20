@@ -1,0 +1,226 @@
+/**
+ * Framework7 Keypad 1.0.3
+ * Keypad plugin extends Framework7 with additional custom keyboards
+ * 
+ * http://www.idangero.us/framework7/plugins/
+ * 
+ * Copyright 2015, Vladimir Kharlampidi
+ * The iDangero.us
+ * http://www.idangero.us/
+ * 
+ * Licensed under MIT
+ * 
+ * Released on: August 22, 2015
+ */
+.picker-keypad.picker-modal-inline {
+  height: 200px;
+}
+.picker-keypad.picker-modal-inline.picker-keypad-type-calculator {
+  height: 260px;
+}
+@media (orientation: landscape) and (max-height: 415px) {
+  .picker-keypad:not(.picker-modal-inline) {
+    height: 200px;
+  }
+}
+.picker-keypad .picker-modal-inner:before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 1px;
+  width: 100%;
+  background-color: rgba(92, 94, 96, 0.35);
+  display: block;
+  z-index: 15;
+  -webkit-transform-origin: 50% 0%;
+  transform-origin: 50% 0%;
+}
+html.ios-gt-6.pixel-ratio-2 .picker-keypad .picker-modal-inner:before {
+  -webkit-transform: scaleY(0.5);
+  transform: scaleY(0.5);
+}
+html.ios-gt-6.pixel-ratio-3 .picker-keypad .picker-modal-inner:before {
+  -webkit-transform: scaleY(0.33);
+  transform: scaleY(0.33);
+}
+.picker-keypad.picker-modal-inline .picker-modal-inner:before,
+.popover.popover-picker-keypad .picker-keypad .picker-modal-inner:before {
+  display: none;
+}
+i.icon-keypad-delete {
+  width: 22px;
+  height: 16px;
+  background-size: 22px 16px;
+  background-image: url("data:image/svg+xml;charset=utf-8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 16'><path d='M18,0h-8C8.9,0,7.9,0.5,7.1,1.2c0,0,0,0,0,0L1,7.2C0.6,7.7,0.6,8.4,1,8.8l4.9,4.7L7,14.6c0,0,0,0,0,0c0.7,0.9,1.8,1.4,3,1.4 h8c2.2,0,4-1.8,4-4V4C22,1.8,20.2,0,18,0z M17.3,11.2l-0.7,0.7l-3.2-3.2l-3.2,3.2l-0.7-0.7L12.8,8L9.6,4.8l0.7-0.7l3.2,3.2l3.2-3.2 l0.7,0.7L14.2,8L17.3,11.2z' fill='%23000000'/></svg>");
+}
+.picker-keypad-buttons {
+  color: #000;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-lines: multiple;
+  -moz-box-lines: multiple;
+  -webkit-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+}
+.picker-keypad-button {
+  background: #fcfcfd;
+  position: relative;
+  text-align: center;
+  cursor: pointer;
+  width: 33.33333333%;
+  width: -webkit-calc(100% / 3);
+  width: calc(100% / 3);
+  height: 25%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -moz-box-orient: vertical;
+  -ms-flex-direction: column;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.picker-keypad-button:after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 1px;
+  height: 100%;
+  background-color: rgba(92, 94, 96, 0.35);
+  display: block;
+  z-index: 15;
+  -webkit-transform-origin: 100% 50%;
+  transform-origin: 100% 50%;
+}
+html.ios-gt-6.pixel-ratio-2 .picker-keypad-button:after {
+  -webkit-transform: scaleX(0.5);
+  transform: scaleX(0.5);
+}
+html.ios-gt-6.pixel-ratio-3 .picker-keypad-button:after {
+  -webkit-transform: scaleX(0.33);
+  transform: scaleX(0.33);
+}
+.picker-keypad-button:before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 1px;
+  width: 100%;
+  background-color: rgba(92, 94, 96, 0.35);
+  display: block;
+  z-index: 15;
+  -webkit-transform-origin: 50% 0%;
+  transform-origin: 50% 0%;
+}
+html.ios-gt-6.pixel-ratio-2 .picker-keypad-button:before {
+  -webkit-transform: scaleY(0.5);
+  transform: scaleY(0.5);
+}
+html.ios-gt-6.pixel-ratio-3 .picker-keypad-button:before {
+  -webkit-transform: scaleY(0.33);
+  transform: scaleY(0.33);
+}
+html:not(.watch-active-state) .picker-keypad-button:not(.picker-keypad-dummy-button):active,
+.picker-keypad-button:not(.picker-keypad-dummy-button).active-state {
+  background: #bcc0c5;
+}
+.picker-keypad-button.picker-keypad-button-dark {
+  background: #bcc0c5;
+}
+html:not(.watch-active-state) .picker-keypad-button.picker-keypad-button-dark:not(.picker-keypad-dummy-button):active,
+.picker-keypad-button.picker-keypad-button-dark:not(.picker-keypad-dummy-button).active-state {
+  background: #fcfcfd;
+}
+.picker-keypad-button.picker-keypad-dummy-button {
+  cursor: default;
+}
+.picker-keypad-type-numpad .picker-keypad-button:nth-child(3n):after {
+  display: none;
+}
+.picker-keypad-type-numpad .picker-keypad-button:nth-child(-n + 3):before {
+  display: none;
+}
+.picker-keypad-type-numpad .picker-keypad-button.picker-keypad-button-double {
+  width: 66.66666667%;
+  width: -webkit-calc(100% / 3 * 2);
+  width: calc(100% / 3 * 2);
+}
+.picker-keypad-type-calculator .picker-keypad-button {
+  width: 25%;
+  height: 20%;
+  font-weight: 300;
+}
+.picker-keypad-type-calculator .picker-keypad-button:nth-child(4n):after {
+  display: none;
+}
+.picker-keypad-type-calculator .picker-keypad-button:nth-child(-n + 4):before {
+  display: none;
+}
+.picker-keypad-type-calculator .picker-keypad-button.picker-keypad-button-double {
+  width: 50%;
+}
+.picker-keypad-button.calc-operator-button {
+  color: #fff;
+  background: #ff9500;
+}
+html:not(.watch-active-state) .picker-keypad-button.calc-operator-button:active,
+.picker-keypad-button.calc-operator-button.active-state {
+  background: #e0750e;
+}
+.picker-keypad-button.calc-operator-button.calc-operator-active {
+  border: 1px solid rgba(0, 0, 0, 0.4);
+}
+.picker-keypad-button-number,
+.picker-keypad-button-letters {
+  display: block;
+}
+.picker-keypad-button-number {
+  font-size: 28px;
+  line-height: 1;
+}
+.picker-keypad-button-letters {
+  font-size: 11px;
+  line-height: 15px;
+  height: 15px;
+}
+.list-block input[type="numpad"],
+.list-block input[type="calculator"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -ms-appearance: none;
+  appearance: none;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  border: none;
+  background: none;
+  border-radius: 0 0 0 0;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  display: block;
+  padding: 0 0 0 5px;
+  margin: 0;
+  width: 100%;
+  height: 43px;
+  color: #000;
+  font-size: 17px;
+  font-family: inherit;
+}

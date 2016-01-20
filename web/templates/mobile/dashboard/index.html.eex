@@ -1,0 +1,87 @@
+<div class="views">
+  <div class="view view-main">
+    <div class="pages">
+      <div class="page navbar-fixed" data-page="dashboard-screen" >
+        <div class="navbar">
+          <div class="navbar-inner">
+            <div class="left">
+              <a href="#" class="link">
+                <i class="icon icon-bars"></i>
+              </a>
+            </div>
+            <div class="center">ExMoney</div>
+            <div class="right">
+              <a href="/m/transaction/new" class="link">
+                <i class="icon icon-plus">+</i>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="page-content hide-navbar-on-scroll">
+          <div class="content-block-title" align="center">
+            <div class="row">
+              <div class="col-33" align="left">
+                <a href="/m/dashboard?date=<%= @previous_month.date %>" class="link back" data-force="true"><%= @previous_month.label %></a>
+              </div>
+              <div class="col-33">
+                <%= @current_month.label %>
+              </div>
+              <div class="col-33" align="right">
+                <a href="/m/dashboard?date=<%= @next_month.date %>" class="link"><%= @next_month.label %></a>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="list-block">
+              <ul>
+                <li class="item-content">
+                  <div class="item-inner">
+                    <div class="item-title">Expenses</div>
+                    <div class="item-after" style="color: black">
+                      <a href='/m/expenses?date=<%= @current_month.date %>'>
+                        <%= expenses(@month_transactions) %> &#8364;
+                      </a>
+                    </div>
+                  </div>
+                </li>
+                <li class="item-content">
+                  <div class="item-inner">
+                    <div class="item-title">Income</div>
+                    <div class="item-after" style="color: black">
+                      <a href='/m/income?date=<%= @current_month.date %>'>
+                        <%= income(@month_transactions) %> &#8364;
+                      </a>
+                    </div>
+                  </div>
+                </li>
+
+                <li class="item-content">
+                  <div class="item-inner">
+                    <div class="item-title">Balance</div>
+                    <div class="item-after" style="color: black">
+                      <%= balance(@month_transactions) %> &#8364;
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="row">
+              <div class="container horizontal flat">
+                <h3>Top Expenses</h3>
+                <%= for {category, color, width, amount} <- categories_chart_data(@categories) do %>
+                  <div class="progress-bar horizontal">
+                    <div class="progress-track">
+                      <div class="progress-fill" style="width:<%= width %>; background: <%= color %>">
+                        <span><%= amount %>&nbsp;<%= category %></span>
+                      </div>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
