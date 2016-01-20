@@ -2,13 +2,11 @@ exports.config = {
   // See http://brunch.io/#documentation for docs.
   files: {
     javascripts: {
-      joinTo: "js/app.js",
-      // To use a separate vendor.js bundle, specify two files path
-      // https://github.com/brunch/brunch/blob/stable/docs/config.md#files
-      // joinTo: {
-      //  "js/app.js": /^(web\/static\/js)/,
-      //  "js/vendor.js": /^(web\/static\/vendor)|(deps)/
-      // }
+      joinTo: {
+        "js/app.js": /^(web\/static\/js)/,
+        "js/vendor.js": /^(web\/static\/vendor)(\/|\\)(?!ratchet-v2.0.2)|(deps)/,
+        "js/mobile.js": /^(web\/static\/vendor\/ratchet-v2.0.2)/
+      },
       //
       // To change the order of concatenation of files, explicitly mention here
       // https://github.com/brunch/brunch/tree/master/docs#concatenation
@@ -20,7 +18,11 @@ exports.config = {
       }
     },
     stylesheets: {
-      joinTo: "css/app.css"
+      joinTo: {
+        "css/app.css": /^(web\/static\/css)/,
+        "css/vendor.css": /^(web\/static\/vendor)(\/|\\)(?!ratchet-v2.0.2)|(deps)/,
+        "css/mobile.css": /^(web\/static\/vendor\/ratchet-v2.0.2)/
+      }
     },
     templates: {
       joinTo: "js/app.js"
