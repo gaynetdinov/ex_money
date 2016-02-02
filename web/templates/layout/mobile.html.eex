@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>ExMoney</title>
+
+    <link href="<%= static_path(@conn, "/css/framework7.css") %>" rel="stylesheet">
+    <link href="<%= static_path(@conn, "/css/mobile.css") %>" rel="stylesheet">
+  </head>
+
+  <body>
+    <div class="statusbar-overlay"></div>
+    <%= render @view_module, @view_template, assigns %>
+
+    <script src="<%= static_path(@conn, "/js/framework7.js") %>"></script>
+    <script src="<%= static_path(@conn, "/js/mobile.js") %>"></script>
+  </body>
+</html>

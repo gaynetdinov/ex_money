@@ -1,11 +1,11 @@
 exports.config = {
-  // See http://brunch.io/#documentation for docs.
   files: {
     javascripts: {
       joinTo: {
-        "js/app.js": /^(web\/static\/js)/,
-        "js/vendor.js": /^(web\/static\/vendor)(\/|\\)(?!ratchet-v2.0.2)|(deps)/,
-        "js/mobile.js": /^(web\/static\/vendor\/ratchet-v2.0.2)/
+        "js/app.js": /^(web\/static\/js)(\/|\\)(?!mobile)/,
+        "js/vendor.js": /^(web\/static\/vendor)(\/|\\)(?!Framework7)|(deps)/,
+        "js/framework7.js": /^(web\/static\/vendor\/Framework7\/)/,
+        "js/mobile.js": /^(web\/static\/vendor\/Framework7_custom\/js)/
       },
       //
       // To change the order of concatenation of files, explicitly mention here
@@ -13,15 +13,18 @@ exports.config = {
       order: {
         before: [
           "web/static/vendor/jquery-2.1.4.min.js",
-          "web/static/vendor/bootstrap-3.3.6-dist/js/bootstrap.js"
+          "web/static/vendor/bootstrap-3.3.6-dist/js/bootstrap.js",
+          "web/static/vendor/Framework7/js/framework7.min.js",
+          "web/static/vendor/Framework7/js/framework7.keypad.js"
         ]
       }
     },
     stylesheets: {
       joinTo: {
-        "css/app.css": /^(web\/static\/css)/,
-        "css/vendor.css": /^(web\/static\/vendor)(\/|\\)(?!ratchet-v2.0.2)|(deps)/,
-        "css/mobile.css": /^(web\/static\/vendor\/ratchet-v2.0.2)/
+        "css/app.css": /^(web\/static\/css)(\/|\\)(?!mobile)/,
+        "css/vendor.css": /^(web\/static\/vendor)(\/|\\)(?!Framework7)|(deps)/,
+        "css/framework7.css": /^(web\/static\/vendor\/Framework7\/)/,
+        "css/mobile.css": /^(web\/static\/vendor\/Framework7_custom\/css)/
       }
     },
     templates: {
@@ -33,7 +36,7 @@ exports.config = {
     // This option sets where we should place non-css and non-js assets in.
     // By default, we set this to "/web/static/assets". Files in this directory
     // will be copied to `paths.public`, which is "priv/static" by default.
-    assets: /^(web\/static\/assets)/
+    assets: /^(web\/static\/assets)|^(web\/static\/vendor\/Framework7\/img)/
   },
 
   // Phoenix paths configuration
