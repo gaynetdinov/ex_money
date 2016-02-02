@@ -1,5 +1,7 @@
 # ExMoney
 
+`ExMoney` tracks your personal finances. It automatically imports your bank transactions using [Saltedge API](https://www.saltedge.com/products/spectre).
+
 To start your Phoenix app:
 
   1. Install dependencies with `mix deps.get`
