@@ -1,8 +1,14 @@
-<h2>Show transaction</h2>
+<div class="row">
+  <%= render ExMoney.SharedView, "settings_navbar.html", conn: @conn, navigation: @navigation %>
 
-<ul>
+  <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+    <h2>Account <%= @account.name %></h2>
 
-</ul>
+    <ul>
 
-<%= link "Edit", to: transaction_path(@conn, :edit, @transaction) %>
-<%= link "Back", to: transaction_path(@conn, :index) %>
+    </ul>
+
+    <%= link "Edit", to: account_path(@conn, :edit, @account) %>
+    <%= link "Back", to: account_path(@conn, :index) %>
+  </div>
+</div>

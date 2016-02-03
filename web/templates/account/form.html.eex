@@ -24,6 +24,12 @@
     <label for="account_currency_code">Currency</label>
     <%= text_input f, :currency_code, class: "form-control", placeholder: "Currency code, i.e. EUR" %>
   </div>
+
+  <div class="form-group">
+    <label for="account_currency_label">Currency</label>
+    <%= text_input f, :currency_label, class: "form-control", placeholder: "Currency label, i.e. €" %>
+  </div>
+
   <div class="checkbox">
     <label>
       <%= checkbox(f, :show_on_dashboard) %> Show on Dashboard
