@@ -7,6 +7,7 @@ defmodule ExMoney.Account do
     field :nature, :string
     field :balance, :decimal
     field :currency_code, :string
+    field :currency_label, :string
     field :show_on_dashboard, :boolean
 
     belongs_to :login, ExMoney.Login, foreign_key: :saltedge_login_id
@@ -26,6 +27,16 @@ defmodule ExMoney.Account do
   def changeset_for_custom_account(model, params \\ :empty) do
     model
     |> cast(params, ~w(name balance currency_code user_id), ~w())
+  end
+
+  def update_custom_changeset(model, params \\ :empty) do
+    model
+    |> cast(params, ~w(), ~w(name balance currency_code currency_label show_on_dashboard))
+  end
+
+  def update_saltedge_changeset(model, params \\ :empty) do
+    model
+    |> cast(params, ~w(balance), ~w())
   end
 
   def by_saltedge_login_id(login_ids) do

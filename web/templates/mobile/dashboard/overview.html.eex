@@ -1,0 +1,84 @@
+<div class="views">
+  <div class="view view-main">
+    <div class="pages">
+      <div class="page navbar-fixed" data-page="overview-screen" >
+        <div class="navbar">
+          <div class="navbar-inner">
+            <div class="left">
+              <a href="#" class="link">
+                <i class="icon icon-bars"></i>
+              </a>
+            </div>
+            <div class="center">ExMoney</div>
+            <div class="right">
+              <a href="/m/transaction/new" class="link">
+                <i class="icon icon-plus">+</i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="page-content hide-navbar-on-scroll">
+        <div class="content-block-title">Accounts</div>
+        <div class="card">
+          <div class="card-content">
+            <div class="list-block">
+              <ul>
+                <%= for account <- @accounts do %>
+                  <li class="item-content">
+                    <div class="item-inner">
+                      <div class="item-title"><%= account.name %></div>
+                      <div class="item-after" style="color: black">
+                        <a href='/m/accounts/<%= account.id %>'>
+                          <%= account.balance %> <%= account.currency_label %>
+                        </a>
+                      </div>
+                    </div>
+                  </li>
+                <% end %>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="content-block-title">Recent transactions</div>
+        <div class="card">
+          <div class="card-content">
+            <div class="list-block media-list">
+              <ul>
+                <%= for {date, transactions} <- @recent_transactions do %>
+                  <li class="item-divider">
+                    <div class="row">
+                      <div class="col-50"><%= date %></div>
+                      <div class="col-50" align="right">
+                        <%= balance(transactions) %> <%= List.first(transactions).account.currency_label %>
+                      </div>
+                    </div>
+                  </li>
+                  <%= for transaction <- transactions do %>
+                    <li class="item-content">
+                      <div class="item-inner">
+                        <div class="item-title-row">
+                          <div class="item-title"><%= description(transaction) %></div>
+                        </div>
+                        <div class="item-subtitle">
+                          <div class="row">
+                            <div class="col-50">
+                              <%= transaction.category.name %>
+                            </div>
+                            <div class="col-50" align="right">
+                              <%= transaction.amount %> <%= transaction.account.currency_label %>
+                            </div>
+                        </div>
+                      </div>
+                    </li>
+                  <% end %>
+                <% end %>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -23,6 +23,6 @@ defmodule ExMoney.Saltedge.Account do
   end
 
   defp persist!(existing_account, account_params) do
-    Account.changeset(existing_account, account_params) |> Repo.update!
+    Account.update_saltedge_changeset(existing_account, account_params) |> Repo.update!
   end
 end

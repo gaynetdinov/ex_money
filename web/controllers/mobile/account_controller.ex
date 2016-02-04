@@ -1,4 +1,4 @@
-defmodule ExMoney.Mobile.DashboardController do
+defmodule ExMoney.Mobile.AccountController do
   use ExMoney.Web, :controller
 
   alias ExMoney.{Repo, Transaction, User, Account}
@@ -6,15 +6,16 @@ defmodule ExMoney.Mobile.DashboardController do
   plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.Mobile.Unauthenticated
   plug :put_layout, "mobile.html"
 
-  def index(conn, params) do
+  def show(conn, %{"id" => account_id} = params) do
     parsed_date = parse_date(params["date"])
     from = first_day_of_month(parsed_date)
     to = last_day_of_month(parsed_date)
+    account = Repo.get(Account, account_id)
 
-    month_transactions = Transaction.by_month(from, to)
+    month_transactions = Transaction.by_month(account_id, from, to)
     |> Repo.all
 
-    categories = Transaction.by_month_by_category(from, to)
+    categories = Transaction.by_month_by_category(account_id, from, to)
     |> Repo.all
     |> Enum.reduce([], fn({category, color, amount}, acc) ->
       {float_amount, _} = Decimal.to_string(amount, :normal)
@@ -29,34 +30,17 @@ defmodule ExMoney.Mobile.DashboardController do
     previous_month = previous_month(parsed_date)
     next_month = next_month(parsed_date)
 
-    render conn, :index,
+    render conn, :show,
+      account: account,
       month_transactions: month_transactions,
       categories: categories,
       current_month: current_month,
       previous_month: previous_month,
-      next_month: next_month,
-      changeset: User.login_changeset(%User{})
-  end
-
-  def overview(conn, _params) do
-    recent_transactions = Transaction.recent
-    |> Repo.all
-    |> Enum.group_by(fn(transaction) ->
-      transaction.made_on
-    end)
-    |> Enum.sort(fn({date_1, _transactions}, {date_2, _transaction}) ->
-      Ecto.Date.compare(date_1, date_2) != :lt
-    end)
-
-    accounts = Repo.all(Account)
-
-    render conn, :overview,
-      recent_transactions: recent_transactions,
-      accounts: accounts
+      next_month: next_month
   end
 
   defp parse_date(month) when month == "" or is_nil(month) do
-    current_date()
+    Timex.Date.local
   end
 
   defp parse_date(month) do
@@ -76,10 +60,6 @@ defmodule ExMoney.Mobile.DashboardController do
     Timex.Date.from({{date.year, date.month, days_in_month}, {23, 59, 59}})
     |> Timex.DateFormat.format("%Y-%m-%d", :strftime)
     |> elem(1)
-  end
-
-  defp current_date() do
-    Timex.Date.local
   end
 
   defp current_month(date) do

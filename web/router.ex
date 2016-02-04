@@ -50,14 +50,16 @@ defmodule ExMoney.Router do
 
   scope "/m", as: :mobile do
     pipe_through [:browser, :browser_session]
-    get "/", ExMoney.Mobile.DashboardController, :index
-    get "/dashboard", ExMoney.Mobile.DashboardController, :index
+    get "/", ExMoney.Mobile.DashboardController, :overview
+    get "/dashboard", ExMoney.Mobile.DashboardController, :overview
+    get "/overview", ExMoney.Mobile.DashboardController, :overview
     get "/login", ExMoney.Mobile.SessionController, :new, as: :login
     post "/login", ExMoney.Mobile.SessionController, :create, as: :login
     get "/expenses", ExMoney.Mobile.TransactionController, :expenses
     get "/income", ExMoney.Mobile.TransactionController, :income
     get "/transaction/new", ExMoney.Mobile.TransactionController, :new
     post "/transaction/create", ExMoney.Mobile.TransactionController, :create
+    resources "/accounts", ExMoney.Mobile.AccountController, only: [:show]
   end
 
 
