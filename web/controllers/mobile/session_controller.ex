@@ -17,7 +17,7 @@ defmodule ExMoney.Mobile.SessionController do
       if changeset.valid? do
         conn
         |> Guardian.Plug.sign_in(user)
-        |> redirect(to: mobile_dashboard_path(conn, :index))
+        |> redirect(to: mobile_dashboard_path(conn, :overview))
       else
         send_resp(conn, 401, "Unauthenticated")
       end
