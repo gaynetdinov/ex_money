@@ -6,38 +6,6 @@ defmodule ExMoney.Mobile.DashboardController do
   plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.Mobile.Unauthenticated
   plug :put_layout, "mobile.html"
 
-  def index(conn, params) do
-    parsed_date = parse_date(params["date"])
-    from = first_day_of_month(parsed_date)
-    to = last_day_of_month(parsed_date)
-
-    month_transactions = Transaction.by_month(from, to)
-    |> Repo.all
-
-    categories = Transaction.by_month_by_category(from, to)
-    |> Repo.all
-    |> Enum.reduce([], fn({category, color, amount}, acc) ->
-      {float_amount, _} = Decimal.to_string(amount, :normal)
-      |> Float.parse
-
-      positive_float = float_amount * -1
-
-      [{category, color, positive_float} | acc]
-    end)
-
-    current_month = current_month(parsed_date)
-    previous_month = previous_month(parsed_date)
-    next_month = next_month(parsed_date)
-
-    render conn, :index,
-      month_transactions: month_transactions,
-      categories: categories,
-      current_month: current_month,
-      previous_month: previous_month,
-      next_month: next_month,
-      changeset: User.login_changeset(%User{})
-  end
-
   def overview(conn, _params) do
     recent_transactions = Transaction.recent
     |> Repo.all
@@ -48,7 +16,7 @@ defmodule ExMoney.Mobile.DashboardController do
       Ecto.Date.compare(date_1, date_2) != :lt
     end)
 
-    accounts = Repo.all(Account)
+    accounts = Account.show_on_dashboard |> Repo.all
 
     render conn, :overview,
       recent_transactions: recent_transactions,
