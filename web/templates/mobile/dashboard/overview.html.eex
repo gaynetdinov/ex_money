@@ -64,7 +64,7 @@
                         <div class="item-subtitle">
                           <div class="row">
                             <div class="col-50">
-                              <%= transaction.category.name %>
+                              <%= transaction.category.humanized_name %>
                             </div>
                             <div class="col-50" align="right">
                               <%= transaction.amount %> <%= transaction.account.currency_label %>

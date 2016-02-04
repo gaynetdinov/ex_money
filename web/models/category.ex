@@ -5,6 +5,7 @@ defmodule ExMoney.Category do
 
   schema "categories" do
     field :name, :string
+    field :humanized_name, :string
     field :parent_id, :integer
     field :css_color, :string
 
@@ -14,9 +15,9 @@ defmodule ExMoney.Category do
   end
 
   @required_fields ~w(name)
-  @optional_fields ~w(parent_id)
+  @optional_fields ~w(parent_id humanized_name)
 
-  def create_changeset(model, params \\ :empty) do
+  def changeset(model, params \\ :empty) do
     model
     |> cast(params, @required_fields, @optional_fields)
     |> Ecto.Changeset.put_change(:css_color, generate_color())
@@ -24,6 +25,13 @@ defmodule ExMoney.Category do
 
   def by_name(name) do
     from c in Category, where: c.name == ^name, limit: 1
+  end
+
+  def parents do
+    from c in Category,
+      where: is_nil(c.parent_id),
+      order_by: c.name,
+      select: {c.humanized_name, c.id}
   end
 
   def select_list() do

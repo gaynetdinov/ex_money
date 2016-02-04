@@ -139,7 +139,8 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
   defp find_or_create_category(name) do
     case Category.by_name(name) |> Repo.one do
       nil ->
-        changeset = Category.create_changeset(%Category{}, %{name: name})
+        humanized_name = String.replace(name, "_", " ") |> String.capitalize
+        changeset = Category.changeset(%Category{}, %{name: name, humanized_name: humanized_name})
         Repo.insert!(changeset)
 
       existing_category -> existing_category
