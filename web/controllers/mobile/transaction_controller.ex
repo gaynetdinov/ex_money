@@ -42,12 +42,13 @@ defmodule ExMoney.Mobile.TransactionController do
     end
   end
 
-  def expenses(conn, params) do
-    parsed_date = parse_date(params["date"])
+  def expenses(conn, %{"date" => date, "account_id" => account_id}) do
+    account = Repo.get!(Account, account_id)
+    parsed_date = parse_date(date)
     from = first_day_of_month(parsed_date)
     to = last_day_of_month(parsed_date)
 
-    expenses = Transaction.expenses_by_month(from, to)
+    expenses = Transaction.expenses_by_month(account_id, from, to)
     |> Repo.all
     |> Enum.group_by(fn(transaction) ->
       transaction.made_on
@@ -59,16 +60,18 @@ defmodule ExMoney.Mobile.TransactionController do
     {:ok, date} = Timex.DateFormat.format(parsed_date, "%b %Y", :strftime)
 
     render conn, :expenses,
+      currency_label: account.currency_label,
       expenses: expenses,
       date: date
   end
 
-  def income(conn, params) do
-    parsed_date = parse_date(params["date"])
+  def income(conn, %{"date" => date, "account_id" => account_id}) do
+    account = Repo.get!(Account, account_id)
+    parsed_date = parse_date(date)
     from = first_day_of_month(parsed_date)
     to = last_day_of_month(parsed_date)
 
-    income = Transaction.income_by_month(from, to)
+    income = Transaction.income_by_month(account_id, from, to)
     |> Repo.all
     |> Enum.group_by(fn(transaction) ->
       transaction.made_on
@@ -80,6 +83,7 @@ defmodule ExMoney.Mobile.TransactionController do
     {:ok, date} = Timex.DateFormat.format(parsed_date, "%b %Y", :strftime)
 
     render conn, :income,
+      currency_label: account.currency_label,
       income: income,
       date: date
   end

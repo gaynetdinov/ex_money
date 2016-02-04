@@ -75,39 +75,41 @@ defmodule ExMoney.Transaction do
       limit: 1
   end
 
-  def recent() do
+  def recent do
     current_date = Timex.Date.local
     from = Timex.Date.shift(current_date, days: -30)
 
     from tr in Transaction,
       where: tr.made_on >= ^from,
-      preload: [:transaction_info, :category],
+      preload: [:transaction_info, :category, :account],
       order_by: [desc: tr.made_on]
   end
 
-  def by_month(from, to) do
+  def by_month(account_id, from, to) do
     from tr in Transaction,
       where: tr.made_on >= ^from,
-      where: tr.made_on <= ^to
+      where: tr.made_on <= ^to,
+      where: tr.account_id == ^account_id
   end
 
-  def expenses_by_month(from, to) do
-    Transaction.by_month(from ,to)
+  def expenses_by_month(account_id, from, to) do
+    Transaction.by_month(account_id, from ,to)
     |> where([tr], tr.amount < 0)
     |> preload([:transaction_info, :category])
   end
 
-  def income_by_month(from ,to) do
-    Transaction.by_month(from ,to)
+  def income_by_month(account_id, from ,to) do
+    Transaction.by_month(account_id, from ,to)
     |> where([tr], tr.amount > 0)
     |> preload([:transaction_info, :category])
   end
 
-  def by_month_by_category(from, to) do
+  def by_month_by_category(account_id, from, to) do
     from tr in Transaction,
       join: c in assoc(tr, :category),
       where: tr.made_on >= ^from,
       where: tr.made_on <= ^to,
+      where: tr.account_id == ^account_id,
       group_by: [c.name, c.css_color],
       select: {c.name, c.css_color, sum(tr.amount)},
       having: sum(tr.amount) < 0

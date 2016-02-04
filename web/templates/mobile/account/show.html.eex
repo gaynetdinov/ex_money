@@ -1,33 +1,32 @@
 <div class="views">
   <div class="view view-main">
     <div class="pages">
-      <div class="page navbar-fixed" data-page="dashboard-screen" >
+      <div class="page navbar-fixed" data-page="account-screen" >
         <div class="navbar">
           <div class="navbar-inner">
             <div class="left">
-              <a href="#" class="link">
-                <i class="icon icon-bars"></i>
+              <a href="/m/overview" class="link back" data-force="true">
+                <i class="icon icon-back"></i>&nbsp; Home
               </a>
             </div>
             <div class="center">ExMoney</div>
-            <div class="right">
-              <a href="/m/transaction/new" class="link">
-                <i class="icon icon-plus">+</i>
-              </a>
-            </div>
           </div>
         </div>
         <div class="page-content hide-navbar-on-scroll">
           <div class="content-block-title" align="center">
             <div class="row">
               <div class="col-33" align="left">
-                <a href="/m/dashboard?date=<%= @previous_month.date %>" class="link back" data-force="true"><%= @previous_month.label %></a>
+                <a href="/m/accounts/<%= @account.id %>?date=<%= @previous_month.date %>" class="link back" data-force="true">
+                  <%= @previous_month.label %>
+                </a>
               </div>
               <div class="col-33">
                 <%= @current_month.label %>
               </div>
               <div class="col-33" align="right">
-                <a href="/m/dashboard?date=<%= @next_month.date %>" class="link"><%= @next_month.label %></a>
+                <a href="/m/accounts/<%= @account.id %>?date=<%= @next_month.date %>" class="link">
+                  <%= @next_month.label %>
+                </a>
               </div>
             </div>
           </div>
@@ -38,8 +37,8 @@
                   <div class="item-inner">
                     <div class="item-title">Expenses</div>
                     <div class="item-after" style="color: black">
-                      <a href='/m/expenses?date=<%= @current_month.date %>'>
-                        <%= expenses(@month_transactions) %> &#8364;
+                      <a href='/m/expenses?date=<%= @current_month.date %>&account_id=<%= @account.id %>'>
+                        <%= expenses(@month_transactions) %> <%= @account.currency_label %>
                       </a>
                     </div>
                   </div>
@@ -48,8 +47,8 @@
                   <div class="item-inner">
                     <div class="item-title">Income</div>
                     <div class="item-after" style="color: black">
-                      <a href='/m/income?date=<%= @current_month.date %>'>
-                        <%= income(@month_transactions) %> &#8364;
+                      <a href='/m/income?date=<%= @current_month.date %>&account_id=<%= @account.id %>'>
+                        <%= income(@month_transactions) %> <%= @account.currency_label %>
                       </a>
                     </div>
                   </div>
@@ -59,7 +58,7 @@
                   <div class="item-inner">
                     <div class="item-title">Balance</div>
                     <div class="item-after" style="color: black">
-                      <%= balance(@month_transactions) %> &#8364;
+                      <%= balance(@month_transactions) %> <%= @account.currency_label %>
                     </div>
                   </div>
                 </li>

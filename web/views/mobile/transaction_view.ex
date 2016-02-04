@@ -6,4 +6,11 @@ defmodule ExMoney.Mobile.TransactionView do
       Decimal.add(acc, transaction.amount)
     end)
   end
+
+  def description(transaction) do
+    case transaction.transaction_info do
+      nil -> transaction.description
+      ti -> ti.payee
+    end
+  end
 end
