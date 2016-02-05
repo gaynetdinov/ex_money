@@ -4,7 +4,7 @@
       <div class="navbar-inner">
         <div class="left">
           <a href="#" class="link back">
-            <i class="icon icon-back"></i>
+            <i class="icon icon-back"></i>&nbsp; Back
           </a>
         </div>
         <div class="center">Expenses for <%= @date %></div>
@@ -29,7 +29,7 @@
                 <div class="item-subtitle">
                   <div class="row">
                     <div class="col-50">
-                      <%= transaction.category.name %>
+                      <%= transaction.category.humanized_name %>
                     </div>
                     <div class="col-50" align="right">
                       <%= transaction.amount %> <%= @currency_label %>
