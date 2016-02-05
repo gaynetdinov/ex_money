@@ -111,8 +111,8 @@ defmodule ExMoney.Transaction do
       where: tr.made_on >= ^from,
       where: tr.made_on <= ^to,
       where: tr.account_id == ^account_id,
-      group_by: [c.name, c.css_color],
-      select: {c.name, c.css_color, sum(tr.amount)},
+      group_by: [c.humanized_name, c.css_color],
+      select: {c.humanized_name, c.css_color, sum(tr.amount)},
       having: sum(tr.amount) < 0
   end
 

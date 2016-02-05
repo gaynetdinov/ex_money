@@ -29,7 +29,7 @@
             <%= for transaction <- transactions do %>
               <tr>
                 <td width="50%"><%= description(transaction) %></td>
-                <td width="25%"><%= transaction.category.name %></td>
+                <td width="25%"><%= transaction.category.humanized_name %></td>
                 <td width="25%" align="right"><%= transaction.amount %></td>
               </tr>
             <% end %>
