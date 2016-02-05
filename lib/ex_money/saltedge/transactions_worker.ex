@@ -3,37 +3,39 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
 
   require Logger
 
-  alias ExMoney.{Repo, Transaction, TransactionInfo, Category}
+  alias ExMoney.{Repo, Transaction, TransactionInfo, Category, Account}
 
   def start_link(_opts \\ []) do
     GenServer.start_link(__MODULE__, :ok, name: :transactions_worker)
   end
 
-  def handle_call({:fetch_recent, saltedge_account_id, user_id}, _from, state) do
+  def handle_call({:fetch_recent, saltedge_account_id}, _from, state) do
+    account = Account.by_saltedge_account_id(saltedge_account_id) |> Repo.one
     last_transaction = find_last_transaction(saltedge_account_id)
 
-    {:ok, stored_transactions, fetched_transactions} = fetch_recent_and_store(saltedge_account_id, last_transaction, user_id)
+    {:ok, stored_transactions, fetched_transactions} = fetch_recent_and_store(account, last_transaction)
 
     {:reply, {:ok, stored_transactions, fetched_transactions}, state}
   end
 
-  def handle_call({:fetch_all, saltedge_account_id, user_id}, _from, state) do
-    {:ok, stored_transactions, fetched_transactions} = fetch_all(saltedge_account_id, user_id)
+  def handle_call({:fetch_all, saltedge_account_id}, _from, state) do
+    account = Account.by_saltedge_account_id(saltedge_account_id) |> Repo.one
+    {:ok, stored_transactions, fetched_transactions} = fetch_all(account)
 
     {:reply, {:ok, stored_transactions, fetched_transactions}, state}
   end
 
-  defp fetch_recent_and_store(saltedge_account_id, nil, _user_id) do
-    Logger.warn("There are no transactions in DB for account with id #{saltedge_account_id}")
+  defp fetch_recent_and_store(account, nil) do
+    Logger.warn("There are no transactions in DB for account with id #{account.name}")
 
     {:ok, 0, 0}
   end
 
-  defp fetch_recent_and_store(saltedge_account_id, last_transaction, user_id) do
-    transactions = fetch_recent(saltedge_account_id, last_transaction.saltedge_transaction_id, [])
+  defp fetch_recent_and_store(account, last_transaction) do
+    transactions = fetch_recent(account.saltedge_account_id, last_transaction.saltedge_transaction_id, [])
     |> List.flatten
 
-    stored_transactions = store(transactions, user_id)
+    stored_transactions = store(transactions, account)
 
     {:ok, stored_transactions, Enum.count(transactions)}
   end
@@ -55,13 +57,13 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
     end
   end
 
-  defp fetch_all(saltedge_account_id, user_id) do
+  defp fetch_all(account) do
     to = Timex.Date.local
     from = Timex.Date.shift(to, months: -1)
 
-    transactions = fetch_all(saltedge_account_id, from, to, [])
+    transactions = fetch_all(account.saltedge_account_id, from, to, [])
 
-    stored_transactions = store(transactions, user_id)
+    stored_transactions = store(transactions, account)
 
     {:ok, stored_transactions, Enum.count(transactions)}
   end
@@ -100,12 +102,13 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
     end
   end
 
-  defp store(transactions, user_id) do
+  defp store(transactions, account) do
     Enum.reduce(transactions, 0, fn(se_tran, acc) ->
       se_tran = Map.put(se_tran, "saltedge_transaction_id", se_tran["id"])
       se_tran = Map.put(se_tran, "saltedge_account_id", se_tran["account_id"])
-      se_tran = Map.put(se_tran, "user_id", user_id)
+      se_tran = Map.put(se_tran, "user_id", account.user_id)
       se_tran = Map.drop(se_tran, ["id", "account_id"])
+      se_tran = Map.put(se_tran, "account_id", account.id)
 
       existing_transaction = Transaction.
         by_saltedge_transaction_id(se_tran["saltedge_transaction_id"])

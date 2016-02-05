@@ -21,7 +21,7 @@ defmodule ExMoney.Saltedge.SyncWorker do
     |> Enum.map(fn(account) ->
       {:ok, stored_transactions, fetched_transactions} = GenServer.call(
         :transactions_worker,
-        {fetch_type, account.saltedge_account_id, user_id}
+        {fetch_type, account.saltedge_account_id}
       )
       Logger.info("Fetched #{fetched_transactions}, stored #{stored_transactions}, fetched with type #{fetch_type} for #{account.name} account")
     end)

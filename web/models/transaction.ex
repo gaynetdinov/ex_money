@@ -36,6 +36,7 @@ defmodule ExMoney.Transaction do
     description
     duplicated
     saltedge_account_id
+    account_id
     user_id
   )
   @optional_fields ~w(category_id)
