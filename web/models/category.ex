@@ -23,6 +23,10 @@ defmodule ExMoney.Category do
     |> Ecto.Changeset.put_change(:css_color, generate_color())
   end
 
+  def order_by_name do
+    from c in Category, order_by: c.name
+  end
+
   def by_name(name) do
     from c in Category, where: c.name == ^name, limit: 1
   end
@@ -34,9 +38,9 @@ defmodule ExMoney.Category do
       select: {c.humanized_name, c.id}
   end
 
-  def select_list() do
+  def select_list do
     from c in Category,
-      select: {c.name, c.id},
+      select: {c.humanized_name, c.id},
       order_by: c.name
   end
 

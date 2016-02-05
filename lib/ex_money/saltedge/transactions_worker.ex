@@ -103,6 +103,8 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
   end
 
   defp store(transactions, account) do
+    rules = Rule.by_account_id(account.id) |> Repo.all
+
     Enum.reduce(transactions, 0, fn(se_tran, acc) ->
       se_tran = Map.put(se_tran, "saltedge_transaction_id", se_tran["id"])
       se_tran = Map.put(se_tran, "saltedge_account_id", se_tran["account_id"])
@@ -125,12 +127,19 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
           transaction_info = TransactionInfo.changeset(%TransactionInfo{}, extra)
 
           Repo.insert!(transaction_info)
+          apply_account_rules(transaction, transaction_info, rules)
         end
         acc + 1
       else
         acc
       end
     end)
+  end
+
+  defp apply_account_rules(_, _, []), do: :ok
+
+  defp apply_account_rules(transaction, transaction_info, rules) do
+    GenServer.cast(:rule_processor, {:process, transaction, transaction_info, rules})
   end
 
   defp set_category_id(transaction) do

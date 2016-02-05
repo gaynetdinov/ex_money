@@ -12,6 +12,7 @@ defmodule ExMoney.Account do
 
     belongs_to :login, ExMoney.Login, foreign_key: :saltedge_login_id
     belongs_to :user, ExMoney.User
+    has_many :rules, ExMoney.Rule
 
     timestamps
   end
@@ -58,6 +59,13 @@ defmodule ExMoney.Account do
   def only_custom do
     from a in ExMoney.Account,
       where: is_nil(a.saltedge_account_id),
+      select: {a.name, a.id},
+      order_by: a.name
+  end
+
+  def only_saltedge do
+    from a in ExMoney.Account,
+      where: not is_nil(a.saltedge_account_id),
       select: {a.name, a.id},
       order_by: a.name
   end

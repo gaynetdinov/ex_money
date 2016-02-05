@@ -7,7 +7,7 @@ defmodule ExMoney.CategoryController do
   plug :scrub_params, "category" when action in [:create, :update]
 
   def index(conn, params) do
-    categories = Repo.all(Category)
+    categories = Repo.all(Category.order_by_name)
 
     render(conn, :index,
       topbar: "settings",
@@ -17,10 +17,12 @@ defmodule ExMoney.CategoryController do
   end
 
   def new(conn, _params) do
+    categories = Repo.all(Category.parents)
     changeset = Category.changeset(%Category{})
 
     render(conn, :new,
       changeset: changeset,
+      categories: categories,
       topbar: "settings",
       navigation: "categories"
     )
