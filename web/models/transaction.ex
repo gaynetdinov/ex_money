@@ -49,15 +49,18 @@ defmodule ExMoney.Transaction do
   def changeset_custom(model, params \\ :empty) do
     model
     |> cast(params, ~w(amount category_id account_id made_on user_id), ~w(description ))
-    |> negate_amount_for_expense(params)
+    |> negate_amount(params)
   end
 
-  def negate_amount_for_expense(changeset, :empty), do: changeset
-  def negate_amount_for_expense(changeset, %{"type" => "income"}) do
-    changeset
+  def update_changeset(model, params \\ :empty) do
+    model
+    |> cast(params, ~w(), ~w(category_id made_on amount))
   end
 
-  def negate_amount_for_expense(changeset, %{"type" => "expense"}) do
+  def negate_amount(changeset, :empty), do: changeset
+  def negate_amount(changeset, %{"type" => "income"}), do: changeset
+
+  def negate_amount(changeset, %{"type" => "expense"}) do
     case Ecto.Changeset.fetch_change(changeset, :amount) do
       {:ok, amount} ->
         Ecto.Changeset.put_change(changeset, :amount, Decimal.mult(amount, Decimal.new(-1)))

@@ -10,6 +10,7 @@ defmodule ExMoney do
       worker(ExMoney.Saltedge.TransactionsWorker, []),
       worker(ExMoney.Saltedge.Scheduler, []),
       worker(ExMoney.Saltedge.SyncWorker, []),
+      worker(ExMoney.RuleProcessor, []),
       supervisor(ExMoney.Saltedge.FetchSupervisor, [])
     ]
 

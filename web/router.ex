@@ -47,6 +47,7 @@ defmodule ExMoney.Router do
     resources "/users", UserController
     resources "/transactions", TransactionController
     resources "/categories", CategoryController
+    resources "/rules", RuleController
   end
 
   scope "/m", as: :mobile do

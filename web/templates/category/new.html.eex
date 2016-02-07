@@ -7,7 +7,6 @@
     <%= render "form.html",
       changeset: @changeset,
       action: category_path(@conn, :create),
-      accounts: @accounts,
       categories: @categories
     %>
 
