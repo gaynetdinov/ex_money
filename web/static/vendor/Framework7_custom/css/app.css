@@ -31,3 +31,17 @@
 .reduced-margin {
   margin: 15px 0;
 }
+
+.new_transaction {
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 1) 100%),
+                    linear-gradient(to right, rgba(240, 150, 40, 1) 0%, rgba(240, 140, 40, 1) 100%);
+  background-clip: content-box, padding-box;
+}
+
+.item-content {
+  padding-left: 12px !important;
+}
+
+.item-inner {
+  margin-left: 3px !important;
+}

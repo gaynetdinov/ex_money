@@ -15,6 +15,8 @@ defmodule ExMoney.SessionController do
     if user do
       changeset = User.login_changeset(user, params["user"])
       if changeset.valid? do
+        update_last_login_at(user)
+
         conn
         |> put_flash(:info, "Logged in.")
         |> Guardian.Plug.sign_in(user)
@@ -32,5 +34,10 @@ defmodule ExMoney.SessionController do
     Guardian.Plug.sign_out(conn)
     |> put_flash(:info, "Logged out successfully.")
     |> redirect(to: "/login")
+  end
+
+  defp update_last_login_at(user) do
+    User.update_changeset(user, %{last_login_at: :calendar.local_time})
+    |> Repo.update
   end
 end
