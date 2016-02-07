@@ -8,6 +8,7 @@ defmodule ExMoney.User do
     field :saltedge_customer_id, :string
     field :saltedge_token, :string
     field :password, :string, virtual: true
+    field :last_login_at, Ecto.DateTime
 
     has_many :logins, ExMoney.Login
     has_many :accounts, ExMoney.Account
@@ -31,7 +32,7 @@ defmodule ExMoney.User do
 
   def update_changeset(model, params \\ :empty) do
     model
-    |> cast(params, ~w(), ~w(name email password saltedge_customer_id))
+    |> cast(params, ~w(), ~w(name email password saltedge_customer_id last_login_at))
     |> maybe_update_password
   end
 

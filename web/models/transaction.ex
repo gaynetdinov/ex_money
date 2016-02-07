@@ -89,6 +89,12 @@ defmodule ExMoney.Transaction do
       order_by: [desc: tr.made_on]
   end
 
+  def new_since(time, account_id) do
+    from tr in Transaction,
+      where: tr.inserted_at >= ^time,
+      where: tr.account_id == ^account_id
+  end
+
   def by_month(account_id, from, to) do
     from tr in Transaction,
       where: tr.made_on >= ^from,

@@ -55,4 +55,17 @@ defmodule ExMoney.Mobile.DashboardView do
       ti -> ti.payee
     end
   end
+
+  def recent_diff(recent_diff, currency_label) do
+    recent_diff_compare = Decimal.compare(recent_diff, Decimal.new(0))
+    recent_diff_str = Decimal.to_string(recent_diff)
+
+    cond do
+      recent_diff_compare == Decimal.new(1) ->
+        "<span style='color:green'>" <> recent_diff_str <> currency_label <> "&#x25B2; &nbsp;</span>"
+      recent_diff_compare == Decimal.new(0) -> ""
+      recent_diff_compare == Decimal.new(-1) ->
+        "<span style='color:red'>" <> recent_diff_str <> currency_label <> "&#x25BC; &nbsp;</span>"
+    end
+  end
 end

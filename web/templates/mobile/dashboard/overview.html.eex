@@ -29,6 +29,7 @@
                     <div class="item-inner">
                       <div class="item-title"><%= account.name %></div>
                       <div class="item-after" style="color: black">
+                        <%= raw recent_diff(account.recent_diff, account.currency_label) %>
                         <a href='/m/accounts/<%= account.id %>'>
                           <%= account.balance %> <%= account.currency_label %>
                         </a>
@@ -56,7 +57,7 @@
                     </div>
                   </li>
                   <%= for transaction <- transactions do %>
-                    <li class="item-content">
+                    <li class="item-content <%= if Enum.member?(@new_transaction_ids, transaction.id), do: "new_transaction"  %>">
                       <div class="item-inner">
                         <div class="item-title-row">
                           <div class="item-title"><%= description(transaction) %></div>
