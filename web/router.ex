@@ -59,9 +59,8 @@ defmodule ExMoney.Router do
     post "/login", ExMoney.Mobile.SessionController, :create, as: :login
     get "/expenses", ExMoney.Mobile.TransactionController, :expenses
     get "/income", ExMoney.Mobile.TransactionController, :income
-    get "/transaction/new", ExMoney.Mobile.TransactionController, :new
-    post "/transaction/create", ExMoney.Mobile.TransactionController, :create
     resources "/accounts", ExMoney.Mobile.AccountController, only: [:show]
+    resources "/transactions", ExMoney.Mobile.TransactionController
   end
 
 

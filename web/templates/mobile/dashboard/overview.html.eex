@@ -1,7 +1,7 @@
 <div class="views">
   <div class="view view-main">
     <div class="pages">
-      <div class="page navbar-fixed" data-page="overview-screen" >
+      <div class="page navbar-fixed" data-page="overview-screen">
         <div class="navbar">
           <div class="navbar-inner">
             <div class="left">
@@ -11,7 +11,7 @@
             </div>
             <div class="center">ExMoney</div>
             <div class="right">
-              <a href="/m/transaction/new" class="link">
+              <a href="/m/transactions/new" class="link">
                 <i class="icon icon-plus">+</i>
               </a>
             </div>
@@ -57,24 +57,34 @@
                     </div>
                   </li>
                   <%= for transaction <- transactions do %>
-                    <li class="item-content <%= if Enum.member?(@new_transaction_ids, transaction.id), do: "new_transaction"  %>">
-                      <div class="item-inner">
-                        <div class="item-title-row">
-                          <div class="item-title"><%= description(transaction) %></div>
-                        </div>
-                        <div class="item-subtitle">
-                          <%= transaction.account.name %>
-                        </div>
-                        <div class="item-subtitle">
-                          <div class="row">
-                            <div class="col-50">
-                              <%= transaction.category.humanized_name %>
+                    <li class="swipeout">
+                      <div class="swipeout-content">
+                        <div class="item-content <%= if Enum.member?(@new_transaction_ids, transaction.id), do: "new_transaction"  %>">
+
+                          <div class="item-inner">
+                            <div class="item-title-row">
+                              <div class="item-title"><%= description(transaction) %></div>
                             </div>
-                            <div class="col-50" align="right">
-                              <%= transaction.amount %> <%= transaction.account.currency_label %>
+                            <div class="item-subtitle">
+                              <%= transaction.account.name %>
+                            </div>
+                            <div class="item-subtitle">
+                              <div class="row">
+                                <div class="col-50">
+                                  <%= transaction.category.humanized_name %>
+                                </div>
+                                <div class="col-50" align="right">
+                                  <%= transaction.amount %> <%= transaction.account.currency_label %>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>
+                      </div>
+                      <div class="swipeout-actions-right">
+                        <a href="/m/transactions/<%= transaction.id %>" class="bg-blue show-transaction" data-ignore-cache="true">Show</a>
+                        <a href="/m/transactions/<%= transaction.id %>/edit" class="bg-orange edit-transaction">Edit</a>
+                        <a href="#" data-id="<%= transaction.id %>" data-confirm="Are you sure?" data-confirm-title="Delete?" class="swipeout-delete bg-red delete-transaction">Delete</a>
                       </div>
                     </li>
                   <% end %>

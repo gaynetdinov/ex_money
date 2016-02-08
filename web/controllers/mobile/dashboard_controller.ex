@@ -45,6 +45,9 @@ defmodule ExMoney.Mobile.DashboardController do
   end
 
   defp fetch_last_login_at do
-    :ets.lookup_element(:ex_money_cache, "last_login_at", 2)
+    case :ets.lookup(:ex_money_cache, "last_login_at") do
+      [] -> Ecto.DateTime.from_erl(:calendar.universal_time)
+      [{_key, value}] -> value
+    end
   end
 end

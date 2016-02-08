@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="csrf" content="<%= Plug.CSRFProtection.get_csrf_token() %>">
     <title>ExMoney</title>
 
     <link href="<%= static_path(@conn, "/css/framework7.css") %>" rel="stylesheet">

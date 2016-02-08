@@ -54,7 +54,7 @@ defmodule ExMoney.Transaction do
 
   def update_changeset(model, params \\ :empty) do
     model
-    |> cast(params, ~w(), ~w(category_id made_on amount))
+    |> cast(params, ~w(), ~w(category_id description))
   end
 
   def negate_amount(changeset, :empty), do: changeset

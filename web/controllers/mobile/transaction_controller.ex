@@ -8,10 +8,6 @@ defmodule ExMoney.Mobile.TransactionController do
   def new(conn, _params) do
     categories = Category.select_list
     |> Repo.all
-    |> Enum.reduce([], fn({name, id}, acc) ->
-      humanized_name = String.replace(name, "_", " ") |> String.capitalize
-      [{humanized_name, id} | acc]
-    end)
 
     uncategorized = Enum.find(categories, fn({name, _id}) -> name == "Uncategorized" end)
     sorted_categories = Enum.sort(categories, fn({name_1, _id_1}, {name_2, _id_2}) ->
@@ -29,6 +25,33 @@ defmodule ExMoney.Mobile.TransactionController do
       accounts: accounts
   end
 
+  def edit(conn, %{"id" => id}) do
+    transaction = Repo.get(Transaction, id)
+
+    categories = Category.select_list
+    |> Repo.all
+
+    changeset = Transaction.update_changeset(transaction)
+
+    render conn, :edit,
+      transaction: transaction,
+      categories: categories,
+      changeset: changeset
+  end
+
+  def update(conn, %{"id" => id, "transaction" => transaction_params}) do
+    transaction = Repo.get!(Transaction, id)
+
+    changeset = Transaction.update_changeset(transaction, transaction_params)
+
+    case Repo.update(changeset) do
+      {:ok, _transaction} ->
+        send_resp(conn, 200, "")
+      {:error, _changeset} ->
+        send_resp(conn, 422, "Something went wrong, check server logs")
+    end
+  end
+
   def create(conn, %{"transaction" => transaction_params}) do
     user = Guardian.Plug.current_resource(conn)
     transaction_params = Map.put(transaction_params, "user_id", user.id)
@@ -40,6 +63,15 @@ defmodule ExMoney.Mobile.TransactionController do
       {:error, _changeset} ->
         send_resp(conn, 422, "Something went wrong, check server logs")
     end
+  end
+
+  def show(conn, %{"id" => id}) do
+    transaction = Repo.one(
+      from tr in Transaction,
+        where: tr.id == ^id,
+        preload: [:account, :transaction_info, :category]
+      )
+    render(conn, :show, transaction: transaction)
   end
 
   def expenses(conn, %{"date" => date, "account_id" => account_id}) do
@@ -86,6 +118,14 @@ defmodule ExMoney.Mobile.TransactionController do
       currency_label: account.currency_label,
       income: income,
       date: date
+  end
+
+  def delete(conn, %{"id" => id}) do
+    transaction = Repo.get!(Transaction, id)
+
+    Repo.delete!(transaction)
+
+    send_resp(conn, 200, "")
   end
 
   defp parse_date(month) do
