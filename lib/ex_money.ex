@@ -4,6 +4,8 @@ defmodule ExMoney do
   def start(_type, _args) do
     import Supervisor.Spec, warn: false
 
+    :ets.new(:ex_money_cache, [:set, :public, :named_table])
+
     children = [
       supervisor(ExMoney.Endpoint, []),
       worker(ExMoney.Repo, []),

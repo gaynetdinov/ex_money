@@ -8,7 +8,7 @@ defmodule ExMoney.Mobile.DashboardController do
 
   def overview(conn, _params) do
     user = Guardian.Plug.current_resource(conn)
-    last_login_at = user.last_login_at || :calendar.local_time()
+    last_login_at = fetch_last_login_at
 
     transactions = Transaction.recent
     |> Repo.all
@@ -22,7 +22,7 @@ defmodule ExMoney.Mobile.DashboardController do
     recent_transactions = Enum.group_by(transactions, fn(transaction) ->
       transaction.made_on
     end)
-    |> Enum.sort(fn({date_1, _transactions}, {date_2, _transaction}) ->
+    |> Enum.sort(fn({date_1, _transactions_1}, {date_2, _transactions_2}) ->
       Ecto.Date.compare(date_1, date_2) != :lt
     end)
 
@@ -42,5 +42,9 @@ defmodule ExMoney.Mobile.DashboardController do
       recent_transactions: recent_transactions,
       accounts: accounts,
       new_transaction_ids: new_transaction_ids
+  end
+
+  defp fetch_last_login_at do
+    :ets.lookup_element(:ex_money_cache, "last_login_at", 2)
   end
 end

@@ -15,6 +15,7 @@ defmodule ExMoney.Mobile.SessionController do
     if user do
       changeset = User.login_changeset(user, params["user"])
       if changeset.valid? do
+        store_last_login_at(user.last_login_at)
         update_last_login_at(user)
 
         conn
@@ -35,7 +36,16 @@ defmodule ExMoney.Mobile.SessionController do
   end
 
   defp update_last_login_at(user) do
-    User.update_changeset(user, %{last_login_at: :calendar.local_time})
+    User.update_changeset(user, %{last_login_at: :calendar.universal_time})
     |> Repo.update
+  end
+
+  defp store_last_login_at(timestamp) do
+    value = timestamp || Ecto.DateTime.from_erl(:calendar.universal_time)
+
+    case :ets.lookup(:ex_money_cache, "last_login_at") do
+      [] -> :ets.insert(:ex_money_cache, {"last_login_at", value})
+      _value -> :ets.update_element(:ex_money_cache, "last_login_at", {2, value})
+    end
   end
 end
