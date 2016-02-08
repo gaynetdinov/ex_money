@@ -8,7 +8,7 @@ defmodule ExMoney.Mobile.DashboardController do
 
   def overview(conn, _params) do
     user = Guardian.Plug.current_resource(conn)
-    last_login_at = user.last_login_at
+    last_login_at = user.last_login_at || :calendar.local_time()
 
     transactions = Transaction.recent
     |> Repo.all

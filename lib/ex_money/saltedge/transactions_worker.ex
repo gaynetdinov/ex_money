@@ -3,7 +3,7 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
 
   require Logger
 
-  alias ExMoney.{Repo, Transaction, TransactionInfo, Category, Account}
+  alias ExMoney.{Repo, Rule, Transaction, TransactionInfo, Category, Account}
 
   def start_link(_opts \\ []) do
     GenServer.start_link(__MODULE__, :ok, name: :transactions_worker)
@@ -124,9 +124,9 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
           transaction = Repo.insert!(changeset)
 
           extra = Map.put(se_tran["extra"], "transaction_id", transaction.id)
-          transaction_info = TransactionInfo.changeset(%TransactionInfo{}, extra)
+          transaction_info_changeset = TransactionInfo.changeset(%TransactionInfo{}, extra)
 
-          Repo.insert!(transaction_info)
+          transaction_info = Repo.insert!(transaction_info_changeset)
           apply_account_rules(transaction, transaction_info, rules)
         end
         acc + 1
