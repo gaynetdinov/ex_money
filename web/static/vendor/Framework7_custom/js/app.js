@@ -22,10 +22,41 @@ var exMoney = new Framework7({
       });
     }
   }
-
 });
 
 var mainView = exMoney.addView('.view-main');
+
+$$('.swipeout').on('deleted', function (e) {
+  var id = $$(e.target).children("div.swipeout-actions-opened").find("a.delete-transaction").data('id');
+  var csrf = document.querySelector("meta[name=csrf]").content;
+
+  $$.ajax({
+    url: '/m/transactions/' + id,
+    type: 'DELETE',
+    headers: {
+      "X-CSRF-TOKEN": csrf
+    },
+    error: function(xhr, status) {
+      alert("Something went wrong, check server logs");
+    }
+  });
+});
+
+exMoney.onPageBeforeInit('edit-transaction-screen', function (page) {
+  $$('form.ajax-submit').on('submitted', function (e) {
+    var xhr = e.detail.xhr;
+
+    if (xhr.status == 200) {
+      mainView.router.back({
+        url: '/m/dashboard',
+        ignoreCache: true,
+        force: true
+      });
+    } else {
+      exMoney.alert(xhr.responseText);
+    }
+  });
+});
 
 exMoney.onPageBeforeInit('new-transaction-screen', function (page) {
   var calculator = exMoney.keypad({

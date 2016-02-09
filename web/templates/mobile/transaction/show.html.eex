@@ -1,0 +1,133 @@
+<div class="pages">
+  <div class="page navbar-fixed" data-page="show-transaction-screen">
+    <div class="navbar">
+      <div class="navbar-inner">
+        <div class="left">
+          <a href="#" class="link back back-to-dashboard">
+            <i class="icon icon-back"></i>&nbsp; Back
+          </a>
+        </div>
+        <div class="center">Transaction</div>
+      </div>
+    </div>
+    <div class="page-content">
+        <div class="card">
+          <div class="card-content">
+            <div class="card-content-inner">
+              <div class="list-block reduced-margin">
+                <ul>
+                  <li class="item-divider">Transaction</li>
+                  <li>
+                    <div class="item-content">
+                      <div class="item-inner">
+                        <div class="item-title label">Description</div>
+                        <div class="item-input">
+                          <%= @transaction.description %>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                  <li>
+                    <div class="item-content">
+                      <div class="item-inner">
+                        <div class="item-title label">Currency</div>
+                        <div class="item-input">
+                          <%= @transaction.currency_code %>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                  <li>
+                    <div class="item-content">
+                      <div class="item-inner">
+                        <div class="item-title label">Account</div>
+                        <div class="item-input">
+                          <%= @transaction.account.name %>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                  <li>
+                    <div class="item-content">
+                      <div class="item-inner">
+                        <div class="item-title label">Category</div>
+                        <div class="item-input">
+                          <%= @transaction.category.humanized_name %>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                  <li class="item-divider">Transaction Info</li>
+                  <li>
+                    <div class="item-content">
+                      <div class="item-inner">
+                        <div class="item-title label">Payee</div>
+                        <div class="item-input">
+                          <%= @transaction.transaction_info.payee %>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                  <li>
+                    <div class="item-content">
+                      <div class="item-inner">
+                        <div class="item-title label">Information</div>
+                        <div class="item-input">
+                          <%= @transaction.transaction_info.information %>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+
+                  <li>
+                    <div class="item-content">
+                      <div class="item-inner">
+                        <div class="item-title label">Time</div>
+                        <div class="item-input">
+                          <%= @transaction.transaction_info.time %>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+
+                  <li>
+                    <div class="item-content">
+                      <div class="item-inner">
+                        <div class="item-title label">Posting</br> date</div>
+                        <div class="item-input">
+                          <%= @transaction.transaction_info.posting_date %>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+
+                  <li>
+                    <div class="item-content">
+                      <div class="item-inner">
+                        <div class="item-title label">Posting</br> time</div>
+                        <div class="item-input">
+                          <%= @transaction.transaction_info.posting_time %>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+
+                  <li>
+                    <div class="item-content">
+                      <div class="item-inner">
+                        <div class="item-title label">Type</div>
+                        <div class="item-input">
+                          <%= @transaction.transaction_info.type %>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

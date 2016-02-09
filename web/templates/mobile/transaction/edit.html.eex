@@ -1,0 +1,52 @@
+<div class="pages">
+  <div class="page navbar-fixed" data-page="edit-transaction-screen">
+    <div class="navbar">
+      <div class="navbar-inner">
+        <div class="left">
+          <a href="#" class="link back back-to-dashboard">
+            <i class="icon icon-back"></i>&nbsp; Back
+          </a>
+        </div>
+        <div class="center">Edit transaction</div>
+      </div>
+    </div>
+    <div class="page-content">
+      <div class="list-block reduced-margin">
+        <%= form_for @changeset, mobile_transaction_path(@conn, :update, @transaction), [method: :put, class: "ajax-submit"], fn f -> %>
+          <ul>
+            <li>
+              <a href="#" class="item-link smart-select" data-back-on-select="true" data-open-in="popup" data-searchbar="true" data-page-title="Choose Category">
+                <%= select(f, :category_id, @categories) %>
+                <div class="item-content">
+                  <div class="item-inner">
+                    <div class="item-title">Category</div>
+                  </div>
+                </div>
+              </a>
+            </li>
+            <li class="align-top">
+              <div class="item-content">
+                <div class="item-inner">
+                  <div class="item-title label">Note</div>
+                  <div class="item-input">
+                    <%= textarea(f, :description, placeholder: "Note") %>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
+
+          <div class="content-block">
+            <div class="row">
+              <div class="col-25"></div>
+              <div class="col-50" align="center">
+                <button class="button active button-big" type="submit">Update</button>
+              </div>
+              <div class="col-25"></div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
