@@ -57,12 +57,19 @@ defmodule ExMoney.Mobile.TransactionController do
     transaction_params = Map.put(transaction_params, "user_id", user.id)
     changeset = Transaction.changeset_custom(%Transaction{}, transaction_params)
 
-    case Repo.insert(changeset) do
-      {:ok, _transaction} ->
-        send_resp(conn, 200, "")
-      {:error, _changeset} ->
-        send_resp(conn, 422, "Something went wrong, check server logs")
-    end
+    Repo.transaction(fn ->
+      case Repo.insert(changeset) do
+        {:ok, transaction} ->
+          account = Repo.get!(Account, transaction.account_id)
+          new_balance = Decimal.add(account.balance, transaction.amount)
+          Account.update_custom_changeset(account, %{balance: new_balance})
+          |> Repo.update!
+
+          send_resp(conn, 200, "")
+        {:error, _changeset} ->
+          send_resp(conn, 422, "Something went wrong, check server logs")
+      end
+    end)
   end
 
   def show(conn, %{"id" => id}) do
