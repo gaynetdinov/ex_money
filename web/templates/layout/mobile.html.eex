@@ -5,11 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no">
     <meta name="csrf" content="<%= Plug.CSRFProtection.get_csrf_token() %>">
+    <link href="/images/startup.png" rel="apple-touch-startup-image"
+              media="(device-width: 320px) and (device-height: 568px)
+                     and (-webkit-device-pixel-ratio: 2)">
+    <link rel="apple-touch-icon" sizes="120x120" href="/images/apple-touch-icon.png">
     <title>ExMoney</title>
 
     <link href="<%= static_path(@conn, "/css/framework7.css") %>" rel="stylesheet">
     <link href="<%= static_path(@conn, "/css/mobile.css") %>" rel="stylesheet">
+
   </head>
 
   <body>

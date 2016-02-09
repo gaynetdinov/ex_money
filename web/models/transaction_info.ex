@@ -1,6 +1,8 @@
 defmodule ExMoney.TransactionInfo do
   use ExMoney.Web, :model
 
+  alias ExMoney.TransactionInfo
+
   schema "transactions_info" do
     field :record_number, :string
     field :information, :string
@@ -62,5 +64,11 @@ defmodule ExMoney.TransactionInfo do
   def changeset(model, params \\ :empty) do
     model
     |> cast(params, @required_fields, @optional_fields)
+  end
+
+  def by_transaction_id(transaction_id) do
+    from tr_info in TransactionInfo,
+      where: tr_info.transaction_id == ^transaction_id,
+      limit: 1
   end
 end

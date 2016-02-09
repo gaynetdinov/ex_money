@@ -84,7 +84,7 @@
                       <div class="swipeout-actions-right">
                         <a href="/m/transactions/<%= transaction.id %>" class="bg-blue show-transaction" data-ignore-cache="true">Show</a>
                         <a href="/m/transactions/<%= transaction.id %>/edit" class="bg-orange edit-transaction">Edit</a>
-                        <a href="#" data-id="<%= transaction.id %>" data-confirm="Are you sure?" data-confirm-title="Delete?" class="swipeout-delete bg-red delete-transaction">Delete</a>
+                        <a href="#" data-id="<%= transaction.id %>" class="swipeout-delete bg-red delete-transaction">Delete</a>
                       </div>
                     </li>
                   <% end %>

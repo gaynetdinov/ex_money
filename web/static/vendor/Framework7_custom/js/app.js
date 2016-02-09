@@ -52,19 +52,21 @@ var exMoney = new Framework7({
 
 var mainView = exMoney.addView('.view-main');
 
-$$('.swipeout').on('deleted', function (e) {
-  var id = $$(e.target).children("div.swipeout-actions-opened").find("a.delete-transaction").data('id');
-  var csrf = document.querySelector("meta[name=csrf]").content;
+exMoney.onPageInit('overview-screen', function (page) {
+  $$(document).on('deleted', $$('.swipeout'), function(e) {
+    var id = $$(e.target).children("div.swipeout-actions-opened").find("a.delete-transaction").data('id');
+    var csrf = document.querySelector("meta[name=csrf]").content;
 
-  $$.ajax({
-    url: '/m/transactions/' + id,
-    type: 'DELETE',
-    headers: {
-      "X-CSRF-TOKEN": csrf
-    },
-    error: function(xhr, status) {
-      alert("Something went wrong, check server logs");
-    }
+    $$.ajax({
+      url: '/m/transactions/' + id,
+      type: 'DELETE',
+      headers: {
+        "X-CSRF-TOKEN": csrf
+      },
+      error: function(xhr, status) {
+        alert("Something went wrong, check server logs");
+      }
+    });
   });
 });
 

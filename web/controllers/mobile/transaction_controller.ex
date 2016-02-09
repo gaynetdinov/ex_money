@@ -1,6 +1,6 @@
 defmodule ExMoney.Mobile.TransactionController do
   use ExMoney.Web, :controller
-  alias ExMoney.{Repo, Transaction, Category, Account}
+  alias ExMoney.{Repo, Transaction, Category, Account, TransactionInfo}
 
   plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.Mobile.Unauthenticated
   plug :put_layout, "mobile.html"
@@ -121,6 +121,9 @@ defmodule ExMoney.Mobile.TransactionController do
   end
 
   def delete(conn, %{"id" => id}) do
+    tr_info = TransactionInfo.by_transaction_id(id) |> Repo.one
+    if tr_info, do: Repo.delete!(tr_info)
+
     transaction = Repo.get!(Transaction, id)
 
     Repo.delete!(transaction)
