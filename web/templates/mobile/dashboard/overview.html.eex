@@ -30,8 +30,9 @@
                       <div class="item-title"><%= account.name %></div>
                       <div class="item-after" style="color: black">
                         <%= raw recent_diff(account.recent_diff, account.currency_label) %>
-                        <a href='/m/accounts/<%= account.id %>'>
-                          <%= account.balance %> <%= account.currency_label %>
+                        <a href='/m/accounts/<%= account.id %>' >
+                          <span id="account_id_<%= account.id %>"><%= account.balance %></span>
+                          <%= account.currency_label %>
                         </a>
                       </div>
                     </div>

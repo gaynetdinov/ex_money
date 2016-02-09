@@ -13,4 +13,11 @@ defmodule ExMoney.Mobile.TransactionView do
       ti -> ti.payee
     end
   end
+
+  def render("delete.json", %{account_id: account_id, new_balance: new_balance}) do
+    %{
+      account_id: account_id,
+      new_balance: new_balance,
+    }
+  end
 end

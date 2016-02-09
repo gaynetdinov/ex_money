@@ -47,28 +47,33 @@ var exMoney = new Framework7({
         exMoney.alert(xhr.responseText);
       });
     }
+
+    if (page.name == 'overview-screen') {
+      $$('.swipeout').on('deleted', function (e) {
+        var id = $$(e.target).children("div.swipeout-actions-opened").find("a.delete-transaction").data('id');
+        var csrf = document.querySelector("meta[name=csrf]").content;
+
+        $$.ajax({
+          url: '/m/transactions/' + id + "?_format=json",
+          contentType: "application/json",
+          type: 'DELETE',
+          headers: {
+            "X-CSRF-TOKEN": csrf
+          },
+          success: function(data, status, xhr) {
+            var response = JSON.parse(data);
+            $$("#account_id_" + response.account_id).text(response.new_balance);
+          },
+          error: function(xhr, status) {
+            alert("Something went wrong, check server logs");
+          }
+        });
+      });
+    }
   }
 });
 
 var mainView = exMoney.addView('.view-main');
-
-exMoney.onPageInit('overview-screen', function (page) {
-  $$('.swipeout').on('deleted', function (e) {
-    var id = $$(e.target).children("div.swipeout-actions-opened").find("a.delete-transaction").data('id');
-    var csrf = document.querySelector("meta[name=csrf]").content;
-
-    $$.ajax({
-      url: '/m/transactions/' + id,
-      type: 'DELETE',
-      headers: {
-        "X-CSRF-TOKEN": csrf
-      },
-      error: function(xhr, status) {
-        alert("Something went wrong, check server logs");
-      }
-    });
-  });
-});
 
 exMoney.onPageBeforeInit('edit-transaction-screen', function (page) {
   $$('form.ajax-submit').on('submitted', function (e) {

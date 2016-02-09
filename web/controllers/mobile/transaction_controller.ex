@@ -127,15 +127,25 @@ defmodule ExMoney.Mobile.TransactionController do
       date: date
   end
 
-  def delete(conn, %{"id" => id}) do
-    tr_info = TransactionInfo.by_transaction_id(id) |> Repo.one
-    if tr_info, do: Repo.delete!(tr_info)
-
+  def delete(conn, %{"id" => id} = params) do
     transaction = Repo.get!(Transaction, id)
+    account = Repo.get!(Account, transaction.account_id)
+    new_balance = Decimal.sub(account.balance, transaction.amount)
 
-    Repo.delete!(transaction)
+    Repo.transaction(fn ->
+      tr_info = TransactionInfo.by_transaction_id(id) |> Repo.one
+      if tr_info, do: Repo.delete!(tr_info)
 
-    send_resp(conn, 200, "")
+      Repo.delete!(transaction)
+
+      Account.update_custom_changeset(account, %{balance: new_balance})
+      |> Repo.update!
+    end)
+
+    render conn, :delete,
+      account_id: account.id,
+      new_balance: new_balance,
+      currency_label: account.currency_label
   end
 
   defp parse_date(month) do
