@@ -59,7 +59,7 @@
                   <%= for transaction <- transactions do %>
                     <li class="swipeout">
                       <div class="swipeout-content">
-                        <div class="item-content <%= if Enum.member?(@new_transaction_ids, transaction.id), do: "new_transaction"  %>">
+                        <div class="item-content <%= if Enum.member?(@new_transaction_ids, transaction.id), do: "new_transaction" %>">
 
                           <div class="item-inner">
                             <div class="item-title-row">
