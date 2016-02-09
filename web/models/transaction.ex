@@ -81,12 +81,12 @@ defmodule ExMoney.Transaction do
 
   def recent do
     current_date = Timex.Date.local
-    from = Timex.Date.shift(current_date, days: -30)
+    from = Timex.Date.shift(current_date, days: -15)
 
     from tr in Transaction,
       where: tr.made_on >= ^from,
       preload: [:transaction_info, :category, :account],
-      order_by: [desc: tr.made_on]
+      order_by: [desc: tr.inserted_at]
   end
 
   def new_since(time, account_id) do

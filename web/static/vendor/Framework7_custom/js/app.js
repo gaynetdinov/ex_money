@@ -53,7 +53,7 @@ var exMoney = new Framework7({
 var mainView = exMoney.addView('.view-main');
 
 exMoney.onPageInit('overview-screen', function (page) {
-  $$(document).on('deleted', $$('.swipeout'), function(e) {
+  $$('.swipeout').on('deleted', function (e) {
     var id = $$(e.target).children("div.swipeout-actions-opened").find("a.delete-transaction").data('id');
     var csrf = document.querySelector("meta[name=csrf]").content;
 
