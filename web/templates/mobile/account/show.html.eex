@@ -9,7 +9,7 @@
                 <i class="icon icon-back"></i>&nbsp; Home
               </a>
             </div>
-            <div class="center">ExMoney</div>
+            <div class="center"><%= @account.name %></div>
           </div>
         </div>
         <div class="page-content hide-navbar-on-scroll">
@@ -17,7 +17,7 @@
             <div class="row">
               <div class="col-33" align="left">
                 <a href="/m/accounts/<%= @account.id %>?date=<%= @previous_month.date %>" class="link back" data-force="true">
-                  <%= @previous_month.label %>
+                  &#8592; <%= @previous_month.label %>
                 </a>
               </div>
               <div class="col-33">
@@ -25,7 +25,7 @@
               </div>
               <div class="col-33" align="right">
                 <a href="/m/accounts/<%= @account.id %>?date=<%= @next_month.date %>" class="link">
-                  <%= @next_month.label %>
+                  <%= @next_month.label %> &#8594;
                 </a>
               </div>
             </div>
@@ -71,7 +71,7 @@
                   <div class="progress-bar horizontal">
                     <div class="progress-track">
                       <div class="progress-fill" style="width:<%= width %>; background: <%= color %>">
-                        <span><%= amount %>&nbsp;<%= category %></span>
+                        <span><%= amount %>&nbsp;<%= raw category %></span>
                       </div>
                     </div>
                   </div>

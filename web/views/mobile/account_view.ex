@@ -14,7 +14,8 @@ defmodule ExMoney.Mobile.AccountView do
       if percent == "0" do
         acc
       else
-        [{category, color, "#{percent}%", amount} | acc]
+        html_category = String.replace(category, " ", "&nbsp;")
+        [{html_category, color, "#{percent}%", amount} | acc]
       end
 
     end)

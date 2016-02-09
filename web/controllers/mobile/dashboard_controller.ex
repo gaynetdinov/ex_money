@@ -3,13 +3,20 @@ defmodule ExMoney.Mobile.DashboardController do
 
   alias ExMoney.{Repo, Transaction, User, Account}
 
-  plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.Mobile.Unauthenticated
   plug :put_layout, "mobile.html"
 
   def overview(conn, _params) do
     user = Guardian.Plug.current_resource(conn)
-    last_login_at = fetch_last_login_at
+    _overview(conn, user)
+  end
 
+  defp _overview(conn, nil) do
+    changeset = User.login_changeset(%User{})
+    render conn, :overview_not_logged_in, changeset: changeset
+  end
+
+  defp _overview(conn, user) do
+    last_login_at = fetch_last_login_at
     transactions = Transaction.recent
     |> Repo.all
 

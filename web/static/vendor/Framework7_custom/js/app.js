@@ -3,6 +3,13 @@ var $$ = Dom7;
 var exMoney = new Framework7({
   modalTitle: 'ExMoney',
 
+  onAjaxStart: function (xhr) {
+    exMoney.showIndicator();
+  },
+  onAjaxComplete: function (xhr) {
+    exMoney.hideIndicator();
+  },
+
   onPageInit: function(app, page) {
     if (page.name == 'login-screen') {
       $$('#login-form').on('submitted', function (e) {
@@ -10,6 +17,25 @@ var exMoney = new Framework7({
 
         if (xhr.status == 200) {
           window.location.replace("/m");
+        } else {
+          exMoney.alert(xhr.responseText);
+        }
+      });
+
+      $$('#login-form').on('submitError', function (e) {
+        var xhr = e.detail.xhr;
+
+        exMoney.alert(xhr.responseText);
+      });
+    }
+
+    if (page.name == 'embedded-login-screen') {
+      $$('#embedded-login-form').on('submitted', function (e) {
+        var xhr = e.detail.xhr;
+
+        if (xhr.status == 200) {
+          exMoney.closeModal($$(".embedded-login-screen"));
+          mainView.router.load({ url: '/m/dashboard' });
         } else {
           exMoney.alert(xhr.responseText);
         }

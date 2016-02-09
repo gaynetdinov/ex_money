@@ -29,7 +29,7 @@
             <div class="row">
               <div class="col-25"></div>
               <div class="col-50" align="center">
-                  <button class="button"  type="submit">Let me in!</button>
+                  <button class="button button-big button-round active" type="submit">Let me in!</button>
               </div>
               <div class="col-25"></div>
             </div>
