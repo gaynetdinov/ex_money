@@ -68,4 +68,10 @@ defmodule ExMoney.Mobile.DashboardView do
         "<span style='color:red'>" <> recent_diff_str <> currency_label <> "&#x25BC; &nbsp;</span>"
     end
   end
+
+  def sort_by_inserted_at(transactions) do
+    Enum.sort(transactions, fn(tr_1, tr_2) ->
+      Ecto.Date.compare(tr_1.inserted_at, tr_2.inserted_at) != :lt
+    end)
+  end
 end
