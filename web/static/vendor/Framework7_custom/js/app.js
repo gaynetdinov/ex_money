@@ -2,6 +2,7 @@ var $$ = Dom7;
 
 var exMoney = new Framework7({
   modalTitle: 'ExMoney',
+  scrollTopOnNavbarClick: true,
 
   onAjaxStart: function (xhr) {
     exMoney.showIndicator();
