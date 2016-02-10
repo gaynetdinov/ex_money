@@ -54,17 +54,25 @@ defmodule ExMoney.RuleProcessor do
       transaction.category_id == transfer_category.id &&
       Decimal.compare(transaction.amount, Decimal.new(0)) == Decimal.new(-1) do
 
-      Transaction.changeset_custom(%Transaction{},
-        %{
-          "amount" => transaction.amount,
-          "category_id" => withdraw_category.id,
-          "account_id" => account.id,
-          "made_on" => transaction.made_on,
-          "user_id" => transaction.user_id,
-          "type" => "expense"
-        }
-      )
-      |> Repo.insert
+      Repo.transaction(fn ->
+        Transaction.changeset_custom(%Transaction{},
+          %{
+            "amount" => transaction.amount,
+            "category_id" => withdraw_category.id,
+            "account_id" => account.id,
+            "made_on" => transaction.made_on,
+            "user_id" => transaction.user_id,
+            "type" => "expense"
+          }
+        )
+        |> Repo.insert
+
+        # transaction.amount is negative, sub with something with negative => add
+        new_balance = Decimal.sub(account.balance, transaction.amount)
+
+        Account.update_custom_changeset(account, %{balance: new_balance})
+        |> Repo.update!
+      end)
     end
   end
 
