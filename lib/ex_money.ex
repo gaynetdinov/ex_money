@@ -10,6 +10,7 @@ defmodule ExMoney do
       supervisor(ExMoney.Endpoint, []),
       worker(ExMoney.Repo, []),
       worker(ExMoney.Saltedge.TransactionsWorker, []),
+      worker(ExMoney.IdleWorker, [], restart: :transient),
       worker(ExMoney.Saltedge.Scheduler, []),
       worker(ExMoney.Saltedge.SyncWorker, []),
       worker(ExMoney.RuleProcessor, []),
