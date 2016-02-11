@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Signin Template for Bootstrap</title>
+    <title>ExMoney Signin</title>
 
     <link href="<%= static_path(@conn, "/css/vendor.css") %>" rel="stylesheet">
     <link href="<%= static_path(@conn, "/css/app.css") %>" rel="stylesheet">
