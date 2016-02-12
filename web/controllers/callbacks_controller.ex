@@ -25,6 +25,7 @@ defmodule CallbacksController do
         if changeset.valid? do
           case Repo.insert(changeset) do
             {:ok, _login} ->
+              Logger.info("CallbackController#success: set HistoricalDataWorker to run in one hour")
               Process.send_after(:historical_data_worker, {:fetch, login_id}, 3600 * 1000)
 
               put_resp_content_type(conn, "application/json")
@@ -143,6 +144,7 @@ defmodule CallbacksController do
   defp sync_data(_user_id, _login, stage) when stage != "finish", do: :ok
 
   defp sync_data(user_id, login, _stage) do
+    Logger.info("CallbackController#notify: set SyncWorker to sync #{login.saltedge_login_id} login now")
     GenServer.cast(:sync_worker, {:sync, user_id, login.saltedge_login_id})
 
     Login.update_changeset(

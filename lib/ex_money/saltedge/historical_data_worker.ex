@@ -10,14 +10,16 @@ defmodule ExMoney.Saltedge.HistoricalDataWorker do
   end
 
   def handle_info({:fetch, saltedge_login_id}, state) do
+    Logger.info("HistoricalDataWorker: refreshing #{saltedge_login_id} saltedge_login_id")
     login = Login.by_saltedge_login_id(saltedge_login_id) |> Repo.one
 
     result = send_refresh_request(saltedge_login_id)
 
     case result["data"]["refreshed"] do
       false ->
-        Logger.info("Could not refresh login with fetch_all for login #{saltedge_login_id}")
+        Logger.info("HistoricalDataWorker: could not refresh login with fetch_all for login #{saltedge_login_id}")
       true ->
+        Logger.info("HistoricalDataWorker: set SyncWorker to fetch_all transactions")
         # Tell SyncWorker to use +fetch_all+ callback when call TransactionsWorker next time.
         GenServer.cast(:sync_worker, :fetch_all)
         set_last_refreshed_at(login)
@@ -27,7 +29,7 @@ defmodule ExMoney.Saltedge.HistoricalDataWorker do
       ExMoney.Saltedge.FetchSupervisor,
       ExMoney.Saltedge.LoginRefreshWorker
     )
-    Logger.info("HistoricalDataWorker restarted LoginRefreshWorker with result => #{inspect(result)}")
+    Logger.info("HistoricalDataWorker: LoginRefreshWorker was restarted with result => #{inspect(result)}")
 
     {:noreply, state}
   end
@@ -37,9 +39,8 @@ defmodule ExMoney.Saltedge.HistoricalDataWorker do
       { "data": { "fetch_type": "full" }}
     """
 
-    Logger.info("Refreshed login request for #{saltedge_login_id} with type 'full'.")
+    Logger.info("HistoricalDataWorker: Refreshed login request for #{saltedge_login_id} with type 'full'.")
     result = ExMoney.Saltedge.Client.request(:put, "logins/#{saltedge_login_id}/refresh", body)
-    Logger.info("Refresh login result => #{inspect(result)}")
 
     result
   end
