@@ -9,7 +9,7 @@ defmodule CallbacksController do
   plug :set_login when action in [:success, :notify, :interactive]
 
   def success(conn, params) do
-    Logger.info("CallbackController#success: #{inspect(params)}")
+    Logger.info("Success: #{inspect(params)}")
 
     customer_id = params["data"]["customer_id"]
     login_id = params["data"]["login_id"]
@@ -25,33 +25,32 @@ defmodule CallbacksController do
         if changeset.valid? do
           case Repo.insert(changeset) do
             {:ok, _login} ->
-              Logger.info("CallbackController#success: set HistoricalDataWorker to run in one hour")
-              Process.send_after(:historical_data_worker, {:fetch, login_id}, 3600 * 1000)
+              Process.send_after(:historical_data_worker, {:fetch, login_id}, 10000)
+              Logger.info("HistoricalDataWorker has been set to run in one hour")
 
               put_resp_content_type(conn, "application/json")
               |> send_resp(200, "")
             {:error, changeset} ->
-              Logger.info("Success: Could not create Login for customer_id => #{inspect(customer_id)}, errors => #{inspect(changeset.errors)}")
+              Logger.info("Could not create Login for customer_id => #{inspect(customer_id)}, errors => #{inspect(changeset.errors)}")
               put_resp_content_type(conn, "application/json")
               |> send_resp(200, "")
           end
         else
-          # log error
-          Logger.info("Success: Could not create Login for customer_id => #{inspect(customer_id)}, errors => #{inspect(changeset.errors)}")
+          Logger.info("Could not create Login for customer_id => #{inspect(customer_id)}, errors => #{inspect(changeset.errors)}")
           put_resp_content_type(conn, "application/json")
           |> send_resp(200, "")
         end
       login ->
         changeset = Login.update_changeset(login, params["data"])
         {result, _} = Repo.update(changeset)
-        Logger.info("Success: Login was updated with result => #{inspect(result)}")
+        Logger.info("Login was updated with result => #{inspect(result)}")
         put_resp_content_type(conn, "application/json")
         |> send_resp(200, "")
     end
   end
 
   def notify(conn, params) do
-    Logger.info("CallbackController#notify: #{inspect(params)}")
+    Logger.info("Notify: #{inspect(params)}")
     customer_id = params["data"]["customer_id"]
     stage = params["data"]["stage"]
 
@@ -68,19 +67,19 @@ defmodule CallbacksController do
           put_resp_content_type(conn, "application/json")
           |> send_resp(200, "ok")
         {:error, changeset} ->
-          Logger.info("Notify: Could not update Login for customer_id => #{inspect(customer_id)}, errors => #{inspect(changeset.errors)}")
+          Logger.info("Could not update Login for customer_id => #{inspect(customer_id)}, errors => #{inspect(changeset.errors)}")
           put_resp_content_type(conn, "application/json")
           |> send_resp(200, "ok")
       end
     else
-      Logger.info("Failure: Could not update Login for customer_id => #{inspect(customer_id)}, errors => #{inspect(changeset.errors)}")
+      Logger.info("Could not update Login for customer_id => #{inspect(customer_id)}, errors => #{inspect(changeset.errors)}")
       put_resp_content_type(conn, "application/json")
       |> send_resp(200, "ok")
     end
   end
 
   def interactive(conn, params) do
-    Logger.info("CallbackController#interactive: #{inspect(params)}")
+    Logger.info("Interactive: #{inspect(params)}")
     customer_id = params["data"]["customer_id"]
     stage = params["data"]["stage"]
     html = params["data"]["html"]
@@ -112,7 +111,7 @@ defmodule CallbacksController do
   end
 
   def failure(conn, params) do
-    Logger.info("CallbackController#failure: #{inspect(params)}")
+    Logger.info("Failure: #{inspect(params)}")
     customer_id = params["data"]["customer_id"]
     login_id = params["data"]["login_id"]
     user = conn.assigns[:user]
@@ -130,12 +129,12 @@ defmodule CallbacksController do
           |> send_resp(200, "ok")
         {:error, changeset} ->
           # log error
-          Logger.info("Failure: Could not create Login for customer_id => #{inspect(customer_id)}, errors => #{inspect(changeset.errors)}")
+          Logger.info("Could not create Login for customer_id => #{inspect(customer_id)}, errors => #{inspect(changeset.errors)}")
           put_resp_content_type(conn, "application/json")
           |> send_resp(200, "ok")
       end
     else
-      Logger.info("Failure: Could not create Login for customer_id => #{inspect(customer_id)}, errors => #{inspect(changeset.errors)}")
+      Logger.info("Could not create Login for customer_id => #{inspect(customer_id)}, errors => #{inspect(changeset.errors)}")
       put_resp_content_type(conn, "application/json")
       |> send_resp(200, "ok")
     end
@@ -144,7 +143,7 @@ defmodule CallbacksController do
   defp sync_data(_user_id, _login, stage) when stage != "finish", do: :ok
 
   defp sync_data(user_id, login, _stage) do
-    Logger.info("CallbackController#notify: set SyncWorker to sync #{login.saltedge_login_id} login now")
+    Logger.info("SyncWorker is going to sync #{login.saltedge_login_id} login now")
     GenServer.cast(:sync_worker, {:sync, user_id, login.saltedge_login_id})
 
     Login.update_changeset(
@@ -159,7 +158,7 @@ defmodule CallbacksController do
       customer_id ->
         case User.by_customer_id(customer_id) |> Repo.one do
           nil ->
-            Logger.info("Success: Could not create Login for customer_id => #{inspect(customer_id)}, User not found")
+            Logger.info("Could not create Login for customer_id => #{inspect(customer_id)}, User not found")
             # TODO: send as json?
             send_resp(conn, 400, "customer_id is not valid") |> halt
           user -> assign(conn, :user, user)

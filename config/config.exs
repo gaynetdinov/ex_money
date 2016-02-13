@@ -26,11 +26,15 @@ config :logger,
 
 config :logger, :info,
   path: "log/info.log",
-  level: :info
+  level: :info,
+  format: "$time $metadata[$level] $message\n",
+  metadata: [:module]
 
 config :logger, :error,
   path: "log/error.log",
-  level: :error
+  level: :error,
+  format: "$time $metadata[$level] $message\n",
+  metadata: [:module]
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
