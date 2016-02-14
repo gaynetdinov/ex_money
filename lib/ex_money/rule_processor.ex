@@ -1,7 +1,7 @@
 defmodule ExMoney.RuleProcessor do
   use GenServer
 
-  alias ExMoney.{Repo, Rule, Transaction, Category, Account, TransactionInfo}
+  alias ExMoney.{Repo, Transaction, Category, Account, TransactionInfo}
 
   import Ecto.Query
 

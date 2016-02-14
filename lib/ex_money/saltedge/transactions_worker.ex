@@ -26,9 +26,15 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
   end
 
   defp fetch_recent_and_store(account, nil) do
-    Logger.warn("There are no transactions in DB for account with id #{account.name}")
+    Logger.info("There are no transactions in DB for account with id #{account.name}")
+    to = Timex.Date.now
+    from = Timex.Date.shift(to, months: -2)
 
-    {:ok, 0, 0}
+    transactions = fetch_custom(account.saltedge_account_id, from, to, nil, [])
+
+    stored_transactions = store(transactions, account)
+
+    {:ok, stored_transactions, Enum.count(transactions)}
   end
 
   defp fetch_recent_and_store(account, last_transaction) do
@@ -58,7 +64,7 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
   end
 
   defp fetch_all(account) do
-    to = Timex.Date.local
+    to = Timex.Date.now
     from = Timex.Date.shift(to, months: -1)
 
     transactions = fetch_all(account.saltedge_account_id, from, to, [])

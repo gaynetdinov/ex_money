@@ -26,10 +26,21 @@ defmodule ExMoney.Login do
     field :store_credentials, :boolean, default: false
     field :last_refreshed_at, Ecto.DateTime
 
+    field :fetch_all_tried, :boolean, default: false
+
     belongs_to :user, ExMoney.User
-    has_many :accounts, ExMoney.Account
+    has_many :accounts, ExMoney.Account,
+      on_delete: :delete_all,
+      references: :saltedge_login_id,
+      foreign_key: :saltedge_login_id
 
     timestamps
+  end
+
+  def background_refresh do
+    from l in Login,
+      where: l.automatic_fetch == true,
+      where: l.interactive == false
   end
 
   def by_user_id(user_id) do
@@ -67,7 +78,7 @@ defmodule ExMoney.Login do
 
   def interactive_callback_changeset(model, params \\ :empty) do
     model
-    |> cast(params, ~w(stage interactive_fields_names interactive_html), ~w())
+    |> cast(params, ~w(stage interactive_fields_names), ~w(interactive_html))
   end
 
   @required_fields ~w(
@@ -117,6 +128,7 @@ defmodule ExMoney.Login do
     last_request_at
     last_success_at
     last_refreshed_at
+    fetch_all_tried
   )
 
   def create_changeset(model, params \\ :empty) do

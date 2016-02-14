@@ -127,7 +127,7 @@ defmodule ExMoney.Mobile.TransactionController do
       date: date
   end
 
-  def delete(conn, %{"id" => id} = params) do
+  def delete(conn, %{"id" => id}) do
     transaction = Repo.get!(Transaction, id)
     account = Repo.get!(Account, transaction.account_id)
     new_balance = Decimal.sub(account.balance, transaction.amount)

@@ -85,5 +85,6 @@ defmodule ExMoney.Router do
     post "/failure", CallbacksController, :failure, as: :failure
     post "/notify", CallbacksController, :notify, as: :notify
     post "/interactive", CallbacksController, :interactive, as: :interactive
+    post "/destroy", CallbacksController, :destroy, as: :destroy
   end
 end

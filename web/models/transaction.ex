@@ -15,7 +15,7 @@ defmodule ExMoney.Transaction do
     field :description, :string
     field :duplicated, :boolean, default: false
 
-    has_one :transaction_info, ExMoney.TransactionInfo
+    has_one :transaction_info, ExMoney.TransactionInfo, on_delete: :delete_all
     belongs_to :category, ExMoney.Category
     belongs_to :user, ExMoney.User
     belongs_to :account, ExMoney.Account
