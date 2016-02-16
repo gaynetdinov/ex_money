@@ -3,7 +3,7 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
 
   require Logger
 
-  alias ExMoney.{Repo, Rule, Transaction, TransactionInfo, Category, Account}
+  alias ExMoney.{Repo, Transaction, TransactionInfo, Category, Account}
 
   def start_link(_opts \\ []) do
     GenServer.start_link(__MODULE__, :ok, name: :transactions_worker)
@@ -109,8 +109,6 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
   end
 
   defp store(transactions, account) do
-    rules = Rule.by_account_id(account.id) |> Repo.all
-
     Enum.reduce(transactions, 0, fn(se_tran, acc) ->
       se_tran = Map.put(se_tran, "saltedge_transaction_id", se_tran["id"])
       se_tran = Map.put(se_tran, "saltedge_account_id", se_tran["account_id"])
@@ -126,26 +124,23 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
         se_tran = set_category_id(se_tran)
 
         changeset = Transaction.changeset(%Transaction{}, se_tran)
-        Repo.transaction fn ->
+        {:ok, inserted_transaction} = Repo.transaction fn ->
           transaction = Repo.insert!(changeset)
 
           extra = Map.put(se_tran["extra"], "transaction_id", transaction.id)
           transaction_info_changeset = TransactionInfo.changeset(%TransactionInfo{}, extra)
 
-          transaction_info = Repo.insert!(transaction_info_changeset)
-          apply_account_rules(transaction, transaction_info, rules)
+          Repo.insert!(transaction_info_changeset)
+
+          transaction
         end
+        GenServer.cast(:rule_processor, {:process, inserted_transaction.id})
+
         acc + 1
       else
         acc
       end
     end)
-  end
-
-  defp apply_account_rules(_, _, []), do: :ok
-
-  defp apply_account_rules(transaction, transaction_info, rules) do
-    GenServer.cast(:rule_processor, {:process, transaction, transaction_info, rules})
   end
 
   defp set_category_id(transaction) do

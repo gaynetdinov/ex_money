@@ -119,6 +119,6 @@ defmodule ExMoney.RuleController do
 
   defp apply_rule_for_all("false", _rule), do: :nothing
   defp apply_rule_for_all("true", rule) do
-    GenServer.cast(:rule_processor, {:process_all, rule})
+    GenServer.cast(:rule_processor, {:process_all, rule.id})
   end
 end
