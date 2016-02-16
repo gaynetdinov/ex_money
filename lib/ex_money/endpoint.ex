@@ -1,7 +1,7 @@
 defmodule ExMoney.Endpoint do
   use Phoenix.Endpoint, otp_app: :ex_money
 
-  socket "/socket", ExMoney.UserSocket
+  socket "/refresh_socket", ExMoney.RefreshSocket
 
   # Serve at "/" the static files from "priv/static" directory.
   #

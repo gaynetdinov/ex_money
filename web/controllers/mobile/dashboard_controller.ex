@@ -12,7 +12,7 @@ defmodule ExMoney.Mobile.DashboardController do
 
   defp _overview(conn, nil) do
     changeset = User.login_changeset(%User{})
-    render conn, :overview_not_logged_in, changeset: changeset
+    render conn, :not_logged_in, changeset: changeset
   end
 
   defp _overview(conn, _user) do
@@ -54,6 +54,7 @@ defmodule ExMoney.Mobile.DashboardController do
   defp fetch_last_login_at do
     case :ets.lookup(:ex_money_cache, "last_login_at") do
       [] -> Ecto.DateTime.from_erl(:calendar.universal_time)
+      [{_key, nil}] -> Ecto.DateTime.from_erl(:calendar.universal_time)
       [{_key, value}] -> value
     end
   end

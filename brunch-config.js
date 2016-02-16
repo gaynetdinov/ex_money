@@ -2,7 +2,7 @@ exports.config = {
   files: {
     javascripts: {
       joinTo: {
-        "js/app.js": /^(web\/static\/js)(\/|\\)(?!mobile)/,
+        "js/app.js": /^(web\/static\/js)(\/|\\)|(deps)/,
         "js/vendor.js": /^(web\/static\/vendor)(\/|\\)(?!Framework7)|(deps)/,
         "js/framework7.js": /^(web\/static\/vendor\/Framework7\/)/,
         "js/mobile.js": /^(web\/static\/vendor\/Framework7_custom\/js)/

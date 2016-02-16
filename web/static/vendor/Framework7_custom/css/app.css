@@ -45,3 +45,7 @@
 .item-inner {
   margin-left: 3px !important;
 }
+
+.blurred {
+  -webkit-filter: blur(5px);
+}

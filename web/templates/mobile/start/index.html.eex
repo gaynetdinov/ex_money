@@ -1,0 +1,14 @@
+<div class="views">
+  <div class="view view-main">
+    <div class="pages">
+      <div class="page navbar-fixed" data-page="start-screen">
+        <div class="navbar">
+          <div class="navbar-inner">
+            <div class="left">&nbsp;</div>
+            <div class="center">ExMoney</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -5,8 +5,6 @@
 // and connect at the socket path in "lib/my_app/endpoint.ex":
 import {Socket} from "deps/phoenix/web/static/js/phoenix"
 
-let socket = new Socket("/socket", {params: {token: window.userToken}})
-
 // When you connect, you'll often need to authenticate the client.
 // For example, imagine you have an authentication plug, `MyAuth`,
 // which authenticates the session and assigns a `:current_user`.
@@ -51,12 +49,61 @@ let socket = new Socket("/socket", {params: {token: window.userToken}})
 // Finally, pass the token on connect as below. Or remove it
 // from connect if you don't care about authentication.
 
-socket.connect()
+exMoney.onPageInit('account-refresh-screen', function (page) {
+  var jwt = document.querySelector('meta[name="guardian_token"]').content
+  var login_id = $$("#account-refresh-content").data("login-id")
+  var account_id = $$("#account-refresh-content").data("account-id")
 
-// Now that you are connected, you can join channels with a topic:
-let channel = socket.channel("topic:subtopic", {})
-channel.join()
-  .receive("ok", resp => { console.log("Joined successfully", resp) })
-  .receive("error", resp => { console.log("Unable to join", resp) })
+  let socket = new Socket("/refresh_socket", {params: {token: window.userToken, guardian_token: jwt}})
+  socket.connect()
 
-export default socket
+  let channel = socket.channel("login_refresh:interactive", {})
+
+  channel.join()
+    .receive("error", resp => { exMoney.alert('Unable to refresh account') })
+
+  if (localStorage.interactive == undefined || JSON.parse(localStorage.interactive).status == false) {
+    channel.push("refresh", {login_id: login_id})
+  }
+
+  channel.on("refresh_ok", msg => {
+    exMoney.showPreloader(['Submitting request...'])
+  })
+
+  channel.on("refresh_failed", msg => {
+    exMoney.alert('Refresh failed')
+  })
+
+  channel.on("otp", msg => {
+    exMoney.hidePreloader()
+
+    var interactive = {status: true, account_id: account_id};
+    localStorage.setItem("interactive", JSON.stringify(interactive));
+    exMoney.prompt('Please enter OTP', 'One Time Password',
+      function(value) {
+        channel.push("otp", {otp: value, login_id: login_id})
+        localStorage.setItem("interactive", JSON.stringify({status: false}))
+      },
+      function(value) {
+        channel.push("otp_cancel", {})
+        localStorage.setItem("interactive", JSON.stringify({status: false}))
+        mainView.router.back({
+          url: '/m/accounts/' + account_id,
+          ignoreCache: true,
+          force: true
+        })
+      }
+    );
+  })
+
+  channel.on("otp_ok", msg => {
+    exMoney.alert("OTP has been successfully sent", "Transactions will by synced shortly.", function () {
+      localStorage.setItem("interactive", JSON.stringify({status: false}))
+      mainView.router.back({
+        url: '/m/accounts/' + account_id,
+        ignoreCache: true,
+        force: true
+      })
+    });
+  })
+});

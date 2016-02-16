@@ -10,7 +10,9 @@ defmodule ExMoney.Account do
     field :currency_label, :string
     field :show_on_dashboard, :boolean
 
-    belongs_to :login, ExMoney.Login, foreign_key: :saltedge_login_id
+    belongs_to :login, ExMoney.Login,
+      foreign_key: :saltedge_login_id,
+      references: :saltedge_login_id
     belongs_to :user, ExMoney.User
     has_many :rules, ExMoney.Rule
     has_many :transactions, ExMoney.Transaction,

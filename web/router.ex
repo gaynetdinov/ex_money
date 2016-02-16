@@ -22,6 +22,9 @@ defmodule ExMoney.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug :fetch_session
+    plug Guardian.Plug.VerifyHeader
+    plug Guardian.Plug.LoadResource
   end
 
   scope "/", ExMoney do
@@ -50,19 +53,21 @@ defmodule ExMoney.Router do
     resources "/rules", RuleController
   end
 
-  scope "/m", as: :mobile do
+  scope "/m", ExMoney.Mobile, as: :mobile do
     pipe_through [:browser, :browser_session]
-    get "/", ExMoney.Mobile.DashboardController, :overview
-    get "/dashboard", ExMoney.Mobile.DashboardController, :overview
-    get "/overview", ExMoney.Mobile.DashboardController, :overview
-    get "/login", ExMoney.Mobile.SessionController, :new, as: :login
-    post "/login", ExMoney.Mobile.SessionController, :create, as: :login
-    get "/expenses", ExMoney.Mobile.TransactionController, :expenses
-    get "/income", ExMoney.Mobile.TransactionController, :income
-    resources "/accounts", ExMoney.Mobile.AccountController, only: [:show]
-    resources "/transactions", ExMoney.Mobile.TransactionController
-  end
 
+    get "/", StartController, :index
+    get "/dashboard", DashboardController, :overview
+    get "/overview", DashboardController, :overview
+    get "/login", SessionController, :new, as: :login
+    get "/logged_in", SessionController, :exist, as: :logged_in
+    post "/login", SessionController, :create, as: :login
+    get "/expenses", TransactionController, :expenses
+    get "/income", TransactionController, :income
+    resources "/accounts", AccountController, only: [:show]
+    get "/accounts/:id/refresh", AccountController, :refresh
+    resources "/transactions", TransactionController
+  end
 
   scope "/saltedge", as: :saltedge do
     pipe_through [:browser, :browser_session]
@@ -86,5 +91,10 @@ defmodule ExMoney.Router do
     post "/notify", CallbacksController, :notify, as: :notify
     post "/interactive", CallbacksController, :interactive, as: :interactive
     post "/destroy", CallbacksController, :destroy, as: :destroy
+  end
+
+  scope "/api/v1", ExMoney.Api.V1, as: :api do
+    pipe_through [:api]
+    get "/session/relogin", SessionController, :relogin
   end
 end

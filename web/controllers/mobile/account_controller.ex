@@ -3,6 +3,8 @@ defmodule ExMoney.Mobile.AccountController do
 
   alias ExMoney.{Repo, Transaction, Account}
 
+  import Ecto.Query
+
   plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.Mobile.Unauthenticated
   plug :put_layout, "mobile.html"
 
@@ -10,7 +12,11 @@ defmodule ExMoney.Mobile.AccountController do
     parsed_date = parse_date(params["date"])
     from = first_day_of_month(parsed_date)
     to = last_day_of_month(parsed_date)
-    account = Repo.get(Account, account_id)
+
+    account = Account
+    |> where([a], a.id == ^account_id)
+    |> preload(:login)
+    |> Repo.one
 
     month_transactions = Transaction.by_month(account_id, from, to)
     |> Repo.all
@@ -37,6 +43,12 @@ defmodule ExMoney.Mobile.AccountController do
       current_month: current_month,
       previous_month: previous_month,
       next_month: next_month
+  end
+
+  def refresh(conn, %{"id" => account_id} = params) do
+    account = Repo.get(Account, account_id)
+
+    render conn, :refresh, account: account
   end
 
   defp parse_date(month) when month == "" or is_nil(month) do
