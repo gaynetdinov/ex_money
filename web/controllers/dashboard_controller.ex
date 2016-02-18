@@ -24,18 +24,4 @@ defmodule ExMoney.DashboardController do
       recent_transactions: recent_transactions,
       accounts: accounts
   end
-
-  defp first_day_of_month(date) do
-    Timex.Date.from({{date.year, date.month, 0}, {0, 0, 0}})
-    |> Timex.DateFormat.format("%Y-%m-%d", :strftime)
-    |> elem(1)
-  end
-
-  defp last_day_of_month(date) do
-    days_in_month = Timex.Date.days_in_month(date)
-
-    Timex.Date.from({{date.year, date.month, days_in_month}, {23, 59, 59}})
-    |> Timex.DateFormat.format("%Y-%m-%d", :strftime)
-    |> elem(1)
-  end
 end

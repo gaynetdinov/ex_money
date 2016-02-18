@@ -9,8 +9,18 @@ defmodule ExMoney.RuleProcessor do
     GenServer.start_link(__MODULE__, :ok, name: :rule_processor)
   end
 
-  def handle_cast({:process, transaction, transaction_info, rules}, _state) do
-    Enum.each(rules, fn(rule) ->
+  def handle_cast({:process, transaction_id}, _state) do
+    transaction = Transaction
+    |> preload(:transaction_info)
+    |> where([tr], tr.id == ^transaction_id)
+    |> Repo.one
+
+    transaction_info = transaction.transaction_info
+
+    Rule
+    |> where([r], r.account_id == ^transaction.account_id)
+    |> Repo.all
+    |> Enum.each(fn(rule) ->
       case rule.type do
         "assign_category" -> assign_category(rule, transaction, transaction_info)
         "withdraw_to_cash" -> withdraw_to_cash(rule, transaction, transaction_info)
@@ -20,7 +30,9 @@ defmodule ExMoney.RuleProcessor do
     {:noreply, %{}}
   end
 
-  def handle_cast({:process_all, rule}, _state) do
+  def handle_cast({:process_all, rule_id}, _state) do
+    rule = Repo.get(Rule, rule_id)
+
     sql_like = "%#{rule.pattern}%"
     transactions = Repo.all(from tr in Transaction,
       join: tr_info in TransactionInfo, on: tr.id == tr_info.transaction_id,
@@ -29,7 +41,7 @@ defmodule ExMoney.RuleProcessor do
       where: ilike(tr.description, ^sql_like) or ilike(tr_info.payee, ^sql_like))
 
     Enum.each(transactions, fn(tr) ->
-      GenServer.cast(:rule_processor, {:process, tr, tr.transaction_info, [rule]})
+      GenServer.cast(:rule_processor, {:process, tr.id})
     end)
 
     {:noreply, %{}}

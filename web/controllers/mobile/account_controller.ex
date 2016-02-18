@@ -1,7 +1,7 @@
 defmodule ExMoney.Mobile.AccountController do
   use ExMoney.Web, :controller
 
-  alias ExMoney.{Repo, Transaction, User, Account}
+  alias ExMoney.{Repo, Transaction, Account}
 
   plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.Mobile.Unauthenticated
   plug :put_layout, "mobile.html"

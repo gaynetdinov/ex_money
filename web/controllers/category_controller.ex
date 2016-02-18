@@ -6,7 +6,7 @@ defmodule ExMoney.CategoryController do
   plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.Unauthenticated
   plug :scrub_params, "category" when action in [:create, :update]
 
-  def index(conn, params) do
+  def index(conn, _params) do
     categories = Repo.all(Category.order_by_name)
 
     render(conn, :index,

@@ -6,7 +6,7 @@ defmodule CallbacksController do
   alias ExMoney.{Repo, User, Login}
 
   plug :set_user
-  plug :set_login when action in [:success, :notify, :interactive]
+  plug :set_login when action in [:success, :notify, :interactive, :destroy]
 
   def success(conn, params) do
     Logger.info("Success: #{inspect(params)}")
@@ -24,9 +24,10 @@ defmodule CallbacksController do
 
         if changeset.valid? do
           case Repo.insert(changeset) do
-            {:ok, _login} ->
-              Process.send_after(:historical_data_worker, {:fetch, login_id}, 10000)
-              Logger.info("HistoricalDataWorker has been set to run in one hour")
+            {:ok, login} ->
+              update_login_last_refreshed_at(login)
+              GenServer.cast(:sync_buffer, {:schedule, :sync, login})
+              schedule_login_refresh_worker(login)
 
               put_resp_content_type(conn, "application/json")
               |> send_resp(200, "")
@@ -44,6 +45,9 @@ defmodule CallbacksController do
         changeset = Login.update_changeset(login, params["data"])
         {result, _} = Repo.update(changeset)
         Logger.info("Login was updated with result => #{inspect(result)}")
+        update_login_last_refreshed_at(login)
+        GenServer.cast(:sync_buffer, {:schedule, :sync, login})
+
         put_resp_content_type(conn, "application/json")
         |> send_resp(200, "")
     end
@@ -54,7 +58,6 @@ defmodule CallbacksController do
     customer_id = params["data"]["customer_id"]
     stage = params["data"]["stage"]
 
-    user = conn.assigns[:user]
     login = conn.assigns[:login]
 
     changeset = Login.notify_callback_changeset(login, %{stage: stage})
@@ -62,7 +65,7 @@ defmodule CallbacksController do
     if changeset.valid? do
       case Repo.update(changeset) do
         {:ok, login} ->
-          sync_data(user.id, login, stage)
+          sync_data(login, stage)
 
           put_resp_content_type(conn, "application/json")
           |> send_resp(200, "ok")
@@ -123,7 +126,7 @@ defmodule CallbacksController do
       last_fail_message: params["data"]["message"]
     })
     if changeset.valid? do
-      case Repo.insert(changeset) do
+      case Repo.updateinsert(changeset) do
         {:ok, _login} ->
           put_resp_content_type(conn, "application/json")
           |> send_resp(200, "ok")
@@ -140,17 +143,32 @@ defmodule CallbacksController do
     end
   end
 
-  defp sync_data(_user_id, _login, stage) when stage != "finish", do: :ok
+  def destroy(conn, params) do
+    Logger.info("Destroy: #{inspect(params)}")
+    login = conn.assigns[:login]
 
-  defp sync_data(user_id, login, _stage) do
-    Logger.info("SyncWorker is going to sync #{login.saltedge_login_id} login now")
-    GenServer.cast(:sync_worker, {:sync, user_id, login.saltedge_login_id})
+    Repo.transaction(fn -> Repo.delete!(login) end)
 
+    put_resp_content_type(conn, "application/json") |> send_resp(200, "")
+  end
+
+  defp sync_data(_login, stage) when stage != "finish", do: :ok
+
+  defp sync_data(login, _stage) do
+    GenServer.cast(:sync_buffer, {:schedule, :sync, login})
+    Logger.info("SyncBuffer scheduled #{login.saltedge_login_id} login to be synced in 5 mins")
+
+    update_login_last_refreshed_at(login)
+  end
+
+  defp update_login_last_refreshed_at(login) do
     Login.update_changeset(
       login,
       %{last_refreshed_at: :erlang.universaltime()}
     ) |> Repo.update!
+    Logger.info("last_refreshed_at for login #{login.saltedge_login_id} has been updated")
   end
+
 
   defp set_user(conn, _opts) do
     case conn.params["data"]["customer_id"] do
@@ -173,5 +191,11 @@ defmodule CallbacksController do
     ) |> Repo.one
 
     assign(conn, :login, login)
+  end
+
+  defp schedule_login_refresh_worker(login) do
+    if login.interactive == false and login.automatic_fetch == true do
+      Process.send_after(:login_refresh_worker, {:refresh, login.id}, 600 * 1000)
+    end
   end
 end

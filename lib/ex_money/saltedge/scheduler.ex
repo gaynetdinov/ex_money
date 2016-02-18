@@ -11,7 +11,7 @@ defmodule ExMoney.Saltedge.Scheduler do
   def init(:ok) do
     Process.send_after(self(), :schedule, 100)
 
-    {:ok, {}}
+    {:ok, %{}}
   end
 
   def handle_info(:schedule, state) do
@@ -31,7 +31,7 @@ defmodule ExMoney.Saltedge.Scheduler do
 
   def handle_info(:start_worker, state) do
     result = Supervisor.restart_child(
-      ExMoney.Saltedge.FetchSupervisor,
+      ExMoney.Supervisor,
       ExMoney.Saltedge.LoginRefreshWorker
     )
     Logger.info("Time to wake up, LoginRefreshWorker has been started with result => #{inspect(result)}")

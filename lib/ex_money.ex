@@ -13,7 +13,8 @@ defmodule ExMoney do
       worker(ExMoney.Saltedge.Scheduler, []),
       worker(ExMoney.Saltedge.SyncWorker, []),
       worker(ExMoney.RuleProcessor, []),
-      supervisor(ExMoney.Saltedge.FetchSupervisor, [])
+      worker(ExMoney.Saltedge.LoginRefreshWorker, [], restart: :transient),
+      worker(ExMoney.Saltedge.SyncBuffer, [])
     ]
 
     opts = [strategy: :one_for_one, name: ExMoney.Supervisor]

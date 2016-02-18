@@ -59,7 +59,7 @@ defmodule ExMoney.AccountController do
     changeset = Account.update_custom_changeset(account, account_params)
 
     case Repo.update(changeset) do
-      {:ok, account} ->
+      {:ok, _account} ->
         conn
         |> put_flash(:info, "Account updated successfully.")
         |> redirect(to: account_path(conn, :index))
