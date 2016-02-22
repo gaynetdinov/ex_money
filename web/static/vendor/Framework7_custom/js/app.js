@@ -12,12 +12,46 @@ var exMoney = new Framework7({
   },
 
   onPageInit: function(app, page) {
-    if (page.name == 'login-screen') {
-      $$('#login-form').on('submitted', function (e) {
-        var xhr = e.detail.xhr;
+    if (page.name == 'start-screen') {
+      if (localStorage.token) {
+        var jwt = JSON.parse(localStorage.token).value;
 
+        $$.ajax({
+          url: '/api/v1/session/relogin?_format=json',
+          type: 'GET',
+          contentType: "application/json",
+          headers: {
+            "Authorization": jwt
+          },
+          complete: function(xhr, status) {
+            $$('head').append("<meta name='guardian_token' content='" + xhr.responseText +"' />");
+
+            if (localStorage.interactive != undefined) {
+              var interactive = JSON.parse(localStorage.interactive);
+              if (interactive.status == true) {
+                mainView.router.load({ url: '/m/accounts/' + interactive.account_id + '/refresh' });
+              } else {
+                mainView.router.load({ url: '/m/dashboard', animatePages: false });
+              }
+            } else { mainView.router.load({ url: '/m/dashboard', animatePages: false }); }
+          }
+        });
+      } else {
+        window.location.replace("/m/dashboard");
+        window.history.pushState('m', '', '/m');
+      }
+    }
+
+    if (page.name == 'embedded-login-screen') {
+      $$('#embedded-login-form').on('submitted', function (e) {
+        var xhr = e.detail.xhr;
         if (xhr.status == 200) {
-          window.location.replace("/m");
+          exMoney.closeModal($$(".embedded-login-screen"));
+          $$('head').append("<meta name='guardian_token' content='" + xhr.responseText +"' />");
+          token = {value: xhr.responseText, timestamp: new Date().getTime()};
+          localStorage.setItem("token", JSON.stringify(token));
+          mainView.router.load({ url: '/m/dashboard' });
+          window.history.pushState('m', '', '/m');
         } else {
           exMoney.alert(xhr.responseText);
         }
@@ -30,13 +64,12 @@ var exMoney = new Framework7({
       });
     }
 
-    if (page.name == 'embedded-login-screen') {
-      $$('#embedded-login-form').on('submitted', function (e) {
+    if (page.name == 'login-screen') {
+      $$('#login-form').on('submitted', function (e) {
         var xhr = e.detail.xhr;
 
         if (xhr.status == 200) {
-          exMoney.closeModal($$(".embedded-login-screen"));
-          mainView.router.load({ url: '/m/dashboard' });
+          window.location.replace("/m/dashboard");
         } else {
           exMoney.alert(xhr.responseText);
         }

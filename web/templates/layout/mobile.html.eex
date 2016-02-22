@@ -6,10 +6,13 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="format-detection" content="telephone=no">
-    <meta name="csrf" content="<%= Plug.CSRFProtection.get_csrf_token() %>">
-    <link href="/images/startup.png" rel="apple-touch-startup-image"
-              media="(device-width: 320px) and (device-height: 568px)
-                     and (-webkit-device-pixel-ratio: 2)">
+    <meta name="csrf" content="<%= Plug.CSRFProtection.get_csrf_token %>">
+    <%= if Guardian.Plug.current_token(@conn) do %>
+      <meta name='guardian_token' content="<%= Guardian.Plug.current_token(@conn) %>">
+    <% end %>
+    <link href="/images/startup.png"
+          media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)"
+          rel="apple-touch-startup-image">
     <link rel="apple-touch-icon" sizes="120x120" href="/images/apple-touch-icon.png">
     <title>ExMoney</title>
 
@@ -24,5 +27,6 @@
 
     <script src="<%= static_path(@conn, "/js/framework7.js") %>"></script>
     <script src="<%= static_path(@conn, "/js/mobile.js") %>"></script>
+    <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
   </body>
 </html>

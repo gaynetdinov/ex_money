@@ -144,8 +144,7 @@ defmodule ExMoney.Mobile.TransactionController do
 
     render conn, :delete,
       account_id: account.id,
-      new_balance: new_balance,
-      currency_label: account.currency_label
+      new_balance: new_balance
   end
 
   defp parse_date(month) do

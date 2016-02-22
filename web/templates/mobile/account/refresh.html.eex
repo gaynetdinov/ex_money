@@ -1,0 +1,20 @@
+<div class="views">
+  <div class="view view-main">
+    <div class="pages">
+      <div class="page navbar-fixed" data-page="account-refresh-screen">
+        <div class="navbar">
+          <div class="navbar-inner">
+            <div class="left">
+              <a href="/m/accounts/<%= @account.id %>" class="link back" data-force="true">
+                <i class="icon icon-back"></i>&nbsp; Home
+              </a>
+            </div>
+            <div class="center"><%= @account.name %></div>
+          </div>
+        </div>
+        <div class="page-content" id="account-refresh-content" data-login-id="<%= @account.saltedge_login_id %>" data-account-id="<%= @account.id %>">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

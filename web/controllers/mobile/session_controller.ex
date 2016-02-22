@@ -18,9 +18,8 @@ defmodule ExMoney.Mobile.SessionController do
         store_last_login_at(user.last_login_at)
         update_last_login_at(user)
 
-        conn
-        |> Guardian.Plug.sign_in(user)
-        |> redirect(to: mobile_dashboard_path(conn, :overview))
+        conn = Guardian.Plug.sign_in(conn, user)
+        send_resp(conn, 200, Guardian.Plug.current_token(conn))
       else
         send_resp(conn, 401, "Unauthenticated")
       end

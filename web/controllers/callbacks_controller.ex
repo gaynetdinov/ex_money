@@ -6,7 +6,7 @@ defmodule CallbacksController do
   alias ExMoney.{Repo, User, Login}
 
   plug :set_user
-  plug :set_login when action in [:success, :notify, :interactive, :destroy]
+  plug :set_login when action in [:success, :notify, :interactive, :destroy, :failure]
 
   def success(conn, params) do
     Logger.info("Success: #{inspect(params)}")
@@ -99,6 +99,9 @@ defmodule CallbacksController do
     if changeset.valid? do
       case Repo.update(changeset) do
         {:ok, _login} ->
+          pid = get_channel_pid(conn.assigns[:user].id)
+          Process.send_after(pid, {:interactive, html, interactive_fields_names}, 10)
+
           put_resp_content_type(conn, "application/json")
           |> send_resp(200, "ok")
         {:error, changeset} ->
@@ -119,27 +122,42 @@ defmodule CallbacksController do
     login_id = params["data"]["login_id"]
     user = conn.assigns[:user]
 
-    changeset = Ecto.Model.build(user, :logins)
-    |> Login.failure_callback_changeset(%{
-      saltedge_login_id: login_id,
-      last_fail_error_class: params["data"]["error_class"],
-      last_fail_message: params["data"]["message"]
-    })
-    if changeset.valid? do
-      case Repo.updateinsert(changeset) do
-        {:ok, _login} ->
-          put_resp_content_type(conn, "application/json")
-          |> send_resp(200, "ok")
-        {:error, changeset} ->
-          # log error
+    case conn.assigns[:login] do
+      nil ->
+        changeset = Ecto.Model.build(user, :logins)
+        |> Login.failure_callback_changeset(%{
+          saltedge_login_id: login_id,
+          last_fail_error_class: params["data"]["error_class"],
+          last_fail_message: params["data"]["message"]
+        })
+        if changeset.valid? do
+          case Repo.update(changeset) do
+            {:ok, _login} ->
+              put_resp_content_type(conn, "application/json")
+              |> send_resp(200, "ok")
+            {:error, changeset} ->
+              # log error
+              Logger.info("Could not create Login for customer_id => #{inspect(customer_id)}, errors => #{inspect(changeset.errors)}")
+              put_resp_content_type(conn, "application/json")
+              |> send_resp(200, "ok")
+          end
+        else
           Logger.info("Could not create Login for customer_id => #{inspect(customer_id)}, errors => #{inspect(changeset.errors)}")
           put_resp_content_type(conn, "application/json")
           |> send_resp(200, "ok")
-      end
-    else
-      Logger.info("Could not create Login for customer_id => #{inspect(customer_id)}, errors => #{inspect(changeset.errors)}")
-      put_resp_content_type(conn, "application/json")
-      |> send_resp(200, "ok")
+        end
+      login ->
+        params = %{
+          last_fail_error_class: params["data"]["error_class"],
+          last_fail_message: params["data"]["message"]
+        }
+
+        Login.failure_callback_changeset(login, params)
+        |> Repo.update
+        Logger.info("Login has been updated with failure reason")
+
+        put_resp_content_type(conn, "application/json")
+        |> send_resp(200, "ok")
     end
   end
 
@@ -156,7 +174,6 @@ defmodule CallbacksController do
 
   defp sync_data(login, _stage) do
     GenServer.cast(:sync_buffer, {:schedule, :sync, login})
-    Logger.info("SyncBuffer scheduled #{login.saltedge_login_id} login to be synced in 5 mins")
 
     update_login_last_refreshed_at(login)
   end
@@ -196,6 +213,16 @@ defmodule CallbacksController do
   defp schedule_login_refresh_worker(login) do
     if login.interactive == false and login.automatic_fetch == true do
       Process.send_after(:login_refresh_worker, {:refresh, login.id}, 600 * 1000)
+    end
+  end
+
+  defp get_channel_pid(user_id) do
+    user_id = "user:#{user_id}"
+    key = "refresh_channel_pid_#{user_id}"
+
+    case :ets.lookup(:ex_money_cache, key) do
+      [] -> nil
+      [{_key, value}] -> value
     end
   end
 end
