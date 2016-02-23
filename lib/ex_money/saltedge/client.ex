@@ -1,7 +1,4 @@
 defmodule ExMoney.Saltedge.Client do
-
-  @client_id Application.get_env(:ex_money, :saltedge_client_id)
-  @service_secret Application.get_env(:ex_money, :saltedge_service_secret)
   @base_url "https://www.saltedge.com/api/v2/"
 
   @doc """
@@ -38,6 +35,9 @@ defmodule ExMoney.Saltedge.Client do
   iex> ExMoney.SaltedgeClient.request(:post, "logins", body)
   """
   def request(method, endpoint, body \\ "") do
+    client_id = Application.get_env(:ex_money, :saltedge_client_id)
+    service_secret = Application.get_env(:ex_money, :saltedge_service_secret)
+
     url = @base_url <> endpoint
     str_method = to_string(method) |> String.upcase
     request = "#{expires_at}|#{str_method}|#{url}|#{body}"
@@ -47,8 +47,8 @@ defmodule ExMoney.Saltedge.Client do
       {"Content-type", "application/json"},
       {"Expires-at", expires_at},
       {"Signature", signature(request)},
-      {"Client-id", @client_id},
-      {"Service-secret", @service_secret}
+      {"Client-id", client_id},
+      {"Service-secret", service_secret}
     ]
 
     {:ok, response} = HTTPoison.request(method, url, body, headers)
