@@ -17,7 +17,7 @@ need to enter every single transaction.
 [Spectre API](https://www.saltedge.com/products/spectre) provides 'Test' mode using which it's possible to have
 connections with up to 10 providers(banks) **for free**.
 
-## Mobile mobile
+## Mobile version
 
 `ExMoney` has a mobile version for iOS devices. The mobile version is built using [Framework7](http://framework7.io).  
 `ExMoney` is supposed to run as Standalone web app(i.e. `Add to Home Screen` in Safari).
