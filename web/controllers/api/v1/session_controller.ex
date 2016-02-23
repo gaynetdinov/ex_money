@@ -1,7 +1,7 @@
 defmodule ExMoney.Api.V1.SessionController do
   use ExMoney.Web, :controller
 
-  def relogin(conn, params) do
+  def relogin(conn, _params) do
     case Guardian.Plug.current_resource(conn) do
       nil -> send_resp(conn, 401, "Unauthenticated")
       user ->

@@ -14,7 +14,7 @@ exports.config = {
         before: [
           "web/static/vendor/jquery-2.1.4.min.js",
           "web/static/vendor/bootstrap-3.3.6-dist/js/bootstrap.js",
-          "web/static/vendor/Framework7/js/framework7.min.js",
+          "web/static/vendor/Framework7/js/framework7.js",
           "web/static/vendor/Framework7/js/framework7.keypad.js"
         ]
       }
@@ -36,7 +36,7 @@ exports.config = {
     // This option sets where we should place non-css and non-js assets in.
     // By default, we set this to "/web/static/assets". Files in this directory
     // will be copied to `paths.public`, which is "priv/static" by default.
-    assets: /^(web\/static\/assets)|^(web\/static\/vendor\/Framework7\/img)/
+    assets: /^(web\/static\/assets)/
   },
 
   // Phoenix paths configuration

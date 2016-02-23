@@ -45,7 +45,7 @@ defmodule ExMoney.Mobile.AccountController do
       next_month: next_month
   end
 
-  def refresh(conn, %{"id" => account_id} = params) do
+  def refresh(conn, %{"id" => account_id}) do
     account = Repo.get(Account, account_id)
 
     render conn, :refresh, account: account
