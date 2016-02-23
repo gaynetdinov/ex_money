@@ -5,8 +5,22 @@ defmodule ExMoney.Api.V1.SessionController do
     case Guardian.Plug.current_resource(conn) do
       nil -> send_resp(conn, 401, "Unauthenticated")
       user ->
+        store_last_login_at(user.last_login_at)
+        update_last_login_at(user)
         conn = Guardian.Plug.sign_in(conn, user)
         send_resp(conn, 200, Guardian.Plug.current_token(conn))
+    end
+  end
+
+  defp update_last_login_at(user) do
+    ExMoney.User.update_changeset(user, %{last_login_at: :calendar.universal_time})
+    |> ExMoney.Repo.update
+  end
+
+  defp store_last_login_at(timestamp) do
+    case :ets.lookup(:ex_money_cache, "last_login_at") do
+      [] -> :ets.insert(:ex_money_cache, {"last_login_at", timestamp})
+      _value -> :ets.update_element(:ex_money_cache, "last_login_at", {2, timestamp})
     end
   end
 end

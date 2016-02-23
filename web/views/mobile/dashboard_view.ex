@@ -25,12 +25,6 @@ defmodule ExMoney.Mobile.DashboardView do
      end)
    end
 
-  def balance(transactions) do
-    Enum.reduce(transactions, Decimal.new(0), fn(transaction, acc) ->
-      Decimal.add(acc, transaction.amount)
-    end)
-  end
-
   def expenses(transactions) do
     Enum.reject(transactions, fn(transaction) ->
       Decimal.compare(transaction.amount, Decimal.new(0)) != Decimal.new(-1)
