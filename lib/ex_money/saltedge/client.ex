@@ -61,13 +61,17 @@ defmodule ExMoney.Saltedge.Client do
     |> Base.encode64
   end
 
-  defp read_private_key() do
-    File.read!("./lib/saltedge_private.pem")
+  defp read_private_key do
+    private_key
     |> :public_key.pem_decode
     |> hd() |> :public_key.pem_entry_decode
   end
 
-  defp expires_at() do
+  defp private_key do
+    System.get_env("SALTEDGE_KEY") || File.read!("./lib/saltedge_private.pem")
+  end
+
+  defp expires_at do
     {mgsec, sec, _mcs} = :os.timestamp
 
     mgsec * 1_000_000 + sec + 60
