@@ -75,3 +75,7 @@ I don't have an Android device to test `ExMoney` on Android. Feel free to add ne
 ### Why Desktop version does not use React/ES7/Clojurescript/Elm/etc?
 
 I'm a backend developer, I don't know frontend part, I don't know how to js/html/css, so I took the most easiest approach to build a frontend.
+
+## License
+
+This software is licensed under [the ISC license](LICENSE).
