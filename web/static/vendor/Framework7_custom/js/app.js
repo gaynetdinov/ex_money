@@ -31,9 +31,9 @@ var exMoney = new Framework7({
               if (interactive.status == true) {
                 mainView.router.load({ url: '/m/accounts/' + interactive.account_id + '/refresh' });
               } else {
-                mainView.router.load({ url: '/m/dashboard', animatePages: false });
+                mainView.router.load({ url: '/m/dashboard', animatePages: false, reload: true });
               }
-            } else { mainView.router.load({ url: '/m/dashboard', animatePages: false }); }
+            } else { mainView.router.load({ url: '/m/dashboard', animatePages: false, reload: true }); }
           }
         });
       } else {
