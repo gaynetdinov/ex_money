@@ -5,8 +5,8 @@
     <h2>Edit account</h2>
 
     <%= render "form.html", changeset: @changeset,
-                            action: account_path(@conn, :update, @account) %>
+                            action: settings_account_path(@conn, :update, @account) %>
 
-    <%= link "Back", to: account_path(@conn, :index) %>
+    <%= link "Back", to: settings_account_path(@conn, :index) %>
   </div>
 </div>

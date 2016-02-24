@@ -28,7 +28,7 @@
 
     </ul>
 
-    <%= link "Edit", to: rule_path(@conn, :edit, @rule) %>
-    <%= link "Back", to: rule_path(@conn, :index) %>
+    <%= link "Edit", to: settings_rule_path(@conn, :edit, @rule) %>
+    <%= link "Back", to: settings_rule_path(@conn, :index) %>
   </div>
 </div>

@@ -25,7 +25,7 @@
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
             <li><%= link "Dashboard", to: dashboard_path(@conn, :overview) %></li>
-            <li><%= link "Settings", to: settings_path(@conn, :logins) %></li>
+            <li><%= link "Settings", to: settings_login_path(@conn, :index) %></li>
             <li><a href="https://github.com/gaynetdinov/ex_money">Help</a></li>
           </ul>
         </div>

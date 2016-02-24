@@ -1,0 +1,8 @@
+<h2>Show category</h2>
+
+<ul>
+
+</ul>
+
+<%= link "Edit", to: settings_category_path(@conn, :edit, @category) %>
+<%= link "Back", to: settings_category_path(@conn, :index) %>
