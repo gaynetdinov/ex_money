@@ -42,15 +42,16 @@ defmodule ExMoney.Router do
       get "/overview", DashboardController, :overview
     end
 
-    scope "/settings" do
-      get "/logins", SettingsController, :logins
+    scope "/settings", Settings, as: :settings do
+      get "/user", UserController, :edit
+      put "/user", UserController, :update
       resources "/accounts", AccountController
+      resources "/categories", CategoryController
+      resources "/rules", RuleController
+      resources "/logins", LoginController, only: [:index]
     end
 
-    resources "/users", UserController
     resources "/transactions", TransactionController
-    resources "/categories", CategoryController
-    resources "/rules", RuleController
   end
 
   scope "/m", ExMoney.Mobile, as: :mobile do

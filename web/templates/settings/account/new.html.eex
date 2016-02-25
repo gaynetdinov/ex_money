@@ -5,8 +5,8 @@
     <h2>New Account</h2>
 
     <%= render "form.html", changeset: @changeset,
-                            action: account_path(@conn, :create) %>
+                            action: settings_account_path(@conn, :create) %>
 
-    <%= link "Back", to: account_path(@conn, :index) %>
+    <%= link "Back", to: settings_account_path(@conn, :index) %>
   </div>
 </div>

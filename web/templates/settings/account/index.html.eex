@@ -3,7 +3,7 @@
 
   <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
     <h2 class="sub-header">
-      Accounts [<%= link "New", to: account_path(@conn, :new) %>]
+      Accounts [<%= link "New", to: settings_account_path(@conn, :new) %>]
     </h2>
   <div class="table-responsive">
     <table class="table table-striped">
@@ -31,7 +31,7 @@
             <td><%= account.show_on_dashboard %></td>
             <td><%= account.currency_code %></td>
             <td><%= account.currency_label %></td>
-            <td><%= link "Edit", to: account_path(@conn, :edit, account), class: "btn btn-default btn-xs" %></td>
+            <td><%= link "Edit", to: settings_account_path(@conn, :edit, account), class: "btn btn-default btn-xs" %></td>
           </tr>
         <% end %>
       </tbody>

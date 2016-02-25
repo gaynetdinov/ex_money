@@ -8,7 +8,7 @@
 
     </ul>
 
-    <%= link "Edit", to: account_path(@conn, :edit, @account) %>
-    <%= link "Back", to: account_path(@conn, :index) %>
+    <%= link "Edit", to: settings_account_path(@conn, :edit, @account) %>
+    <%= link "Back", to: settings_account_path(@conn, :index) %>
   </div>
 </div>

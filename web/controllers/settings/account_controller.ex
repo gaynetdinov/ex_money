@@ -1,4 +1,4 @@
-defmodule ExMoney.AccountController do
+defmodule ExMoney.Settings.AccountController do
   use ExMoney.Web, :controller
   use Guardian.Phoenix.Controller
 
@@ -35,7 +35,7 @@ defmodule ExMoney.AccountController do
       {:ok, _account} ->
         conn
         |> put_flash(:info, "Account created successfully.")
-        |> redirect(to: account_path(conn, :index))
+        |> redirect(to: settings_account_path(conn, :index))
       {:error, changeset} ->
         render(conn, "new.html", changeset: changeset, topbar: "settings", navigation: "accounts")
     end
@@ -62,7 +62,7 @@ defmodule ExMoney.AccountController do
       {:ok, _account} ->
         conn
         |> put_flash(:info, "Account updated successfully.")
-        |> redirect(to: account_path(conn, :index))
+        |> redirect(to: settings_account_path(conn, :index))
       {:error, changeset} ->
         render(conn, :edit,
           account: account,

@@ -1,4 +1,4 @@
-defmodule ExMoney.CategoryController do
+defmodule ExMoney.Settings.CategoryController do
   use ExMoney.Web, :controller
 
   alias ExMoney.{Repo, Category}
@@ -35,7 +35,7 @@ defmodule ExMoney.CategoryController do
       {:ok, _category} ->
         conn
         |> put_flash(:info, "Category created successfully.")
-        |> redirect(to: category_path(conn, :index))
+        |> redirect(to: settings_category_path(conn, :index))
       {:error, changeset} ->
         render(conn, :new, changeset: changeset, topbar: "settings", navigation: "categories")
     end
@@ -67,7 +67,7 @@ defmodule ExMoney.CategoryController do
       {:ok, category} ->
         conn
         |> put_flash(:info, "Category updated successfully.")
-        |> redirect(to: category_path(conn, :show, category))
+        |> redirect(to: settings_category_path(conn, :show, category))
       {:error, changeset} ->
         render(conn, :edit,
           category: category,
@@ -85,6 +85,6 @@ defmodule ExMoney.CategoryController do
 
     conn
     |> put_flash(:info, "Category deleted successfully.")
-    |> redirect(to: category_path(conn, :index))
+    |> redirect(to: settings_category_path(conn, :index))
   end
 end

@@ -3,7 +3,7 @@
 
   <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
     <h2 class="sub-header">
-      Listing rules [<%= link "New", to: rule_path(@conn, :new) %>]
+      Listing rules [<%= link "New", to: settings_rule_path(@conn, :new) %>]
     </h2>
 
     <div class="table-responsive">
@@ -27,9 +27,9 @@
               <td><%= rule.target_id %></td>
 
               <td class="text-right">
-                <%= link "Show", to: rule_path(@conn, :show, rule), class: "btn btn-default btn-xs" %>
-                <%= link "Edit", to: rule_path(@conn, :edit, rule), class: "btn btn-default btn-xs" %>
-                <%= link "Delete", to: rule_path(@conn, :delete, rule), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %>
+                <%= link "Show", to: settings_rule_path(@conn, :show, rule), class: "btn btn-default btn-xs" %>
+                <%= link "Edit", to: settings_rule_path(@conn, :edit, rule), class: "btn btn-default btn-xs" %>
+                <%= link "Delete", to: settings_rule_path(@conn, :delete, rule), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %>
               </td>
             </tr>
           <% end %>

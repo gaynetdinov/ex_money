@@ -1,4 +1,4 @@
-defmodule ExMoney.RuleController do
+defmodule ExMoney.Settings.RuleController do
   use ExMoney.Web, :controller
   alias ExMoney.{Repo, Rule, Account, Category}
 
@@ -44,7 +44,7 @@ defmodule ExMoney.RuleController do
 
         conn
         |> put_flash(:info, "Rule created successfully.")
-        |> redirect(to: rule_path(conn, :index))
+        |> redirect(to: settings_rule_path(conn, :index))
       {:error, changeset} ->
         accounts = Account.only_saltedge |> Repo.all
         render(conn, :new,
@@ -96,7 +96,7 @@ defmodule ExMoney.RuleController do
 
         conn
         |> put_flash(:info, "Rule updated successfully.")
-        |> redirect(to: rule_path(conn, :show, rule))
+        |> redirect(to: settings_rule_path(conn, :show, rule))
       {:error, changeset} ->
         render(conn, :edit,
           rule: rule,
@@ -114,7 +114,7 @@ defmodule ExMoney.RuleController do
 
     conn
     |> put_flash(:info, "Rule deleted successfully.")
-    |> redirect(to: rule_path(conn, :index))
+    |> redirect(to: settings_rule_path(conn, :index))
   end
 
   defp apply_rule_for_all("false", _rule), do: :nothing
