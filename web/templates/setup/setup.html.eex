@@ -16,7 +16,7 @@
   <%= email_input f, :email, placeholder: "Email address", class: "form-control" %>
 
   <label for="password" class="sr-only">Password</label>
-  <%= password_input :user, :password, placeholder: "Password", class: "form-control" %>
+  <%= password_input f, :password, placeholder: "Password", class: "form-control" %>
 
   <button class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>
 <% end %>
