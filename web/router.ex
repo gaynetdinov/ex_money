@@ -33,6 +33,8 @@ defmodule ExMoney.Router do
     get "/", DashboardController, :overview
 
     get "/login", SessionController, :new, as: :login
+    get "/setup/new", SetupController, :new
+    post "/setup/complete", SetupController, :complete
     post "/login", SessionController, :create, as: :login
     delete "/logout", SessionController, :delete, as: :logout
     get "/logout", SessionController, :delete, as: :logout
