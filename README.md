@@ -19,7 +19,7 @@ connections with up to 10 providers(banks) **for free**.
 
 ## Mobile version
 
-`ExMoney` has a mobile version for iOS devices. The mobile version is built using [Framework7](http://framework7.io).  
+`ExMoney` has a mobile version for an iPhone. The mobile version is built using [Framework7](http://framework7.io).  
 `ExMoney` is supposed to run as Standalone web app(i.e. `Add to Home Screen` in Safari).
 
 Currently mobile version looks like this
