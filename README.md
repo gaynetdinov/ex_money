@@ -58,9 +58,9 @@ Heroku's free plan [limitations](https://blog.heroku.com/archives/2015/5/7/herok
 `ExMoney` allows to manually export transactions from banks which require one-time-password as well.
 For now only `otp` is supported.
 
-## How to use [TODO]
+## How to use
 
-## Installation [TODO]
+There is a [wiki page](https://github.com/gaynetdinov/ex_money/wiki) which describes how to use `ExMoney`.
 
 ## Current state
 
