@@ -41,16 +41,16 @@ The desktop version is built using [Bootstrap](http://getbootstrap.com) and util
 
 Currently `ExMoney` has two types of Rules which can be applied for every incoming transaction from [Spectre API](https://www.saltedge.com/products/spectre):
 
-* a rule to reassign category which was assigned automatically by [Spectre API](https://www.saltedge.com/products/spectre)  
-    In case of automatically assigned category does not make sense it's possible to reassign category based on transaction's description and payee.
+* a rule to reassign category which has been assigned automatically by [Spectre API](https://www.saltedge.com/products/spectre)  
+    In case of automatically assigned category does not make sense it's possible to reassign category based on transaction's description and payee fields.
 
-* a rule to detect withdraw transaction and create appropriate 'Income' transactions in 'Cash' account
+* a rule to detect withdraw transaction and to create appropriate 'Income' transaction in a 'Cash' account
 
 ###### Automatic sync
 
 If a bank does not require one-time-password/captcha/etc to log in, `ExMoney` will run a periodic job to export transactions for you.
-`ExMoney` will run a job to export transactions from a bank every hour. Also `ExMoney` disables this task during night to not violate 
-Heroku's free plan [limitations](https://blog.heroku.com/archives/2015/5/7/heroku-free-dynos).
+`ExMoney` will run a job to export transactions from a bank every hour.   
+Also `ExMoney` disables this task during the nights to not violate Heroku's free plan [limitations](https://blog.heroku.com/archives/2015/5/7/heroku-free-dynos).
 
 
 ###### Interactive providers
