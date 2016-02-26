@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ExMoney First Run</title>
+
+    <link href="<%= static_path(@conn, "/css/vendor.css") %>" rel="stylesheet">
+    <link href="<%= static_path(@conn, "/css/app.css") %>" rel="stylesheet">
+  </head>
+  <body>
+    <div class="container-fluid">
+      <%= render @view_module, @view_template, assigns %>
+    </div>
+
+    <script src="<%= static_path(@conn, "/js/vendor.js") %>"></script>
+    <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
+  </body>
+</html>

@@ -1,0 +1,22 @@
+<%= form_for @changeset, setup_path(@conn, :complete), [method: :post, class: "form-signin"], fn f -> %>
+  <%= if f.errors != [] do %>
+    <div class="alert alert-danger">
+      <p>Oops, something went wrong! Please check the errors below:</p>
+      <ul>
+        <%= for {attr, message} <- f.errors do %>
+          <li><%= humanize(attr) %> <%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <h2 class="form-signin-heading">Create a user</h2>
+
+  <label for="email" class="sr-only">Email address</label>
+  <%= email_input f, :email, placeholder: "Email address", class: "form-control" %>
+
+  <label for="password" class="sr-only">Password</label>
+  <%= password_input f, :password, placeholder: "Password", class: "form-control" %>
+
+  <button class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>
+<% end %>
