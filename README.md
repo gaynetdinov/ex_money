@@ -80,7 +80,7 @@ I'm a backend developer, I don't know frontend part, I don't know how to js/html
 
 ## Contributing
 
-Contributions welcome! Please feel free to create pull-request or issues. 
+Contributions welcome! Please feel free to create pull-requests and issues. 
 
 ## License
 
