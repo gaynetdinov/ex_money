@@ -60,6 +60,8 @@ For now only `otp` is supported.
 
 ## How to use
 
+Before using `ExMoney`, please make sure that `Saltedge` supports your bank [here](https://www.saltedge.com/countries).
+
 There is a [wiki page](https://github.com/gaynetdinov/ex_money/wiki) which describes how to use `ExMoney`.
 
 ## Current state
