@@ -32,17 +32,19 @@ config :logger, :console, format: "[$level] $message\n"
 # and calculating stacktraces is usually expensive.
 config :phoenix, :stacktrace_depth, 20
 
-# Configure your database
+# ExMoney uses Postgres
 config :ex_money, ExMoney.Repo,
   adapter: Ecto.Adapters.Postgres,
-  username: System.get_env("DB_USER") || "fabian",
-  password: System.get_env("DB_PASSWORD") || "",
-  database: "ex_money_dev",
-  hostname: "localhost",
   pool_size: 10
 
 # Put Saltedge credentials into dev.secret.exs
 # config :ex_money,
 #   saltedge_client_id: "your client id"
 #   saltedge_service_secret: "your service secret"
+# Also put database credentials into dev.descret.exs like this:
+# config :ex_money, ExMoney.Repo,
+#  username: "username",
+#  password: "password",
+#  database: "db_name",
+#  hostname: "host"
 import_config "dev.secret.exs"
