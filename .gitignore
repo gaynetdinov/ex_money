@@ -25,3 +25,5 @@ erl_crash.dump
 /config/dev.secret.exs
 *.pem
 /log
+/web/static/assets/cache.appcache
+
