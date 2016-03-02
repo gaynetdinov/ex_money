@@ -34,12 +34,12 @@
       <ul class="pager">
         <li class="previous <%= disabled_previous_page?(@page_number, @total_pages) %>">
           <a href="<%= build_previous_page_url(@page_number) %>">
-            <span aria-hidden="true">&larr;</span> Older
+            <span aria-hidden="true">&larr;</span> Newer
           </a>
         </li>
         <li class="next <%= disabled_next_page?(@page_number, @total_pages) %>">
           <a href="<%= build_next_page_url(@page_number, @total_pages)%>">
-            Newer <span aria-hidden="true">&rarr;</span>
+            Older <span aria-hidden="true">&rarr;</span>
           </a>
         </li>
       </ul>

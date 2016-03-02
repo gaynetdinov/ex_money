@@ -193,7 +193,7 @@ defmodule CallbacksController do
       customer_id ->
         case User.by_customer_id(customer_id) |> Repo.one do
           nil ->
-            Logger.info("Could not create Login for customer_id => #{inspect(customer_id)}, User not found")
+            Logger.info("Could not find User with customer_id '#{inspect(customer_id)}'")
             # TODO: send as json?
             send_resp(conn, 400, "customer_id is not valid") |> halt
           user -> assign(conn, :user, user)
