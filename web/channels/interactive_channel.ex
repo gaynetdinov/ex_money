@@ -35,7 +35,7 @@
     result = ExMoney.Saltedge.Client.request(:put, "logins/#{login_id}/refresh", body)
     case result["data"]["refreshed"] do
       false ->
-        push socket, "refresh_failed", %{msg: "Could not refresh login"}
+        push socket, "refresh_failed", %{msg: "Could not refresh login. Try again later."}
       true ->
         user = current_resource(socket)
         user_id = "user:#{user.id}"
