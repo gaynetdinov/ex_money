@@ -12,7 +12,7 @@ defmodule ExMoney.Repo.Migrations.CreateTransaction do
       add :description, :text
       add :category, :string
       add :duplicated, :boolean, default: false
-      add :saltedge_account_id, references(:accounts, column: :saltedge_account_id)
+      add :saltedge_account_id, references(:accounts, column: :saltedge_account_id, on_delete: :delete_all)
       add :category_id, :integer
 
       timestamps

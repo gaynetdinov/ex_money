@@ -8,7 +8,7 @@ defmodule ExMoney.Repo.Migrations.CreateAccount do
       add :nature, :string
       add :balance, :decimal
       add :currency_code, :string
-      add :saltedge_login_id, references(:logins, column: :saltedge_login_id)
+      add :saltedge_login_id, references(:logins, column: :saltedge_login_id, on_delete: :delete_all)
 
       timestamps
     end

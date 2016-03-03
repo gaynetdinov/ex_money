@@ -14,4 +14,14 @@ defmodule ExMoney.Settings.LoginController do
       navigation: "logins",
       topbar: "settings"
   end
+
+  def delete(conn, %{"id" => id}) do
+    login = Repo.get!(Login, id)
+
+    Repo.delete!(login)
+
+    conn
+    |> put_flash(:info, "Login deleted successfully.")
+    |> redirect(to: settings_login_path(conn, :index))
+  end
 end

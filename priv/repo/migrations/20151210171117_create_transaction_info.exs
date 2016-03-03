@@ -24,7 +24,7 @@ defmodule ExMoney.Repo.Migrations.CreateTransactionInfo do
       add :additional, :text
       add :unit_price, :decimal
 
-      add :transaction_id, references(:transactions)
+      add :transaction_id, references(:transactions, on_delete: :delete_all)
 
       timestamps
     end

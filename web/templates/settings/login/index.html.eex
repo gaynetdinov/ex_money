@@ -11,6 +11,7 @@
           <th>Saltedge id</th>
           <th>Name</th>
           <th>Status</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -20,6 +21,9 @@
             <td><%= login.saltedge_login_id %></td>
             <td><%= login.provider_name %></td>
             <td><%= login.status %></td>
+            <td>
+              <%= link "Delete", to: settings_login_path(@conn, :delete, login), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %>
+            </td>
           </tr>
         <% end %>
       </tbody>

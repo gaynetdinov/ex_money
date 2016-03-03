@@ -50,7 +50,7 @@ defmodule ExMoney.Router do
       resources "/accounts", AccountController
       resources "/categories", CategoryController
       resources "/rules", RuleController
-      resources "/logins", LoginController, only: [:index]
+      resources "/logins", LoginController, only: [:index, :delete]
     end
 
     resources "/transactions", TransactionController
