@@ -6,7 +6,7 @@ The list of available banks you can find [here](https://www.saltedge.com/countri
 
 The main idea behind `ExMoney` is to have free, open source application which can help to track personal finances at(almost) no cost.  
 `ExMoney` is written in [Elixir](http://elixir-lang.org) using [Phoenix framework](http://www.phoenixframework.org),
-the app on production consumes around 20 Mb of RAM and it should work just fine on [Heroku](https://heroku.com) free plan.
+the app on production consumes very little of RAM and it should work just fine on [Heroku](https://heroku.com) free plan.
 
 ## Saltedge
 
