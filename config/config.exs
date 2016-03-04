@@ -52,4 +52,8 @@ config :guardian, Guardian,
   ttl: { 30, :days },
   verify_issuer: true,
   secret_key: "showmethemoney",
-  serializer: ExMoney.Guardian.Serializer
+  serializer: ExMoney.Guardian.Serializer,
+  hooks: GuardianDb
+
+config :guardian_db, GuardianDb,
+  repo: ExMoney.Repo

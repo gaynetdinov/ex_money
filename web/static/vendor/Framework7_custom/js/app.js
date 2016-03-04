@@ -24,16 +24,23 @@ var exMoney = new Framework7({
             "Authorization": jwt
           },
           complete: function(xhr, status) {
-            $$('head').append("<meta name='guardian_token' content='" + xhr.responseText +"' />");
+            if (xhr.responseText == "Unauthenticated") {
+              localStorage.removeItem("token");
+              mainView.router.load({ url: '/m/dashboard', animatePages: false, reload: true });
+            }
+            else {
+              token = {value: xhr.responseText, timestamp: new Date().getTime()};
+              localStorage.setItem("token", JSON.stringify(token));
 
-            if (localStorage.interactive != undefined) {
-              var interactive = JSON.parse(localStorage.interactive);
-              if (interactive.status == true) {
-                mainView.router.load({ url: '/m/accounts/' + interactive.account_id + '/refresh' });
-              } else {
-                mainView.router.load({ url: '/m/dashboard', animatePages: false, reload: true });
-              }
-            } else { mainView.router.load({ url: '/m/dashboard', animatePages: false, reload: true }); }
+              if (localStorage.interactive != undefined) {
+                var interactive = JSON.parse(localStorage.interactive);
+                if (interactive.status == true) {
+                  mainView.router.load({ url: '/m/accounts/' + interactive.account_id + '/refresh' });
+                } else {
+                  mainView.router.load({ url: '/m/dashboard', animatePages: false, reload: true });
+                }
+              } else { mainView.router.load({ url: '/m/dashboard', animatePages: false, reload: true }); }
+            }
           }
         });
       } else {
@@ -47,7 +54,6 @@ var exMoney = new Framework7({
         var xhr = e.detail.xhr;
         if (xhr.status == 200) {
           exMoney.closeModal($$(".embedded-login-screen"));
-          $$('head').append("<meta name='guardian_token' content='" + xhr.responseText +"' />");
           token = {value: xhr.responseText, timestamp: new Date().getTime()};
           localStorage.setItem("token", JSON.stringify(token));
           mainView.router.load({ url: '/m/dashboard' });
