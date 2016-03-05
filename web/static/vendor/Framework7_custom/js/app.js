@@ -26,7 +26,7 @@ var exMoney = new Framework7({
           complete: function(xhr, status) {
             if (xhr.responseText == "Unauthenticated") {
               localStorage.removeItem("token");
-              mainView.router.load({ url: '/m/dashboard', animatePages: false, reload: true });
+              window.location.replace("/m/dashboard");
             }
             else {
               token = {value: xhr.responseText, timestamp: new Date().getTime()};
@@ -45,7 +45,6 @@ var exMoney = new Framework7({
         });
       } else {
         window.location.replace("/m/dashboard");
-        window.history.pushState('m', '', '/m');
       }
     }
 
