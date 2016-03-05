@@ -64,7 +64,7 @@ defmodule ExMoney.Settings.CategoryController do
     changeset = Category.changeset(category, category_params)
 
     case Repo.update(changeset) do
-      {:ok, category} ->
+      {:ok, _category} ->
         conn
         |> put_flash(:info, "Category updated successfully.")
         |> redirect(to: settings_category_path(conn, :index))
