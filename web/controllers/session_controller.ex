@@ -31,8 +31,12 @@ defmodule ExMoney.SessionController do
   end
 
   def delete(conn, _params) do
+    if {:ok, claims} = Guardian.Plug.claims(conn) do
+      jwt = Guardian.Plug.current_token(conn)
+      Guardian.revoke!(jwt, claims)
+    end
+
     Guardian.Plug.sign_out(conn)
-    |> put_flash(:info, "Logged out successfully.")
     |> redirect(to: "/login")
   end
 

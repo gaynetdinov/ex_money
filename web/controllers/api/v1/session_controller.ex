@@ -3,8 +3,14 @@ defmodule ExMoney.Api.V1.SessionController do
 
   def relogin(conn, _params) do
     case Guardian.Plug.current_resource(conn) do
-      nil -> send_resp(conn, 401, "Unauthenticated")
+      nil -> send_resp(conn, 200, "Unauthenticated")
       user ->
+        {:ok, claims} = Guardian.Plug.claims(conn)
+        jwt = Guardian.Plug.current_token(conn)
+
+        # TODO
+        Guardian.revoke!(jwt, claims)
+
         store_last_login_at(user.last_login_at)
         update_last_login_at(user)
         conn = Guardian.Plug.sign_in(conn, user)

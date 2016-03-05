@@ -39,6 +39,7 @@ defmodule ExMoney.Mixfile do
       {:cowboy, "~> 1.0"},
       {:httpoison, "~> 0.8.0"},
       {:guardian, "0.10.1"},
+      {:guardian_db, github: "hassox/guardian_db"},
       {:comeonin, "~> 2.0"},
       {:ex_machina, "~> 0.6"},
       {:faker, "~> 0.5", only: :test},

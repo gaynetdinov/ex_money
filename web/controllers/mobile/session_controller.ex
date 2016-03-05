@@ -28,12 +28,6 @@ defmodule ExMoney.Mobile.SessionController do
     end
   end
 
-  def delete(conn, _params) do
-    Guardian.Plug.sign_out(conn)
-    |> put_flash(:info, "Logged out successfully.")
-    |> redirect(to: "/login")
-  end
-
   defp update_last_login_at(user) do
     User.update_changeset(user, %{last_login_at: :calendar.universal_time})
     |> Repo.update

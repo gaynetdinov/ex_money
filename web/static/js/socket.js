@@ -50,11 +50,14 @@ import {Socket} from "deps/phoenix/web/static/js/phoenix"
 // from connect if you don't care about authentication.
 
 exMoney.onPageInit('account-refresh-screen', function (page) {
-  var jwt = document.querySelector('meta[name="guardian_token"]').content
+  var jwt = null
+  if (localStorage.token) {
+   jwt = JSON.parse(localStorage.token).value
+  }
   var login_id = $$("#account-refresh-content").data("login-id")
   var account_id = $$("#account-refresh-content").data("account-id")
 
-  let socket = new Socket("/refresh_socket", {params: {token: window.userToken, guardian_token: jwt}})
+  let socket = new Socket("/refresh_socket", {params: {guardian_token: jwt}})
   socket.connect()
 
   let channel = socket.channel("login_refresh:interactive", {})
