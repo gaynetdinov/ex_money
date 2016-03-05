@@ -76,7 +76,7 @@
                   <div class="progress-bar horizontal">
                     <div class="progress-track">
                       <div class="progress-fill" style="width:<%= width %>; background: <%= color %>">
-                        <span><%= amount %>&nbsp;<%= raw category %></span>
+                        <span><%= Float.to_string(amount, compact: true, decimals: 0) %>&nbsp;<%= raw category %></span>
                       </div>
                     </div>
                   </div>
