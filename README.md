@@ -70,6 +70,10 @@ Currently `ExMoney` is a work-in-progress/prototype/'works on my machine' stage.
 
 ## FAQ
 
+### Why another personal finance app?
+
+I've written a blog post about ExMoney [http://blog.damirca.one/ex-money](http://blog.damirca.one/ex-money).
+
 ### Why only iOS?
 
 I don't have an Android device to test `ExMoney` on Android. Feel free to add necessary [Framework7](http://framework7.io) styles and test `ExMoney` on Android.
