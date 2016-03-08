@@ -6,12 +6,12 @@ defmodule ExMoney.Category do
   schema "categories" do
     field :name, :string
     field :humanized_name, :string
-    field :parent_id, :integer
     field :css_color, :string
 
     timestamps
 
     has_many :transactions, ExMoney.Transaction
+    belongs_to :parent, ExMoney.Category
   end
 
   @required_fields ~w(name)
@@ -20,11 +20,12 @@ defmodule ExMoney.Category do
   def changeset(model, params \\ :empty) do
     model
     |> cast(params, @required_fields, @optional_fields)
-    |> Ecto.Changeset.put_change(:css_color, generate_color())
+    |> Ecto.Changeset.put_change(:css_color, generate_color)
+    |> put_humanized_name
   end
 
-  def order_by_name do
-    from c in Category, order_by: c.name
+  def list do
+    from c in Category, order_by: c.name, preload: [:parent]
   end
 
   def by_name(name) do
@@ -36,6 +37,11 @@ defmodule ExMoney.Category do
       where: is_nil(c.parent_id),
       order_by: c.name,
       select: {c.humanized_name, c.id}
+  end
+
+  def by_ids(ids) do
+    from c in Category,
+      where: c.id in ^(ids)
   end
 
   def select_list do
@@ -70,5 +76,14 @@ defmodule ExMoney.Category do
     b_int = round(b * 256)
 
     "rgb(#{r_int}, #{g_int}, #{b_int})"
+  end
+
+  defp put_humanized_name(changeset) do
+    case Ecto.Changeset.fetch_change(changeset, :name) do
+      {:ok, name} ->
+        humanized_name = String.replace(name, "_", " ") |> String.capitalize
+        Ecto.Changeset.put_change(changeset, :humanized_name, humanized_name)
+      :error -> changeset
+    end
   end
 end

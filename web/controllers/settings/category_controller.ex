@@ -7,13 +7,12 @@ defmodule ExMoney.Settings.CategoryController do
   plug :scrub_params, "category" when action in [:create, :update]
 
   def index(conn, _params) do
-    categories = Repo.all(Category.order_by_name)
+    categories = Category.list |> Repo.all
 
-    render(conn, :index,
+    render conn, :index,
       topbar: "settings",
       navigation: "categories",
       categories: categories
-    )
   end
 
   def new(conn, _params) do
@@ -86,5 +85,33 @@ defmodule ExMoney.Settings.CategoryController do
     conn
     |> put_flash(:info, "Category deleted successfully.")
     |> redirect(to: settings_category_path(conn, :index))
+  end
+
+  def sync(conn, _params) do
+    categories = ExMoney.Saltedge.Client.request(:get, "categories")["data"]
+
+    Repo.transaction(fn ->
+      Enum.each(categories, fn({main_category, sub_categories}) ->
+        category = create_or_update_category(main_category)
+
+        Enum.each(sub_categories, fn(sub_category) ->
+          create_or_update_category(sub_category, category.id)
+        end)
+      end)
+    end)
+
+    redirect(conn, to: settings_category_path(conn, :index))
+  end
+
+  defp create_or_update_category(name, parent_id \\ nil) do
+    case Category.by_name(name) |> Repo.one do
+      nil ->
+        Category.changeset(%Category{}, %{name: name, parent_id: parent_id})
+        |> Repo.insert!
+
+      existing_category ->
+        Category.changeset(existing_category, %{parent_id: parent_id})
+        |> Repo.update!
+    end
   end
 end

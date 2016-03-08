@@ -48,6 +48,7 @@ defmodule ExMoney.Router do
       get "/user", UserController, :edit
       put "/user", UserController, :update
       resources "/accounts", AccountController
+      get "/categories/sync", CategoryController, :sync
       resources "/categories", CategoryController
       resources "/rules", RuleController
       resources "/logins", LoginController, only: [:index, :delete]

@@ -3,7 +3,7 @@
  * Full Featured Mobile HTML Framework For Building iOS & Android Apps
  * 
  * 
- * Included modules: modals,swipeout,cards,smart-select,scroll-toolbars,fast-clicks,forms,notifications,calendar,searchbar,modals
+ * Included modules: modals,swipeout,cards,smart-select,scroll-toolbars,fast-clicks,forms,notifications,calendar,searchbar,modals,accordion,modals
  * 
  * http://www.idangero.us/framework7
  * 
@@ -13,7 +13,7 @@
  * 
  * Licensed under MIT
  * 
- * Released on: February 23, 2016
+ * Released on: March 8, 2016
  */
 (function () {
 
@@ -7594,6 +7594,67 @@
             else if (container.hasClass('navbar-inner')) {
                 container.once('navbarBeforeRemove', onBeforeRemove);
             }
+        };
+
+        /*===============================================================================
+        ************   Accordion   ************
+        ===============================================================================*/
+        app.accordionToggle = function (item) {
+            item = $(item);
+            if (item.length === 0) return;
+            if (item.hasClass('accordion-item-expanded')) app.accordionClose(item);
+            else app.accordionOpen(item);
+        };
+        app.accordionOpen = function (item) {
+            item = $(item);
+            var list = item.parents('.accordion-list').eq(0);
+            var content = item.children('.accordion-item-content');
+            if (content.length === 0) content = item.find('.accordion-item-content');
+            var expandedItem = list.length > 0 && item.parent().children('.accordion-item-expanded');
+            if (expandedItem.length > 0) {
+                app.accordionClose(expandedItem);
+            }
+            content.css('height', content[0].scrollHeight + 'px').transitionEnd(function () {
+                if (item.hasClass('accordion-item-expanded')) {
+                    content.transition(0);
+                    content.css('height', 'auto');
+                    var clientLeft = content[0].clientLeft;
+                    content.transition('');
+                    item.trigger('opened');
+                }
+                else {
+                    content.css('height', '');
+                    item.trigger('closed');
+                }
+            });
+            item.trigger('open');
+            item.addClass('accordion-item-expanded');
+        };
+        app.accordionClose = function (item) {
+            item = $(item);
+            var content = item.children('.accordion-item-content');
+            if (content.length === 0) content = item.find('.accordion-item-content');
+            item.removeClass('accordion-item-expanded');
+            content.transition(0);
+            content.css('height', content[0].scrollHeight + 'px');
+            // Relayout
+            var clientLeft = content[0].clientLeft;
+            // Close
+            content.transition('');
+            content.css('height', '').transitionEnd(function () {
+                if (item.hasClass('accordion-item-expanded')) {
+                    content.transition(0);
+                    content.css('height', 'auto');
+                    var clientLeft = content[0].clientLeft;
+                    content.transition('');
+                    item.trigger('opened');
+                }
+                else {
+                    content.css('height', '');
+                    item.trigger('closed');
+                }
+            });
+            item.trigger('close');
         };
 
         /*===========================

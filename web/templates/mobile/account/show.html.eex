@@ -72,12 +72,27 @@
             <div class="row">
               <div class="container horizontal flat">
                 <h3>Top Expenses</h3>
-                <%= for {category, color, width, amount} <- categories_chart_data(@categories) do %>
-                  <div class="progress-bar horizontal">
-                    <div class="progress-track">
-                      <div class="progress-fill" style="width:<%= width %>; background: <%= color %>">
-                        <span><%= Float.to_string(amount, compact: true, decimals: 0) %>&nbsp;<%= raw category %></span>
+                <%= for {{category, color, width, amount}, sub_categories} <- categories_chart_data(@categories) do %>
+                  <div class="progress-bar horizontal accordion-item">
+                    <a href="#" class="item-content item-link" style="color: black">
+                      <div class="progress-track">
+                        <div class="progress-fill" style="width:<%= width %>; background: <%= color %>">
+                          <span><%= Float.to_string(amount, compact: true, decimals: 1) %>&nbsp;<%= raw category %></span>
+                        </div>
                       </div>
+                    </a>
+                    <div class="accordion-item-content" style="margin-left: 20px">
+                      <%= if Enum.count(sub_categories) > 0 do %>
+                        <div class="progress-bar horizontal">
+                          <%= for {category, _color, width, amount} <- sub_categories do %>
+                            <div class="progress-track" style="margin-top: 10px">
+                              <div class="progress-fill" style="width:<%= width %>; background: #b3b3b3">
+                                <span><%= Float.to_string(amount, compact: true, decimals: 1) %>&nbsp;<%= raw category %></span>
+                              </div>
+                            </div>
+                          <% end %>
+                        </div>
+                      <% end %>
                     </div>
                   </div>
                 <% end %>
