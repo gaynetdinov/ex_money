@@ -114,7 +114,18 @@ var exMoney = new Framework7({
 
 var mainView = exMoney.addView('.view-main');
 
-exMoney.onPageBeforeInit('edit-transaction-screen', function (page) {
+function adjustSelectedCategory() {
+  var category = $$('a.smart-select div.item-content div.item-inner div.item-after');
+  category.text(category.text().replace(/\u21b3/g, ""));
+};
+
+exMoney.onPageInit('edit-transaction-screen', function (page) {
+  adjustSelectedCategory();
+
+  $$('#transaction_category_id').on('change', function(e) {
+    setTimeout(function() { adjustSelectedCategory(); }, 100);
+  });
+
   $$('form.ajax-submit').on('submitted', function (e) {
     var xhr = e.detail.xhr;
 

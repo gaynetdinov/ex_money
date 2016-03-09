@@ -16,7 +16,15 @@
           <ul>
             <li>
               <a href="#" class="item-link smart-select" data-back-on-select="true" data-open-in="popup" data-searchbar="true" data-page-title="Choose Category">
-                <%= select(f, :category_id, @categories) %>
+                <select class="form-control" id="transaction_category_id" name="transaction[category_id]">
+                  <%= for {{name, id}, sub_categories} <- @categories do %>
+                    <option <%= if id == @transaction.category_id, do: "selected=selected" %> value="<%= id %>"><%= name %></option>
+                    <%= for {name, id} <- sub_categories do %>
+                      <option <%= if id == @transaction.category_id, do: "selected=selected" %> value="<%= id %>">&#8627;&nbsp;<%= name %></option>
+                    <% end %>
+                  <% end %>
+                </select>
+
                 <div class="item-content">
                   <div class="item-inner">
                     <div class="item-title">Category</div>

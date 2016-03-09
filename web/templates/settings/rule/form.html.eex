@@ -27,7 +27,11 @@
 
   <div class="form-group">
     <%= label f, :rule_target_id, class: "control-label" %>
-    <%= select f, :target_id, @target, class: "form-control" %>
+    <%= if @conn.params["type"] == "assign_category" do %>
+      <%= render "categories_list.html", target: @target %>
+    <% else %>
+      <%= render "accounts_list.html", target: @target, f: f %>
+    <% end %>
   </div>
 
   <div class="checkbox">
