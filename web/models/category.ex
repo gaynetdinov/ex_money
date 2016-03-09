@@ -44,6 +44,12 @@ defmodule ExMoney.Category do
       where: c.id in ^(ids)
   end
 
+  def sub_categories_by_id(id) do
+    from c in Category,
+      where: c.parent_id == ^id,
+      select: c.id
+  end
+
   def select_list do
     from c in Category,
       select: {c.humanized_name, c.id},

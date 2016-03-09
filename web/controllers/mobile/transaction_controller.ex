@@ -5,6 +5,35 @@ defmodule ExMoney.Mobile.TransactionController do
   plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.Mobile.Unauthenticated
   plug :put_layout, "mobile.html"
 
+  def index(conn, %{"date" => date, "account_id" => account_id, "category_id" => category_id}) do
+    account = Repo.get!(Account, account_id)
+    category = Repo.get!(Category, category_id)
+    category_ids = case category.parent_id do
+      nil -> [category.id | Repo.all(Category.sub_categories_by_id(category.id))]
+      _parent_id -> [category.id]
+    end
+    parsed_date = parse_date(date)
+    from = first_day_of_month(parsed_date)
+    to = last_day_of_month(parsed_date)
+
+    transactions = Transaction.by_month_by_category(account_id, from, to, category_ids)
+    |> Repo.all
+    |> Enum.group_by(fn(transaction) ->
+      transaction.made_on
+    end)
+    |> Enum.sort(fn({date_1, _transactions}, {date_2, _transaction}) ->
+      Ecto.Date.compare(date_1, date_2) != :lt
+    end)
+
+    {:ok, date} = Timex.DateFormat.format(parsed_date, "%b %Y", :strftime)
+
+    render conn, :index,
+      currency_label: account.currency_label,
+      transactions: transactions,
+      date: date,
+      category: category.humanized_name
+  end
+
   def new(conn, _params) do
     categories = Category.select_list
     |> Repo.all

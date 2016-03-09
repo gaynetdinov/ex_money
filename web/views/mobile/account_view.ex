@@ -71,8 +71,8 @@ defmodule ExMoney.Mobile.AccountView do
         end
       end)
       |> Enum.sort(fn(
-        {_cat_1, _color_1, _width_1, amount_1},
-        {_cat_2, _color_2, _width_2, amount_2}) ->
+        {_id_1, _cat_1, _color_1, _width_1, amount_1},
+        {_id_2, _cat_2, _color_2, _width_2, amount_2}) ->
           amount_1 > amount_2
       end)
 
@@ -85,8 +85,8 @@ defmodule ExMoney.Mobile.AccountView do
       end
     end)
     |> Enum.sort(fn(
-      {{_cat_1, _color_1, _width_1, amount_1}, _sub_categories_1},
-      {{_cat_2, _color_2, _width_2, amount_2}, _sub_categories_2}) ->
+      {{_id_1, _cat_1, _color_1, _width_1, amount_1}, _sub_categories_1},
+      {{_id_2, _cat_2, _color_2, _width_2, amount_2}, _sub_categories_2}) ->
         amount_1 > amount_2
     end)
   end
@@ -99,8 +99,8 @@ defmodule ExMoney.Mobile.AccountView do
     if percent == "0" do
       nil
     else
-      html_category = String.replace(category.humanized_name, " ", "&nbsp;")
-      {html_category, category.css_color, "#{percent}%", amount}
+      html_name = String.replace(category.humanized_name, " ", "&nbsp;")
+      {category.id, html_name, category.css_color, "#{percent}%", amount}
     end
   end
 
