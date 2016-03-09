@@ -131,12 +131,11 @@ defmodule CallbacksController do
           last_fail_message: params["data"]["message"]
         })
         if changeset.valid? do
-          case Repo.update(changeset) do
+          case Repo.insert(changeset) do
             {:ok, _login} ->
               put_resp_content_type(conn, "application/json")
               |> send_resp(200, "ok")
             {:error, changeset} ->
-              # log error
               Logger.info("Could not create Login for customer_id => #{inspect(customer_id)}, errors => #{inspect(changeset.errors)}")
               put_resp_content_type(conn, "application/json")
               |> send_resp(200, "ok")
@@ -154,7 +153,9 @@ defmodule CallbacksController do
 
         Login.failure_callback_changeset(login, params)
         |> Repo.update
-        Logger.info("Login has been updated with failure reason")
+        Logger.info("Login has been updated with failure reason.")
+
+        otp_done(user.id)
 
         put_resp_content_type(conn, "application/json")
         |> send_resp(200, "ok")
@@ -185,7 +186,6 @@ defmodule CallbacksController do
     ) |> Repo.update!
     Logger.info("last_refreshed_at for login #{login.saltedge_login_id} has been updated")
   end
-
 
   defp set_user(conn, _opts) do
     case conn.params["data"]["customer_id"] do
@@ -224,5 +224,11 @@ defmodule CallbacksController do
       [] -> nil
       [{_key, value}] -> value
     end
+  end
+
+  defp otp_done(user_id) do
+    user_id = "user:#{user_id}"
+    key = "ongoing_interactive_#{user_id}"
+    :ets.update_element(:ex_money_cache, key, {2, false})
   end
 end
