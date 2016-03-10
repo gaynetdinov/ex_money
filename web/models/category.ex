@@ -41,7 +41,7 @@ defmodule ExMoney.Category do
   def select_list do
     from c in Category,
       select: {c.humanized_name, c.id},
-      order_by: c.name
+      order_by: c.humanized_name
   end
 
   def generate_color() do

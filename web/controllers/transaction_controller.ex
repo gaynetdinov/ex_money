@@ -15,34 +15,25 @@ defmodule ExMoney.TransactionController do
     |> preload([:transaction_info, :account, :saltedge_account, :category])
     |> Paginator.paginate(params)
 
-    render(
-      conn, :index,
+    render conn, :index,
       topbar: "dashboard",
       navigation: "transactions",
       transactions: paginator.entries,
       page_number: paginator.page_number,
       total_pages: paginator.total_pages
-    )
   end
 
   def new(conn, _params) do
     changeset = Transaction.changeset(%Transaction{})
-    accounts = Account.only_custom
-    |> Repo.all
+    accounts = Account.only_custom |> Repo.all
+    categories = Category.select_list |> Repo.all
 
-    categories = Category
-    |> select([c], {c.name, c.id})
-    |> order_by([c], c.name)
-    |> Repo.all
-
-    render(
-      conn, :new,
+    render conn, :new,
       changeset: changeset,
       topbar: "dashboard",
       navigation: "transactions",
       accounts: accounts,
       categories: categories
-    )
   end
 
   def create(conn, %{"transaction" => transaction_params}) do
@@ -52,23 +43,33 @@ defmodule ExMoney.TransactionController do
 
     case Repo.insert(changeset) do
       {:ok, _transaction} ->
-        conn
-        |> put_flash(:info, "Transaction created successfully.")
-        |> redirect(to: transaction_path(conn, :index))
+        redirect(conn, to: transaction_path(conn, :index))
       {:error, changeset} ->
-        render(conn, "new.html", changeset: changeset, topbar: "dashboard", navigation: "transactions")
+        render conn, :new,
+          changeset: changeset,
+          topbar: "dashboard",
+          navigation: "transactions"
     end
   end
 
   def show(conn, %{"id" => id}) do
     transaction = Repo.get!(Transaction, id)
-    render(conn, "show.html", transaction: transaction, topbar: "dashboard", navigation: "transactions")
+
+    render conn, :show,
+      transaction: transaction,
+      topbar: "dashboard",
+      navigation: "transactions"
   end
 
   def edit(conn, %{"id" => id}) do
     transaction = Repo.get!(Transaction, id)
     changeset = Transaction.changeset(transaction)
-    render(conn, "edit.html", transaction: transaction, changeset: changeset, topbar: "dashboard", navigation: "transactions")
+
+    render conn, :edit,
+      transaction: transaction,
+      changeset: changeset,
+      topbar: "dashboard",
+      navigation: "transactions"
   end
 
   def update(conn, %{"id" => id, "transaction" => transaction_params}) do
@@ -77,23 +78,19 @@ defmodule ExMoney.TransactionController do
 
     case Repo.update(changeset) do
       {:ok, transaction} ->
-        conn
-        |> put_flash(:info, "Transaction updated successfully.")
-        |> redirect(to: transaction_path(conn, :show, transaction))
+        redirect(conn, to: transaction_path(conn, :show, transaction))
       {:error, changeset} ->
-        render(conn, "edit.html", transaction: transaction, changeset: changeset, topbar: "dashboard", navigation: "transactions")
+        render conn, :edit,
+          transaction: transaction,
+          changeset: changeset,
+          topbar: "dashboard",
+          navigation: "transactions"
     end
   end
 
   def delete(conn, %{"id" => id}) do
-    transaction = Repo.get!(Transaction, id)
+    Repo.get!(Transaction, id) |> Repo.delete!
 
-    # Here we use delete! (with a bang) because we expect
-    # it to always work (and if it does not, it will raise).
-    Repo.delete!(transaction)
-
-    conn
-    |> put_flash(:info, "Transaction deleted successfully.")
-    |> redirect(to: transaction_path(conn, :index))
+    redirect(conn, to: transaction_path(conn, :index))
   end
 end

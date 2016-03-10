@@ -17,16 +17,15 @@ defmodule ExMoney.SessionController do
       if changeset.valid? do
         update_last_login_at(user)
 
-        conn
-        |> put_flash(:info, "Logged in.")
-        |> Guardian.Plug.sign_in(user)
+        Guardian.Plug.sign_in(conn, user)
         |> redirect(to: dashboard_path(conn, :overview))
       else
-        render(conn, "new.html", changeset: changeset)
+        render(conn, :new, changeset: changeset)
       end
     else
-      changeset = User.login_changeset(%User{}) |> Ecto.Changeset.add_error(:login, "not found")
-      render(conn, "new.html", changeset: changeset)
+      changeset = User.login_changeset(%User{})
+      |> Ecto.Changeset.add_error(:login, "not found")
+      render(conn, :new, changeset: changeset)
     end
   end
 

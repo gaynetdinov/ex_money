@@ -18,7 +18,7 @@ defmodule ExMoney.DashboardController do
     accounts = Account.show_on_dashboard
     |> Repo.all
 
-    render conn, "overview.html",
+    render conn, :overview,
       navigation: "overview",
       topbar: "dashboard",
       recent_transactions: recent_transactions,

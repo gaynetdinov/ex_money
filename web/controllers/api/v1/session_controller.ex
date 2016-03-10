@@ -8,7 +8,6 @@ defmodule ExMoney.Api.V1.SessionController do
         {:ok, claims} = Guardian.Plug.claims(conn)
         jwt = Guardian.Plug.current_token(conn)
 
-        # TODO
         Guardian.revoke!(jwt, claims)
 
         store_last_login_at(user.last_login_at)
