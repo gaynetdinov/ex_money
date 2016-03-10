@@ -16,21 +16,14 @@
       <h2 class="sub-header">Recent transactions</h2>
       <%= for {date, transactions} <- @recent_transactions do %>
         <div class="panel panel-default">
-          <div class="panel-heading">
-            <div class="row">
-              <div class="col-xs-6"><%= date %></div>
-              <div class="col-xs-6" align="right">
-                <%= balance(transactions) %> <%= List.first(transactions).account.currency_label %>
-              </div>
-            </div>
-          </div>
+          <div class="panel-heading"><%= date %></div>
 
           <table class="table recent-transactions-table">
             <%= for transaction <- transactions do %>
               <tr>
                 <td width="50%"><%= description(transaction) %></td>
                 <td width="25%"><%= transaction.category.humanized_name %></td>
-                <td width="25%" align="right"><%= transaction.amount %></td>
+                <td width="25%" align="right"><%= transaction.amount %> <%= transaction.account.currency_label %></td>
               </tr>
             <% end %>
           </table>
