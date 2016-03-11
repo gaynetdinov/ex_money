@@ -3,7 +3,9 @@ defmodule ExMoney.Mobile.AccountView do
 
   alias ExMoney.{Category, Repo}
 
-  def categories_chart_data(%{}), do: []
+  def categories_chart_data(categories) when map_size(categories) == 0 do
+    []
+  end
 
   # FIXME Oh my, that's got complicated.
   # I hope there is a better way to generate data for the chart.
