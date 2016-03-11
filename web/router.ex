@@ -66,10 +66,10 @@ defmodule ExMoney.Router do
     get "/login", SessionController, :new, as: :login
     get "/logged_in", SessionController, :exist, as: :logged_in
     post "/login", SessionController, :create, as: :login
-    get "/expenses", TransactionController, :expenses
-    get "/income", TransactionController, :income
-    resources "/accounts", AccountController, only: [:show]
     get "/accounts/:id/refresh", AccountController, :refresh
+    get "/accounts/:id/expenses", AccountController, :expenses
+    get "/accounts/:id/income", AccountController, :income
+    resources "/accounts", AccountController, only: [:show]
     resources "/transactions", TransactionController
   end
 

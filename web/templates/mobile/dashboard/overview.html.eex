@@ -47,43 +47,10 @@
         <div class="card">
           <div class="card-content">
             <div class="list-block media-list">
-              <ul>
-                <%= for {date, transactions} <- @recent_transactions do %>
-                  <li class="item-divider"><%= date %></li>
-                  <%= for transaction <- sort_by_inserted_at(transactions) do %>
-                    <li class="swipeout">
-                      <div class="swipeout-content">
-                        <div class="item-content <%= if Enum.member?(@new_transaction_ids, transaction.id), do: "new_transaction" %>">
-
-                          <div class="item-inner">
-                            <div class="item-title-row">
-                              <div class="item-title"><%= description(transaction) %></div>
-                            </div>
-                            <div class="item-subtitle">
-                              <%= transaction.account.name %>
-                            </div>
-                            <div class="item-subtitle">
-                              <div class="row">
-                                <div class="col-50">
-                                  <%= transaction.category.humanized_name %>
-                                </div>
-                                <div class="col-50" align="right">
-                                  <%= transaction.amount %> <%= transaction.account.currency_label %>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="swipeout-actions-right">
-                        <a href="/m/transactions/<%= transaction.id %>" class="bg-blue show-transaction" data-ignore-cache="true">Show</a>
-                        <a href="/m/transactions/<%= transaction.id %>/edit" class="bg-orange edit-transaction">Edit</a>
-                        <a href="#" data-id="<%= transaction.id %>" class="swipeout-delete bg-red delete-transaction">Delete</a>
-                      </div>
-                    </li>
-                  <% end %>
-                <% end %>
-              </ul>
+              <%= render ExMoney.SharedView, "transactions_list.html",
+                transactions: @recent_transactions,
+                new_transaction_ids: @new_transaction_ids,
+                from: "/m/dashboard" %>
             </div>
           </div>
         </div>

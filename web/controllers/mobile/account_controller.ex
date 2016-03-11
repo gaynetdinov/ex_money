@@ -58,6 +58,60 @@ defmodule ExMoney.Mobile.AccountController do
     render conn, :refresh, account: account
   end
 
+  def expenses(conn, %{"date" => date, "id" => account_id}) do
+    account = Repo.get!(Account, account_id)
+    parsed_date = parse_date(date)
+    from = first_day_of_month(parsed_date)
+    to = last_day_of_month(parsed_date)
+
+    expenses = Transaction.expenses_by_month(account_id, from, to)
+    |> Repo.all
+    |> Enum.group_by(fn(transaction) ->
+      transaction.made_on
+    end)
+    |> Enum.sort(fn({date_1, _transactions}, {date_2, _transaction}) ->
+      Ecto.Date.compare(date_1, date_2) != :lt
+    end)
+
+    {:ok, formatted_date} = Timex.DateFormat.format(parsed_date, "%b %Y", :strftime)
+
+    from = URI.encode_www_form("/m/accounts/#{account_id}/expenses?date=#{date}")
+
+    render conn, :expenses,
+      currency_label: account.currency_label,
+      expenses: expenses,
+      date: %{label: formatted_date, value: date},
+      from: from,
+      account_id: account.id
+  end
+
+  def income(conn, %{"date" => date, "id" => account_id}) do
+    account = Repo.get!(Account, account_id)
+    parsed_date = parse_date(date)
+    from = first_day_of_month(parsed_date)
+    to = last_day_of_month(parsed_date)
+
+    income = Transaction.income_by_month(account_id, from, to)
+    |> Repo.all
+    |> Enum.group_by(fn(transaction) ->
+      transaction.made_on
+    end)
+    |> Enum.sort(fn({date_1, _transactions}, {date_2, _transaction}) ->
+      Ecto.Date.compare(date_1, date_2) != :lt
+    end)
+
+    {:ok, formatted_date} = Timex.DateFormat.format(parsed_date, "%b %Y", :strftime)
+
+    from = URI.encode_www_form("/m/accounts/#{account_id}/income?date=#{date}")
+
+    render conn, :income,
+      currency_label: account.currency_label,
+      income: income,
+      date: %{label: formatted_date, value: date},
+      from: from,
+      account_id: account.id
+  end
+
   defp parse_date(month) when month == "" or is_nil(month) do
     Timex.Date.local
   end

@@ -13,6 +13,7 @@
     <div class="page-content">
       <div class="list-block reduced-margin">
         <%= form_for @changeset, mobile_transaction_path(@conn, :update, @transaction), [method: :put, class: "ajax-submit"], fn f -> %>
+          <%= hidden_input(f, :from, value: @from) %>
           <ul>
             <li>
               <a href="#" class="item-link smart-select smart-category-select" data-back-on-select="true" data-open-in="popup" data-searchbar="true" data-page-title="Choose Category">

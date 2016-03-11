@@ -74,6 +74,29 @@ function applyBindings(channel) {
   });
 }
 
+function deleteTransaction() {
+  $$('.swipeout').on('deleted', function (e) {
+    var id = $$(e.target).children("div.swipeout-actions-opened").find("a.delete-transaction").data('id');
+    var csrf = document.querySelector("meta[name=csrf]").content;
+
+    $$.ajax({
+      url: '/m/transactions/' + id + "?_format=json",
+      contentType: "application/json",
+      type: 'DELETE',
+      headers: {
+        "X-CSRF-TOKEN": csrf
+      },
+      success: function(data, status, xhr) {
+        var response = JSON.parse(data);
+        $$("#account_id_" + response.account_id).text(response.new_balance);
+      },
+      error: function(xhr, status) {
+        alert("Something went wrong, check server logs");
+      }
+    });
+  });
+}
+
 var exMoney = new Framework7({
   modalTitle: 'ExMoney',
   scrollTopOnNavbarClick: true,
@@ -165,28 +188,7 @@ var exMoney = new Framework7({
       });
     }
 
-    if (page.name == 'overview-screen') {
-      $$('.swipeout').on('deleted', function (e) {
-        var id = $$(e.target).children("div.swipeout-actions-opened").find("a.delete-transaction").data('id');
-        var csrf = document.querySelector("meta[name=csrf]").content;
-
-        $$.ajax({
-          url: '/m/transactions/' + id + "?_format=json",
-          contentType: "application/json",
-          type: 'DELETE',
-          headers: {
-            "X-CSRF-TOKEN": csrf
-          },
-          success: function(data, status, xhr) {
-            var response = JSON.parse(data);
-            $$("#account_id_" + response.account_id).text(response.new_balance);
-          },
-          error: function(xhr, status) {
-            alert("Something went wrong, check server logs");
-          }
-        });
-      });
-    }
+    if (page.name == 'overview-screen') { deleteTransaction(); }
   }
 });
 
@@ -197,13 +199,28 @@ function adjustSelectedCategory() {
   category.text(category.text().replace(/\u21b3/g, ""));
 };
 
+exMoney.onPageInit('income-screen', function(page) {
+  deleteTransaction();
+});
+
+exMoney.onPageInit('expenses-screen', function(page) {
+  deleteTransaction();
+});
+
+exMoney.onPageInit('transactions-screen', function(page) {
+  deleteTransaction();
+});
+
 exMoney.onPageInit('account-screen', function (page) {
   $$('a.category-bar').on('taphold', function () {
     var category_id = $$(this).data("category-id");
     var date = $$("#current_date").data("current-date");
     var account_id = $$("#account_id").data("account-id");
 
-    mainView.router.load({ url: '/m/transactions?category_id='+category_id+'&date='+date+'&account_id='+account_id });
+    mainView.router.load({
+      url: '/m/transactions?category_id='+category_id+'&date='+date+'&account_id='+account_id,
+      ignoreCache: true
+    });
   });
 });
 
@@ -219,7 +236,7 @@ exMoney.onPageInit('edit-transaction-screen', function (page) {
 
     if (xhr.status == 200) {
       mainView.router.back({
-        url: '/m/dashboard',
+        url: xhr.responseText,
         ignoreCache: true,
         force: true
       });
