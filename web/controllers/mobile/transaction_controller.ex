@@ -35,15 +35,12 @@ defmodule ExMoney.Mobile.TransactionController do
   end
 
   def new(conn, _params) do
-    categories = Category.select_list
-    |> Repo.all
+    categories = categories_list
+    uncategorized = Map.keys(categories)
+    |> Enum.find(fn({name, _id}) -> name == "Uncategorized" end)
+    categories = Map.delete(categories, uncategorized)
+    categories = [{uncategorized, []} | Map.to_list(categories)]
 
-    uncategorized = Enum.find(categories, fn({name, _id}) -> name == "Uncategorized" end)
-    sorted_categories = Enum.sort(categories, fn({name_1, _id_1}, {name_2, _id_2}) ->
-      name_2 > name_1
-    end)
-
-    categories = List.flatten([uncategorized | sorted_categories])
     accounts = Account.only_custom |> Repo.all
 
     changeset = Transaction.changeset_custom(%Transaction{})
@@ -56,19 +53,7 @@ defmodule ExMoney.Mobile.TransactionController do
 
   def edit(conn, %{"id" => id}) do
     transaction = Repo.get(Transaction, id)
-
-    categories_dict = Repo.all(Category)
-
-    categories = Enum.reduce(categories_dict, %{}, fn(category, acc) ->
-      if is_nil(category.parent_id) do
-        sub_categories = Enum.filter(categories_dict, fn(c) -> c.parent_id == category.id end)
-        |> Enum.map(fn(sub_category) -> {sub_category.humanized_name, sub_category.id} end)
-        Map.put(acc, {category.humanized_name, category.id}, sub_categories)
-      else
-        acc
-      end
-    end)
-
+    categories = categories_list
     changeset = Transaction.update_changeset(transaction)
 
     render conn, :edit,
@@ -202,5 +187,19 @@ defmodule ExMoney.Mobile.TransactionController do
     Timex.Date.from({{date.year, date.month, days_in_month}, {23, 59, 59}})
     |> Timex.DateFormat.format("%Y-%m-%d", :strftime)
     |> elem(1)
+  end
+
+  defp categories_list do
+    categories_dict = Repo.all(Category)
+
+    Enum.reduce(categories_dict, %{}, fn(category, acc) ->
+      if is_nil(category.parent_id) do
+        sub_categories = Enum.filter(categories_dict, fn(c) -> c.parent_id == category.id end)
+        |> Enum.map(fn(sub_category) -> {sub_category.humanized_name, sub_category.id} end)
+        Map.put(acc, {category.humanized_name, category.id}, sub_categories)
+      else
+        acc
+      end
+    end)
   end
 end

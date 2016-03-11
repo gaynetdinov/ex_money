@@ -117,7 +117,7 @@ var exMoney = new Framework7({
 var mainView = exMoney.addView('.view-main');
 
 function adjustSelectedCategory() {
-  var category = $$('a.smart-select div.item-content div.item-inner div.item-after');
+  var category = $$('a.smart-category-select div.item-content div.item-inner div.item-after');
   category.text(category.text().replace(/\u21b3/g, ""));
 };
 
@@ -153,7 +153,13 @@ exMoney.onPageInit('edit-transaction-screen', function (page) {
   });
 });
 
-exMoney.onPageBeforeInit('new-transaction-screen', function (page) {
+exMoney.onPageInit('new-transaction-screen', function (page) {
+  adjustSelectedCategory();
+
+  $$('#transaction_category_id').on('change', function(e) {
+    setTimeout(function() { adjustSelectedCategory(); }, 100);
+  });
+
   var calculator = exMoney.keypad({
     input: '#new-transaction-amount',
     toolbar: false,
