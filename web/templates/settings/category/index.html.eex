@@ -2,26 +2,27 @@
   <%= render ExMoney.SharedView, "settings_navbar.html", conn: @conn, navigation: @navigation %>
 
   <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-    <h1 class="page-header">Categories [<%= link "New", to: settings_category_path(@conn, :new) %>]</h1>
+    <h2 class="sub-header">Categories
+      [<%= link "New", to: settings_category_path(@conn, :new) %>]
+      [<%= link "Sync with Saltedge", to: settings_category_path(@conn, :sync) %>]
+    </h1>
 
     <div class="table-responsive">
       <table class="table table-striped">
         <thead>
           <tr>
-            <th>Id</th>
             <th>Name</th>
             <th>Humanized name</th>
-            <th>Parent Id</th>
+            <th>Parent Category</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           <%= for category <- @categories do %>
             <tr>
-              <td><%= category.id %></td>
               <td><%= category.name %></td>
               <td><%= category.humanized_name %></td>
-              <td><%= category.parent_id %></td>
+              <td><%= parent_category(category.parent) %></td>
               <td>
                 <%= link "Edit", to: settings_category_path(@conn, :edit, category), class: "btn btn-default btn-xs" %>
                 <%= link "Delete", to: settings_category_path(@conn, :delete, category), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %>

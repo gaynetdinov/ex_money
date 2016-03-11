@@ -3,6 +3,8 @@ var $$ = Dom7;
 var exMoney = new Framework7({
   modalTitle: 'ExMoney',
   scrollTopOnNavbarClick: true,
+  tapHold: true,
+  tapHoldDelay: 500,
 
   onAjaxStart: function (xhr) {
     exMoney.showIndicator();
@@ -114,7 +116,28 @@ var exMoney = new Framework7({
 
 var mainView = exMoney.addView('.view-main');
 
-exMoney.onPageBeforeInit('edit-transaction-screen', function (page) {
+function adjustSelectedCategory() {
+  var category = $$('a.smart-category-select div.item-content div.item-inner div.item-after');
+  category.text(category.text().replace(/\u21b3/g, ""));
+};
+
+exMoney.onPageInit('account-screen', function (page) {
+  $$('a.category-bar').on('taphold', function () {
+    var category_id = $$(this).data("category-id");
+    var date = $$("#current_date").data("current-date");
+    var account_id = $$("#account_id").data("account-id");
+
+    mainView.router.load({ url: '/m/transactions?category_id='+category_id+'&date='+date+'&account_id='+account_id });
+  });
+});
+
+exMoney.onPageInit('edit-transaction-screen', function (page) {
+  adjustSelectedCategory();
+
+  $$('#transaction_category_id').on('change', function(e) {
+    setTimeout(function() { adjustSelectedCategory(); }, 100);
+  });
+
   $$('form.ajax-submit').on('submitted', function (e) {
     var xhr = e.detail.xhr;
 
@@ -130,7 +153,13 @@ exMoney.onPageBeforeInit('edit-transaction-screen', function (page) {
   });
 });
 
-exMoney.onPageBeforeInit('new-transaction-screen', function (page) {
+exMoney.onPageInit('new-transaction-screen', function (page) {
+  adjustSelectedCategory();
+
+  $$('#transaction_category_id').on('change', function(e) {
+    setTimeout(function() { adjustSelectedCategory(); }, 100);
+  });
+
   var calculator = exMoney.keypad({
     input: '#new-transaction-amount',
     toolbar: false,

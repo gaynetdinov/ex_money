@@ -21,8 +21,25 @@
   </div>
 
   <div class="form-group">
+    <label class="radio-inline">
+      <%= radio_button(f, :type, "expense", checked: "checked") %> Expense
+    </label>
+    <label class="radio-inline">
+      <%= radio_button(f, :type, "income") %> Income
+    </label>
+  </div>
+
+  <div class="form-group">
     <label for="transaction_category_id">Category</label>
-    <%= select(f, :category_id, @categories, default: "29") %>
+    <select class="form-control" id="transaction_category_id" name="transaction[category_id]">
+      <option value="">Choose category</option>
+      <%= for {{name, id}, sub_categories} <- @categories do %>
+        <option value="<%= id %>"><%= name %></option>
+        <%= for {name, id} <- sub_categories do %>
+          <option value="<%= id %>">&nbsp;&nbsp;&nbsp;<%= name %></option>
+        <% end %>
+      <% end %>
+    </select>
   </div>
 
   <div class="form-group">

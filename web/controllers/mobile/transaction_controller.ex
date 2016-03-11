@@ -5,16 +5,42 @@ defmodule ExMoney.Mobile.TransactionController do
   plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.Mobile.Unauthenticated
   plug :put_layout, "mobile.html"
 
-  def new(conn, _params) do
-    categories = Category.select_list
-    |> Repo.all
+  def index(conn, %{"date" => date, "account_id" => account_id, "category_id" => category_id}) do
+    account = Repo.get!(Account, account_id)
+    category = Repo.get!(Category, category_id)
+    category_ids = case category.parent_id do
+      nil -> [category.id | Repo.all(Category.sub_categories_by_id(category.id))]
+      _parent_id -> [category.id]
+    end
+    parsed_date = parse_date(date)
+    from = first_day_of_month(parsed_date)
+    to = last_day_of_month(parsed_date)
 
-    uncategorized = Enum.find(categories, fn({name, _id}) -> name == "Uncategorized" end)
-    sorted_categories = Enum.sort(categories, fn({name_1, _id_1}, {name_2, _id_2}) ->
-      name_2 > name_1
+    transactions = Transaction.by_month_by_category(account_id, from, to, category_ids)
+    |> Repo.all
+    |> Enum.group_by(fn(transaction) ->
+      transaction.made_on
+    end)
+    |> Enum.sort(fn({date_1, _transactions}, {date_2, _transaction}) ->
+      Ecto.Date.compare(date_1, date_2) != :lt
     end)
 
-    categories = List.flatten([uncategorized | sorted_categories])
+    {:ok, date} = Timex.DateFormat.format(parsed_date, "%b %Y", :strftime)
+
+    render conn, :index,
+      currency_label: account.currency_label,
+      transactions: transactions,
+      date: date,
+      category: category.humanized_name
+  end
+
+  def new(conn, _params) do
+    categories = categories_list
+    uncategorized = Map.keys(categories)
+    |> Enum.find(fn({name, _id}) -> name == "Uncategorized" end)
+    categories = Map.delete(categories, uncategorized)
+    categories = [{uncategorized, []} | Map.to_list(categories)]
+
     accounts = Account.only_custom |> Repo.all
 
     changeset = Transaction.changeset_custom(%Transaction{})
@@ -27,10 +53,7 @@ defmodule ExMoney.Mobile.TransactionController do
 
   def edit(conn, %{"id" => id}) do
     transaction = Repo.get(Transaction, id)
-
-    categories = Category.select_list
-    |> Repo.all
-
+    categories = categories_list
     changeset = Transaction.update_changeset(transaction)
 
     render conn, :edit,
@@ -164,5 +187,19 @@ defmodule ExMoney.Mobile.TransactionController do
     Timex.Date.from({{date.year, date.month, days_in_month}, {23, 59, 59}})
     |> Timex.DateFormat.format("%Y-%m-%d", :strftime)
     |> elem(1)
+  end
+
+  defp categories_list do
+    categories_dict = Repo.all(Category)
+
+    Enum.reduce(categories_dict, %{}, fn(category, acc) ->
+      if is_nil(category.parent_id) do
+        sub_categories = Enum.filter(categories_dict, fn(c) -> c.parent_id == category.id end)
+        |> Enum.map(fn(sub_category) -> {sub_category.humanized_name, sub_category.id} end)
+        Map.put(acc, {category.humanized_name, category.id}, sub_categories)
+      else
+        acc
+      end
+    end)
   end
 end

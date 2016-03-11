@@ -15,8 +15,8 @@
         <%= form_for @changeset, mobile_transaction_path(@conn, :update, @transaction), [method: :put, class: "ajax-submit"], fn f -> %>
           <ul>
             <li>
-              <a href="#" class="item-link smart-select" data-back-on-select="true" data-open-in="popup" data-searchbar="true" data-page-title="Choose Category">
-                <%= select(f, :category_id, @categories) %>
+              <a href="#" class="item-link smart-select smart-category-select" data-back-on-select="true" data-open-in="popup" data-searchbar="true" data-page-title="Choose Category">
+                <%= render "categories_list.html", categories: @categories, selected: @transaction.category_id %>
                 <div class="item-content">
                   <div class="item-inner">
                     <div class="item-title">Category</div>

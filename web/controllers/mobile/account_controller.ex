@@ -21,15 +21,22 @@ defmodule ExMoney.Mobile.AccountController do
     month_transactions = Transaction.by_month(account_id, from, to)
     |> Repo.all
 
-    categories = Transaction.by_month_by_category(account_id, from, to)
+    categories = Transaction.group_by_month_by_category(account_id, from, to)
     |> Repo.all
-    |> Enum.reduce([], fn({category, color, amount}, acc) ->
+    |> Enum.reduce(%{}, fn({category, amount}, acc) ->
       {float_amount, _} = Decimal.to_string(amount, :normal)
       |> Float.parse
 
       positive_float = float_amount * -1
 
-      [{category, color, positive_float} | acc]
+      Map.put(acc, category.id,
+        %{
+          id: category.id,
+          humanized_name: category.humanized_name,
+          css_color: category.css_color,
+          amount: positive_float,
+          parent_id: category.parent_id
+        })
     end)
 
     current_month = current_month(parsed_date)

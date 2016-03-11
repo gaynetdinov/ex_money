@@ -5,7 +5,7 @@
  * iOS Theme
  *
  * 
- * Included modules: modals,swipeout,cards,smart-select,scroll-toolbars,fast-clicks,forms,notifications,calendar,searchbar,modals
+ * Included modules: modals,swipeout,cards,smart-select,scroll-toolbars,fast-clicks,forms,notifications,calendar,searchbar,modals,accordion,modals
  * 
  * http://www.idangero.us/framework7
  * 
@@ -15,7 +15,7 @@
  * 
  * Licensed under MIT
  * 
- * Released on: February 23, 2016
+ * Released on: March 8, 2016
  */
 html,
 body {
@@ -4930,6 +4930,79 @@ html:not(.watch-active-state) .searchbar.searchbar-active .searchbar-cancel:acti
 .navbar-fixed > .searchbar ~ .page-content,
 .navbar-through > .searchbar ~ .page-content {
   padding-top: 88px;
+}
+/* === Accordion === */
+.list-block .accordion-item-toggle {
+  cursor: pointer;
+  -webkit-transition-duration: 300ms;
+  transition-duration: 300ms;
+}
+.list-block .accordion-item-toggle .item-inner {
+  padding-right: 35px;
+  background: no-repeat -webkit-calc(100% - 15px) center;
+  background: no-repeat calc(100% - 15px) center;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20viewBox%3D'0%200%2060%20120'%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%3E%3Cpath%20d%3D'm60%2061.5-38.25%2038.25-9.75-9.75%2029.25-28.5-29.25-28.5%209.75-9.75z'%20fill%3D'%23c7c7cc'%2F%3E%3C%2Fsvg%3E");
+  background-size: 10px 20px;
+}
+html:not(.watch-active-state) .list-block .accordion-item-toggle:active,
+.list-block .accordion-item-toggle.active-state {
+  -webkit-transition-duration: 0ms;
+  transition-duration: 0ms;
+  background-color: #d9d9d9;
+}
+html:not(.watch-active-state) .list-block .accordion-item-toggle:active > .item-inner:after,
+.list-block .accordion-item-toggle.active-state > .item-inner:after {
+  background-color: transparent;
+}
+.list-block .accordion-item-toggle .item-inner,
+.list-block .accordion-item > .item-link .item-inner {
+  -webkit-transition-duration: 300ms;
+  transition-duration: 300ms;
+  -webkit-transition-property: background-color;
+  transition-property: background-color;
+}
+.list-block .accordion-item-toggle .item-inner:after,
+.list-block .accordion-item > .item-link .item-inner:after {
+  -webkit-transition-duration: 300ms;
+  transition-duration: 300ms;
+}
+.list-block:not(.media-list) .accordion-item-expanded:not(.media-item) .accordion-item-toggle .item-inner,
+.list-block:not(.media-list) .accordion-item-expanded:not(.media-item) > .item-link .item-inner,
+.list-block.media-list .accordion-item-expanded .accordion-item-toggle .item-title-row,
+.list-block.media-list .accordion-item-expanded > .item-link .item-title-row,
+.list-block .accordion-item-expanded.media-item .accordion-item-toggle .item-title-row,
+.list-block .accordion-item-expanded.media-item > .item-link .item-title-row {
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20viewBox%3D'0%200%2060%20120'%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%3E%3Cpath%20d%3D'm60%2061.5-38.25%2038.25-9.75-9.75%2029.25-28.5-29.25-28.5%209.75-9.75z'%20transform%3D'translate(115%2C%2030)%20rotate(90)'%20fill%3D'%23c7c7cc'%2F%3E%3C%2Fsvg%3E");
+  background-size: 20px 20px;
+}
+.list-block .accordion-item-expanded .accordion-item-toggle .item-inner:after,
+.list-block .accordion-item-expanded > .item-link .item-inner:after {
+  background-color: transparent;
+}
+.list-block .accordion-item .content-block,
+.list-block .accordion-item .list-block {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+.list-block .accordion-item ul {
+  padding-left: 0;
+}
+.accordion-item-content {
+  position: relative;
+  overflow: hidden;
+  height: 0;
+  font-size: 14px;
+  -webkit-transition-duration: 300ms;
+  transition-duration: 300ms;
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+}
+.accordion-item-expanded > .accordion-item-content {
+  height: auto;
+}
+html.android-4 .accordion-item-content {
+  -webkit-transform: none;
+  transform: none;
 }
 /* === Login screen === */
 .login-screen-content {

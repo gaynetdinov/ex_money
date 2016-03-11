@@ -24,9 +24,20 @@ defmodule ExMoney.TransactionController do
   end
 
   def new(conn, _params) do
-    changeset = Transaction.changeset(%Transaction{})
+    changeset = Transaction.changeset_custom(%Transaction{})
     accounts = Account.only_custom |> Repo.all
-    categories = Category.select_list |> Repo.all
+
+    categories_dict = Repo.all(Category)
+
+    categories = Enum.reduce(categories_dict, %{}, fn(category, acc) ->
+      if is_nil(category.parent_id) do
+        sub_categories = Enum.filter(categories_dict, fn(c) -> c.parent_id == category.id end)
+        |> Enum.map(fn(sub_category) -> {sub_category.humanized_name, sub_category.id} end)
+        Map.put(acc, {category.humanized_name, category.id}, sub_categories)
+      else
+        acc
+      end
+    end)
 
     render conn, :new,
       changeset: changeset,

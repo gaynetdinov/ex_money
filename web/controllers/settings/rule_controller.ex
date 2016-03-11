@@ -9,30 +9,39 @@ defmodule ExMoney.Settings.RuleController do
   def index(conn, _params) do
     rules = Repo.all(from r in Rule, preload: [:account])
 
-    render(conn, :index,
+    render conn, :index,
       rules: rules,
       topbar: "settings",
       navigation: "rules"
-    )
   end
 
   def new(conn, params) do
     target = case params["type"] do
       nil -> []
-      "assign_category" -> Repo.all(Category.select_list)
+      "assign_category" ->
+        categories = Repo.all(Category)
+
+        Enum.reduce(categories, %{}, fn(category, acc) ->
+          if is_nil(category.parent_id) do
+            sub_categories = Enum.filter(categories, fn(c) -> c.parent_id == category.id end)
+            |> Enum.map(fn(sub_category) -> {sub_category.humanized_name, sub_category.id} end)
+            Map.put(acc, {category.humanized_name, category.id}, sub_categories)
+          else
+            acc
+          end
+        end)
       "withdraw_to_cash" -> Repo.all(Account.only_custom)
     end
 
     accounts = Account.only_saltedge |> Repo.all
     changeset = Rule.changeset(%Rule{})
 
-    render(conn, :new,
+    render conn, :new,
       changeset: changeset,
       target: target,
       accounts: accounts,
       topbar: "settings",
       navigation: "rules"
-    )
   end
 
   def create(conn, %{"rule" => rule_params}) do
