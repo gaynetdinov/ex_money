@@ -84,7 +84,7 @@ exMoney.onPageInit('account-refresh-screen', function (page) {
     localStorage.setItem("interactive", JSON.stringify(interactive));
     exMoney.prompt('Please enter OTP', 'One Time Password',
       function(value) {
-        channel.push("otp", {otp: value, login_id: login_id})
+        channel.push("otp", {otp: value, login_id: login_id, field: msg.field})
         localStorage.setItem("interactive", JSON.stringify({status: false}))
       },
       function(value) {
