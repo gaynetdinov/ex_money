@@ -1,5 +1,79 @@
 var $$ = Dom7;
 
+function setToken(jwt) {
+  token = {value: jwt, timestamp: new Date().getTime()};
+  localStorage.setItem("token", JSON.stringify(token));
+}
+
+function socketConnect(jwt) {
+  var socket = new window.Socket("/refresh_socket", {params: {guardian_token: jwt}});
+  socket.connect();
+
+  var channel = socket.channel("login_refresh:interactive", {});
+
+  channel.join()
+    .receive("error", function(resp) { exMoney.alert('Could not connect to WebSocket channel') });
+
+  window.channel = channel;
+
+  applyBindings(window.channel);
+}
+
+function applyBindings(channel) {
+  channel.on("refresh_request_ok", function(data) {
+    exMoney.showPreloader([data.msg]);
+  })
+
+  channel.on("refresh_request_failed", function(data) {
+    var account_id = $$("#account-refresh-content").data("account-id");
+    exMoney.alert(data.msg, function() {
+      mainView.router.back({url: '/m/accounts/' + account_id});
+    });
+  });
+
+  channel.on("ask_otp", function(data) {
+    exMoney.hidePreloader();
+
+    var login_id = $$("#account-refresh-content").data("login-id");
+    var account_id = $$("#account-refresh-content").data("account-id");
+    var interactive = {status: true, account_id: account_id};
+    localStorage.setItem("interactive", JSON.stringify(interactive));
+    exMoney.prompt('Please enter OTP', 'One Time Password',
+      function(value) {
+        channel.push("send_otp", {otp: value, login_id: login_id, field: data.field});
+        localStorage.setItem("interactive", JSON.stringify({status: false}));
+      },
+      function(value) {
+        channel.push("cancel_otp", {});
+        localStorage.setItem("interactive", JSON.stringify({status: false}));
+        mainView.router.back({url: '/m/accounts/' + account_id});
+      }
+    );
+  });
+
+  channel.on("not_supported_otp", function(data) {
+    exMoney.hidePreloader();
+    localStorage.setItem("interactive", JSON.stringify({status: false}));
+    exMoney.alert(data.msg);
+  });
+
+  channel.on("otp_sent", function(data) {
+    var account_id = $$("#account-refresh-content").data("account-id");
+    exMoney.alert(data.title, data.msg, function () {
+      localStorage.setItem("interactive", JSON.stringify({status: false}));
+      mainView.router.back({
+        url: '/m/accounts/' + account_id,
+        ignoreCache: true,
+        force: true
+      });
+    });
+  });
+
+  channel.on("transactions_fetched", function(msg) {
+    exMoney.addNotification({title: msg.title, message: msg.message});
+  });
+}
+
 var exMoney = new Framework7({
   modalTitle: 'ExMoney',
   scrollTopOnNavbarClick: true,
@@ -31,8 +105,8 @@ var exMoney = new Framework7({
               window.location.replace("/m/dashboard");
             }
             else {
-              token = {value: xhr.responseText, timestamp: new Date().getTime()};
-              localStorage.setItem("token", JSON.stringify(token));
+              setToken(xhr.responseText);
+              socketConnect(xhr.responseText);
 
               if (localStorage.interactive != undefined) {
                 var interactive = JSON.parse(localStorage.interactive);
@@ -55,8 +129,8 @@ var exMoney = new Framework7({
         var xhr = e.detail.xhr;
         if (xhr.status == 200) {
           exMoney.closeModal($$(".embedded-login-screen"));
-          token = {value: xhr.responseText, timestamp: new Date().getTime()};
-          localStorage.setItem("token", JSON.stringify(token));
+          setToken(xhr.responseText);
+          socketConnect(xhr.responseText);
           mainView.router.load({ url: '/m/dashboard' });
           window.history.pushState('m', '', '/m');
         } else {
@@ -76,6 +150,8 @@ var exMoney = new Framework7({
         var xhr = e.detail.xhr;
 
         if (xhr.status == 200) {
+          setToken(xhr.responseText);
+          socketConnect(xhr.responseText);
           window.location.replace("/m/dashboard");
         } else {
           exMoney.alert(xhr.responseText);
@@ -201,4 +277,14 @@ exMoney.onPageInit('new-transaction-screen', function (page) {
     $$('a#expense-button').removeClass('active');
     $$('#transaction_type').val('income');
   });
+});
+
+exMoney.onPageInit('account-refresh-screen', function (page) {
+  var login_id = $$("#account-refresh-content").data("login-id");
+
+  var channel = window.channel;
+
+  if (localStorage.interactive == undefined || JSON.parse(localStorage.interactive).status == false) {
+    channel.push("send_refresh_request", {login_id: login_id});
+  }
 });

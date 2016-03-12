@@ -12,7 +12,7 @@
             <div class="center" id="account_id" data-account-id="<%= @account.id %>"><%= @account.name %></div>
             <%= if @account.login.interactive == true do %>
               <div class="right">
-                <%= link "Refresh", to: mobile_account_path(@conn, :refresh, @account), data: [force: "true"] %>
+                <%= link "Sync", to: mobile_account_path(@conn, :refresh, @account), data: [force: true, "ignore-cache": true] %>
               </div>
             <% end %>
           </div>

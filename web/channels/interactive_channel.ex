@@ -9,15 +9,32 @@
 
     Process.flag(:trap_exit, true)
 
-    if ongoing_otp?(user_id) do
-      Process.send_after(self, {:interactive, "", ""}, 10)
+    with {true, interactive_fields_names} <- ongoing_interactive?(user_id) do
+      Process.send_after(self, {:interactive_callback_received, nil, interactive_fields_names}, 10)
     end
 
     {:ok, socket}
   end
 
-  def handle_info({:interactive, _html, fields}, socket) do
-    push socket, "otp", %{field: List.first(fields)}
+  def handle_info({:interactive_callback_received, _html, fields}, socket) do
+    case length(fields) do
+      1 -> push socket, "ask_otp", %{field: List.first(fields)}
+      _ ->
+        user = current_resource(socket)
+        interactive_done(user.id)
+        push socket, "not_supported_otp", %{msg: "ExMoney could not sync this account"}
+    end
+
+    {:noreply, socket}
+  end
+
+  def handle_info({:transactions_fetched, account_name, stored_transactions}, socket) do
+    msg = case stored_transactions do
+      0 -> "There are no new transactions"
+      new -> "You've got #{new} new transaction(s)"
+    end
+
+    push socket, "transactions_fetched", %{message: msg, title: "#{account_name} account got synced"}
 
     {:noreply, socket}
   end
@@ -27,7 +44,7 @@
     :ok
   end
 
-  def handle_in("refresh", %{"login_id" => login_id}, socket) do
+  def handle_in("send_refresh_request", %{"login_id" => login_id}, socket) do
     body = """
       { "data": { "fetch_type": "recent" }}
     """
@@ -35,35 +52,37 @@
     result = ExMoney.Saltedge.Client.request(:put, "logins/#{login_id}/refresh", body)
     case result["data"]["refreshed"] do
       false ->
-        push socket, "refresh_failed", %{msg: "Could not refresh login. Try again later."}
+        push socket, "refresh_request_failed", %{msg: "Could not refresh login.<br/> Try again later."}
       true ->
         user = current_resource(socket)
         user_id = "user:#{user.id}"
-        cache_ongoing_otp(user_id)
-        push socket, "refresh_ok", %{msg: "Refresh request has been successfully sent"}
+        cache_ongoing_interactive(user_id)
+
+        push socket, "refresh_request_ok", %{msg: "Request has been sent.<br/> Waiting for a response..."}
     end
 
     {:reply, :ok, socket}
   end
 
-  def handle_in("otp", %{"otp" => otp, "login_id" => login_id, "field" => field}, socket) do
+  def handle_in("send_otp", %{"otp" => otp, "login_id" => login_id, "field" => field}, socket) do
     body = """
       { "data": { "fetch_type": "recent", "credentials": { "#{field}": "#{otp}" }}}
     """
 
-    ExMoney.Saltedge.Client.request(:put, "logins/#{login_id}/interactive", body)
+    result = ExMoney.Saltedge.Client.request(:put, "logins/#{login_id}/interactive", body)
+    Logger.info("OTP has been send with the following result => #{inspect(result)}")
 
-    push socket, "otp_ok", %{msg: "OTP has been successfully sent"}
+    push socket, "otp_sent", %{title: "Transactions will by synced shortly", msg: "OTP has been sent"}
 
     user = current_resource(socket)
-    otp_done(user.id)
+    interactive_done(user.id)
 
     {:reply, :ok, socket}
   end
 
-  def handle_in("otp_cancel", _, socket) do
+  def handle_in("cancel_otp", _, socket) do
     user = current_resource(socket)
-    otp_done(user.id)
+    interactive_done(user.id)
 
     {:reply, :ok, socket}
   end
@@ -78,7 +97,7 @@
     end
   end
 
-  defp cache_ongoing_otp(user_id) do
+  defp cache_ongoing_interactive(user_id) do
     user_id = String.downcase(user_id)
 
     key = "ongoing_interactive_#{user_id}"
@@ -89,7 +108,7 @@
     end
   end
 
-  defp ongoing_otp?(user_id) do
+  defp ongoing_interactive?(user_id) do
     user_id = String.downcase(user_id)
 
     key = "ongoing_interactive_#{user_id}"
@@ -97,11 +116,12 @@
     case :ets.lookup(:ex_money_cache, key) do
       [] -> false
       [{_key, false}] -> false
-      _ -> true
+      [{_key, true}] -> true
+      [{_key, interacitve_field_names}] -> {true, interacitve_field_names}
     end
   end
 
-  defp otp_done(user_id) do
+  defp interactive_done(user_id) do
     user_id = "user:#{user_id}"
     key = "ongoing_interactive_#{user_id}"
     :ets.update_element(:ex_money_cache, key, {2, false})
