@@ -16,8 +16,8 @@
     {:ok, socket}
   end
 
-  def handle_info({:interactive, _html, _fields}, socket) do
-    push socket, "otp", %{}
+  def handle_info({:interactive, _html, fields}, socket) do
+    push socket, "otp", %{field: List.first(fields)}
 
     {:noreply, socket}
   end
@@ -46,9 +46,9 @@
     {:reply, :ok, socket}
   end
 
-  def handle_in("otp", %{"otp" => otp, "login_id" => login_id}, socket) do
+  def handle_in("otp", %{"otp" => otp, "login_id" => login_id, "field" => field}, socket) do
     body = """
-      { "data": { "fetch_type": "recent", "credentials": { "otp": "#{otp}" }}}
+      { "data": { "fetch_type": "recent", "credentials": { "#{field}": "#{otp}" }}}
     """
 
     ExMoney.Saltedge.Client.request(:put, "logins/#{login_id}/interactive", body)
