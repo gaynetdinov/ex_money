@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="format-detection" content="telephone=no">
@@ -10,9 +10,6 @@
     <%= if Guardian.Plug.current_token(@conn) do %>
       <meta name='guardian_token' content="<%= Guardian.Plug.current_token(@conn) %>">
     <% end %>
-    <link href="<%= static_path(@conn, "/images/startup.png") %>"
-          media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)"
-          rel="apple-touch-startup-image">
     <link rel="apple-touch-icon" sizes="120x120" href="/images/apple-touch-icon.png">
     <title>ExMoney</title>
 
