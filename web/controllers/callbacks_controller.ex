@@ -100,7 +100,8 @@ defmodule CallbacksController do
       case Repo.update(changeset) do
         {:ok, _login} ->
           pid = get_channel_pid(conn.assigns[:user].id)
-          Process.send_after(pid, {:interactive, html, interactive_fields_names}, 10)
+          store_interactive_field_names(conn.assigns[:user].id, interactive_fields_names)
+          Process.send_after(pid, {:interactive_callback_received, html, interactive_fields_names}, 10)
 
           put_resp_content_type(conn, "application/json")
           |> send_resp(200, "ok")
@@ -155,7 +156,7 @@ defmodule CallbacksController do
         |> Repo.update
         Logger.info("Login has been updated with failure reason.")
 
-        otp_done(user.id)
+        interactive_done(user.id)
 
         put_resp_content_type(conn, "application/json")
         |> send_resp(200, "ok")
@@ -226,9 +227,17 @@ defmodule CallbacksController do
     end
   end
 
-  defp otp_done(user_id) do
-    user_id = "user:#{user_id}"
-    key = "ongoing_interactive_#{user_id}"
+  defp interactive_done(user_id) do
+    key = "ongoing_interactive_user:#{user_id}"
     :ets.update_element(:ex_money_cache, key, {2, false})
+  end
+
+  defp store_interactive_field_names(user_id, interactive_fields_names) do
+    key = "ongoing_interactive_user:#{user_id}"
+
+    case :ets.lookup(:ex_money_cache, key) do
+      [] -> :ets.insert(:ex_money_cache, {key, interactive_fields_names})
+      _ -> :ets.update_element(:ex_money_cache, key, {2, interactive_fields_names})
+    end
   end
 end
