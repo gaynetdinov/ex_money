@@ -68,7 +68,7 @@ defmodule ExMoney.Login do
 
   def failure_callback_changeset(model, params \\ :empty) do
     model
-    |> cast(params, ~w(saltedge_login_id last_fail_error_class last_fail_message), ~w())
+    |> cast(params, ~w(saltedge_login_id), ~w(last_fail_error_class last_fail_message))
   end
 
   def notify_callback_changeset(model, params \\ :empty) do

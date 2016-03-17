@@ -129,7 +129,7 @@ defmodule CallbacksController do
         |> Login.failure_callback_changeset(%{
           saltedge_login_id: login_id,
           last_fail_error_class: params["data"]["error_class"],
-          last_fail_message: params["data"]["message"]
+          last_fail_message: params["data"]["error_message"]
         })
         if changeset.valid? do
           case Repo.insert(changeset) do
