@@ -42,7 +42,7 @@
                   <div class="item-inner">
                     <div class="item-title">Expenses</div>
                     <div class="item-after" style="color: black">
-                      <a href='/m/expenses?date=<%= @current_month.date %>&account_id=<%= @account.id %>'>
+                      <a href='/m/accounts/<%= @account.id %>/expenses?date=<%= @current_month.date %>'>
                         <%= expenses(@month_transactions) %> <%= @account.currency_label %>
                       </a>
                     </div>
@@ -52,7 +52,7 @@
                   <div class="item-inner">
                     <div class="item-title">Income</div>
                     <div class="item-after" style="color: black">
-                      <a href='/m/income?date=<%= @current_month.date %>&account_id=<%= @account.id %>'>
+                      <a href='/m/accounts/<%= @account.id %>/income?date=<%= @current_month.date %>'>
                         <%= income(@month_transactions) %> <%= @account.currency_label %>
                       </a>
                     </div>

@@ -25,13 +25,20 @@ defmodule ExMoney.Mobile.TransactionController do
       Ecto.Date.compare(date_1, date_2) != :lt
     end)
 
-    {:ok, date} = Timex.DateFormat.format(parsed_date, "%b %Y", :strftime)
+    {:ok, formatted_date} = Timex.DateFormat.format(parsed_date, "%b %Y", :strftime)
+
+    from = case transactions do
+      [] -> "/m/accounts/#{account_id}"
+      _ -> "/m/transactions?date=#{date}&category_id=#{category_id}&account_id=#{account_id}"
+    end |> URI.encode_www_form
 
     render conn, :index,
       currency_label: account.currency_label,
       transactions: transactions,
-      date: date,
-      category: category.humanized_name
+      date: %{label: formatted_date, value: date},
+      category: category.humanized_name,
+      from: from,
+      account_id: account.id
   end
 
   def new(conn, _params) do
@@ -51,7 +58,7 @@ defmodule ExMoney.Mobile.TransactionController do
       accounts: accounts
   end
 
-  def edit(conn, %{"id" => id}) do
+  def edit(conn, %{"id" => id, "from" => from}) do
     transaction = Repo.get(Transaction, id)
     categories = categories_list
     changeset = Transaction.update_changeset(transaction)
@@ -59,17 +66,20 @@ defmodule ExMoney.Mobile.TransactionController do
     render conn, :edit,
       transaction: transaction,
       categories: categories,
-      changeset: changeset
+      changeset: changeset,
+      from: from
   end
 
   def update(conn, %{"id" => id, "transaction" => transaction_params}) do
     transaction = Repo.get!(Transaction, id)
 
+    from = validate_from_param(transaction_params["from"])
+
     changeset = Transaction.update_changeset(transaction, transaction_params)
 
     case Repo.update(changeset) do
       {:ok, _transaction} ->
-        send_resp(conn, 200, "")
+        send_resp(conn, 200, from)
       {:error, _changeset} ->
         send_resp(conn, 422, "Something went wrong, check server logs")
     end
@@ -101,53 +111,8 @@ defmodule ExMoney.Mobile.TransactionController do
         where: tr.id == ^id,
         preload: [:account, :transaction_info, :category]
       )
-    render(conn, :show, transaction: transaction)
-  end
 
-  def expenses(conn, %{"date" => date, "account_id" => account_id}) do
-    account = Repo.get!(Account, account_id)
-    parsed_date = parse_date(date)
-    from = first_day_of_month(parsed_date)
-    to = last_day_of_month(parsed_date)
-
-    expenses = Transaction.expenses_by_month(account_id, from, to)
-    |> Repo.all
-    |> Enum.group_by(fn(transaction) ->
-      transaction.made_on
-    end)
-    |> Enum.sort(fn({date_1, _transactions}, {date_2, _transaction}) ->
-      Ecto.Date.compare(date_1, date_2) != :lt
-    end)
-
-    {:ok, date} = Timex.DateFormat.format(parsed_date, "%b %Y", :strftime)
-
-    render conn, :expenses,
-      currency_label: account.currency_label,
-      expenses: expenses,
-      date: date
-  end
-
-  def income(conn, %{"date" => date, "account_id" => account_id}) do
-    account = Repo.get!(Account, account_id)
-    parsed_date = parse_date(date)
-    from = first_day_of_month(parsed_date)
-    to = last_day_of_month(parsed_date)
-
-    income = Transaction.income_by_month(account_id, from, to)
-    |> Repo.all
-    |> Enum.group_by(fn(transaction) ->
-      transaction.made_on
-    end)
-    |> Enum.sort(fn({date_1, _transactions}, {date_2, _transaction}) ->
-      Ecto.Date.compare(date_1, date_2) != :lt
-    end)
-
-    {:ok, date} = Timex.DateFormat.format(parsed_date, "%b %Y", :strftime)
-
-    render conn, :income,
-      currency_label: account.currency_label,
-      income: income,
-      date: date
+    render conn, :show, transaction: transaction
   end
 
   def delete(conn, %{"id" => id}) do
@@ -201,5 +166,17 @@ defmodule ExMoney.Mobile.TransactionController do
         acc
       end
     end)
+  end
+
+  # FIXME: that looks terrible, I'm really sorry.
+  defp validate_from_param(from) do
+    if String.match?(from, ~r/\A\/m\/accounts\/\d+\/(expenses|income)\?date=\d{4}-\d{1,2}\z/) or
+      String.match?(from, ~r/\A\/m\/transactions\?date=\d{4}-\d{1,2}\&category_id=\d+\&account_id=\d+\z/) or
+      String.match?(from, ~r/\A\/m\/accounts\/\d+\z/) do
+
+      from
+    else
+      "/m/dashboard"
+    end
   end
 end

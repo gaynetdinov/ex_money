@@ -105,19 +105,19 @@ defmodule ExMoney.Transaction do
   def by_month_by_category(account_id, from, to, category_ids) do
     Transaction.by_month(account_id, from, to)
     |> where([tr], tr.category_id in ^(category_ids))
-    |> preload([:transaction_info, :category])
+    |> preload([:transaction_info, :category, :account])
   end
 
   def expenses_by_month(account_id, from, to) do
     Transaction.by_month(account_id, from ,to)
     |> where([tr], tr.amount < 0)
-    |> preload([:transaction_info, :category])
+    |> preload([:transaction_info, :category, :account])
   end
 
   def income_by_month(account_id, from ,to) do
     Transaction.by_month(account_id, from ,to)
     |> where([tr], tr.amount > 0)
-    |> preload([:transaction_info, :category])
+    |> preload([:transaction_info, :category, :account])
   end
 
   def group_by_month_by_category(account_id, from, to) do
