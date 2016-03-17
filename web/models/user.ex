@@ -1,6 +1,8 @@
 defmodule ExMoney.User do
   use ExMoney.Web, :model
 
+  alias ExMoney.User
+
   schema "users" do
     field :name, :string
     field :email, :string
@@ -17,11 +19,19 @@ defmodule ExMoney.User do
   end
 
   def by_email(email) do
-    from u in ExMoney.User, where: u.email == ^email
+    from u in User, where: u.email == ^email
   end
 
-  def by_customer_id(customer_id) do
-    from u in ExMoney.User, where: u.saltedge_customer_id == ^to_string(customer_id)
+  def by_id(id) when is_integer(id) do
+    from u in User,
+      where: u.id == ^id,
+      limit: 1
+  end
+
+  def by_id(customer_id) when is_binary(customer_id) do
+    from u in User,
+      where: u.saltedge_customer_id == ^customer_id,
+      limit: 1
   end
 
   def create_changeset(model, params \\ :empty) do
@@ -52,14 +62,6 @@ defmodule ExMoney.User do
       :error -> changeset
     end
   end
-
-  #@required_fields ~w(name email password saltedge_customer_id saltedge_token)
-  #@optional_fields ~w()
-
-  #def changeset(model, params \\ :empty) do
-  #  model
-  #  |> cast(params, @required_fields, @optional_fields)
-  #end
 
   def valid_password?(nil, _), do: false
   def valid_password?(_, nil), do: false

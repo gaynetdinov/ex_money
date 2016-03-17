@@ -192,7 +192,7 @@ defmodule CallbacksController do
     case conn.params["data"]["customer_id"] do
       nil -> send_resp(conn, 400, "customer_id is missing") |> halt
       customer_id ->
-        case User.by_customer_id(customer_id) |> Repo.one do
+        case User.by_id(customer_id) |> Repo.one do
           nil ->
             Logger.info("Could not find User with customer_id '#{inspect(customer_id)}'")
             # TODO: send as json?
