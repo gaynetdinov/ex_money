@@ -103,13 +103,6 @@ var exMoney = new Framework7({
   tapHold: true,
   tapHoldDelay: 500,
 
-  onAjaxStart: function (xhr) {
-    exMoney.showIndicator();
-  },
-  onAjaxComplete: function (xhr) {
-    exMoney.hideIndicator();
-  },
-
   onPageInit: function(app, page) {
     if (page.name == 'start-screen') {
       if (localStorage.token) {
