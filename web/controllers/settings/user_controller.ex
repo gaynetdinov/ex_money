@@ -28,7 +28,11 @@ defmodule ExMoney.Settings.UserController do
         |> put_flash(:info, "User updated successfully.")
         |> redirect(to: settings_user_path(conn, :edit))
       {:error, changeset} ->
-        render(conn, "edit.html", user: user, changeset: changeset)
+        render conn, :edit,
+          user: user,
+          changeset: changeset,
+          navigation: "account",
+          topbar: "settings"
     end
   end
 end

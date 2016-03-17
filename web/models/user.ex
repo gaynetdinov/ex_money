@@ -8,6 +8,7 @@ defmodule ExMoney.User do
     field :email, :string
     field :encrypted_password, :string
     field :saltedge_customer_id, :string
+    field :saltedge_id, :integer
     field :saltedge_token, :string
     field :password, :string, virtual: true
     field :last_login_at, Ecto.DateTime
@@ -22,13 +23,13 @@ defmodule ExMoney.User do
     from u in User, where: u.email == ^email
   end
 
-  def by_id(id) when is_integer(id) do
+  def by_saltedge_id(id) when is_integer(id) do
     from u in User,
-      where: u.id == ^id,
+      where: u.saltedge_id == ^id,
       limit: 1
   end
 
-  def by_id(customer_id) when is_binary(customer_id) do
+  def by_saltedge_id(customer_id) when is_binary(customer_id) do
     from u in User,
       where: u.saltedge_customer_id == ^customer_id,
       limit: 1
@@ -42,7 +43,7 @@ defmodule ExMoney.User do
 
   def update_changeset(model, params \\ :empty) do
     model
-    |> cast(params, ~w(), ~w(name email password saltedge_customer_id last_login_at))
+    |> cast(params, ~w(), ~w(name email password saltedge_id saltedge_customer_id last_login_at))
     |> maybe_update_password
   end
 
