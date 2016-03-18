@@ -6,7 +6,8 @@ defmodule ExMoney.Factory do
       name: Faker.Name.name,
       email: Faker.Internet.email,
       password: Faker.Lorem.word,
-      saltedge_customer_id: Faker.Lorem.word
+      saltedge_customer_id: Faker.Lorem.word,
+      saltedge_id: sequence(:saltedge_id, &(&1))
     }
   end
 

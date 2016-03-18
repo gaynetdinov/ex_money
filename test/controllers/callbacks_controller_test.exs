@@ -3,8 +3,7 @@ defmodule ExMoney.CallbacksControllerTest.Success do
 
   import ExMoney.Factory
 
-  alias ExMoney.Repo
-  alias ExMoney.Login
+  alias ExMoney.{Repo, Login}
 
   setup do
     Ecto.Adapters.SQL.restart_test_transaction(Repo)
@@ -84,8 +83,7 @@ defmodule ExMoney.CallbacksControllerTest.Failure do
 
   import ExMoney.Factory
 
-  alias ExMoney.Repo
-  alias ExMoney.Login
+  alias ExMoney.{Repo, Login}
 
   setup do
     Ecto.Adapters.SQL.restart_test_transaction(Repo)
@@ -101,7 +99,7 @@ defmodule ExMoney.CallbacksControllerTest.Failure do
         customer_id: user.saltedge_customer_id,
         login_id: login_id,
         error_class: "SomethingInvalid",
-        message: "Something went wrong"
+        error_message: "Something went wrong"
       ],
       meta: [
         version: "2",
@@ -144,15 +142,14 @@ defmodule ExMoney.CallbacksControllerTest.Notify do
 
   import ExMoney.Factory
 
-  alias ExMoney.Repo
-  alias ExMoney.Login
+  alias ExMoney.{Repo, Login}
 
   setup do
     Ecto.Adapters.SQL.restart_test_transaction(Repo)
     :ok
   end
 
-  test "successful callback" do
+  test "successful callback when customer_id is saltedge_customer_id" do
     login = create(:login)
 
     body = [
@@ -175,7 +172,31 @@ defmodule ExMoney.CallbacksControllerTest.Notify do
     assert login.stage == "start"
   end
 
-  test "when user is not found by customer_id" do
+  test "successful callback when customer_id is saltedge_id" do
+    login = create(:login)
+
+    body = [
+      data: [
+        customer_id: login.user.saltedge_id,
+        login_id: login.saltedge_login_id,
+        stage: "start"
+      ],
+      meta: [
+        version: "2",
+        time: "2015-12-04T09:54:09Z"
+      ]
+    ]
+
+    conn = post conn(), "/callbacks/notify", body
+    login = Repo.one(Login)
+
+    assert conn.status == 200
+    assert response_content_type(conn, :json) == "application/json; charset=utf-8"
+    assert login.stage == "start"
+  end
+
+
+  test "when user is not found" do
     body = [
       data: [
         customer_id: "foobar",
@@ -193,6 +214,27 @@ defmodule ExMoney.CallbacksControllerTest.Notify do
     assert conn.status == 400
     assert logins == []
   end
+
+  test "when a login is not found" do
+    user = create(:user)
+
+    body = [
+      data: [
+        customer_id: user.saltedge_customer_id,
+        login_id: 123
+      ],
+      meta: [
+        version: "2",
+        time: "2015-12-04T09:54:09Z"
+      ]
+    ]
+
+    conn = post conn(), "/callbacks/notify", body
+    logins = Repo.all(Login)
+
+    assert conn.status == 200
+    assert logins == []
+  end
 end
 
 defmodule ExMoney.CallbacksControllerTest.Interactive do
@@ -200,8 +242,7 @@ defmodule ExMoney.CallbacksControllerTest.Interactive do
 
   import ExMoney.Factory
 
-  alias ExMoney.Repo
-  alias ExMoney.Login
+  alias ExMoney.{Repo, Login}
 
   setup do
     Ecto.Adapters.SQL.restart_test_transaction(Repo)

@@ -22,24 +22,16 @@ defmodule CallbacksController do
         changeset = Ecto.Model.build(user, :logins)
         |> Login.success_callback_changeset(%{saltedge_login_id: login_id, user_id: user.id})
 
-        if changeset.valid? do
-          case Repo.insert(changeset) do
-            {:ok, login} ->
-              update_login_last_refreshed_at(login)
-              GenServer.cast(:sync_buffer, {:schedule, :sync, login})
-              schedule_login_refresh_worker(login)
+        case Repo.insert(changeset) do
+          {:ok, login} ->
+            update_login_last_refreshed_at(login)
+            GenServer.cast(:sync_buffer, {:schedule, :sync, login})
+            schedule_login_refresh_worker(login)
 
-              put_resp_content_type(conn, "application/json")
-              |> send_resp(200, "")
-            {:error, changeset} ->
-              Logger.info("Could not create Login for customer_id => #{inspect(customer_id)}, errors => #{inspect(changeset.errors)}")
-              put_resp_content_type(conn, "application/json")
-              |> send_resp(200, "")
-          end
-        else
-          Logger.info("Could not create Login for customer_id => #{inspect(customer_id)}, errors => #{inspect(changeset.errors)}")
-          put_resp_content_type(conn, "application/json")
-          |> send_resp(200, "")
+            put_resp_content_type(conn, "application/json") |> send_resp(200, "")
+          {:error, changeset} ->
+            Logger.info("Could not create Login for customer_id => #{inspect(customer_id)}, #{inspect(changeset.errors)}")
+            put_resp_content_type(conn, "application/json") |> send_resp(200, "")
         end
       login ->
         changeset = Login.update_changeset(login, params["data"])
@@ -58,36 +50,32 @@ defmodule CallbacksController do
     customer_id = params["data"]["customer_id"]
     stage = params["data"]["stage"]
 
-    login = conn.assigns[:login]
+    case conn.assigns[:login] do
+      nil ->
+        Logger.info("There is no login with customer_id -> #{customer_id}")
+        put_resp_content_type(conn, "application/json") |> send_resp(200, "")
+      login ->
+        changeset = Login.notify_callback_changeset(login, %{stage: stage})
 
-    changeset = Login.notify_callback_changeset(login, %{stage: stage})
+        case Repo.update(changeset) do
+          {:ok, updated_login} ->
+            sync_data(updated_login, stage)
 
-    if changeset.valid? do
-      case Repo.update(changeset) do
-        {:ok, login} ->
-          sync_data(login, stage)
-
-          put_resp_content_type(conn, "application/json")
-          |> send_resp(200, "ok")
-        {:error, changeset} ->
-          Logger.info("Could not update Login for customer_id => #{inspect(customer_id)}, errors => #{inspect(changeset.errors)}")
-          put_resp_content_type(conn, "application/json")
-          |> send_resp(200, "ok")
-      end
-    else
-      Logger.info("Could not update Login for customer_id => #{inspect(customer_id)}, errors => #{inspect(changeset.errors)}")
-      put_resp_content_type(conn, "application/json")
-      |> send_resp(200, "ok")
+            put_resp_content_type(conn, "application/json") |> send_resp(200, "")
+          {:error, changeset} ->
+            Logger.info("Could not update Login for customer_id => #{inspect(customer_id)}, #{inspect(changeset.errors)}")
+            put_resp_content_type(conn, "application/json") |> send_resp(200, "")
+        end
     end
   end
 
   def interactive(conn, params) do
     Logger.info("Interactive: #{inspect(params)}")
+
     customer_id = params["data"]["customer_id"]
     stage = params["data"]["stage"]
     html = params["data"]["html"]
     interactive_fields_names = params["data"]["interactive_fields_names"]
-
     login = conn.assigns[:login]
 
     changeset = Login.interactive_callback_changeset(login, %{
@@ -96,24 +84,17 @@ defmodule CallbacksController do
       interactive_html: html
     })
 
-    if changeset.valid? do
-      case Repo.update(changeset) do
-        {:ok, _login} ->
-          pid = get_channel_pid(conn.assigns[:user].id)
-          store_interactive_field_names(conn.assigns[:user].id, interactive_fields_names)
-          Process.send_after(pid, {:interactive_callback_received, html, interactive_fields_names}, 10)
+    case Repo.update(changeset) do
+      {:ok, _login} ->
+        pid = get_channel_pid(conn.assigns[:user].id)
+        store_interactive_field_names(conn.assigns[:user].id, interactive_fields_names)
+        Process.send_after(pid, {:interactive_callback_received, html, interactive_fields_names}, 10)
 
-          put_resp_content_type(conn, "application/json")
-          |> send_resp(200, "ok")
-        {:error, changeset} ->
-          Logger.info("Interactive: Could not update Login for customer_id => #{inspect(customer_id)}, errors => #{inspect(changeset.errors)}")
-          put_resp_content_type(conn, "application/json")
-          |> send_resp(200, "ok")
-      end
-    else
-      Logger.info("Interactive: Could not update Login for customer_id => #{inspect(customer_id)}, errors => #{inspect(changeset.errors)}")
-      put_resp_content_type(conn, "application/json")
-      |> send_resp(200, "ok")
+        put_resp_content_type(conn, "application/json") |> send_resp(200, "")
+      {:error, changeset} ->
+        Logger.info("Interactive: Could not update Login for customer_id => #{inspect(customer_id)}, #{inspect(changeset.errors)}")
+        put_resp_content_type(conn, "application/json")
+        |> send_resp(200, "")
     end
   end
 
@@ -131,20 +112,15 @@ defmodule CallbacksController do
           last_fail_error_class: params["data"]["error_class"],
           last_fail_message: params["data"]["error_message"]
         })
-        if changeset.valid? do
-          case Repo.insert(changeset) do
-            {:ok, _login} ->
-              put_resp_content_type(conn, "application/json")
-              |> send_resp(200, "ok")
-            {:error, changeset} ->
-              Logger.info("Could not create Login for customer_id => #{inspect(customer_id)}, errors => #{inspect(changeset.errors)}")
-              put_resp_content_type(conn, "application/json")
-              |> send_resp(200, "ok")
-          end
-        else
-          Logger.info("Could not create Login for customer_id => #{inspect(customer_id)}, errors => #{inspect(changeset.errors)}")
-          put_resp_content_type(conn, "application/json")
-          |> send_resp(200, "ok")
+
+        case Repo.insert(changeset) do
+          {:ok, _login} ->
+            put_resp_content_type(conn, "application/json")
+            |> send_resp(200, "ok")
+          {:error, changeset} ->
+            Logger.info("Could not create Login for customer_id => #{inspect(customer_id)}, errors => #{inspect(changeset.errors)}")
+            put_resp_content_type(conn, "application/json")
+            |> send_resp(200, "ok")
         end
       login ->
         params = %{
