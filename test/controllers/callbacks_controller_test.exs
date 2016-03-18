@@ -1,12 +1,12 @@
 defmodule ExMoney.CallbacksControllerTest.Success do
   use ExMoney.ConnCase
-
   import ExMoney.Factory
 
   alias ExMoney.{Repo, Login}
 
-  setup do
-    Ecto.Adapters.SQL.restart_test_transaction(Repo)
+  setup_all do
+    ExMoney.Saltedge.Test.LoginLogger.start_link
+
     :ok
   end
 
@@ -80,13 +80,13 @@ end
 
 defmodule ExMoney.CallbacksControllerTest.Failure do
   use ExMoney.ConnCase
-
   import ExMoney.Factory
 
   alias ExMoney.{Repo, Login}
 
-  setup do
-    Ecto.Adapters.SQL.restart_test_transaction(Repo)
+  setup_all do
+    ExMoney.Saltedge.Test.LoginLogger.start_link
+
     :ok
   end
 
@@ -144,8 +144,9 @@ defmodule ExMoney.CallbacksControllerTest.Notify do
 
   alias ExMoney.{Repo, Login}
 
-  setup do
-    Ecto.Adapters.SQL.restart_test_transaction(Repo)
+  setup_all do
+    ExMoney.Saltedge.Test.LoginLogger.start_link
+
     :ok
   end
 
@@ -165,6 +166,7 @@ defmodule ExMoney.CallbacksControllerTest.Notify do
     ]
 
     conn = post conn(), "/callbacks/notify", body
+
     login = Repo.one(Login)
 
     assert conn.status == 200
@@ -194,7 +196,6 @@ defmodule ExMoney.CallbacksControllerTest.Notify do
     assert response_content_type(conn, :json) == "application/json; charset=utf-8"
     assert login.stage == "start"
   end
-
 
   test "when user is not found" do
     body = [
@@ -239,13 +240,13 @@ end
 
 defmodule ExMoney.CallbacksControllerTest.Interactive do
   use ExMoney.ConnCase
-
   import ExMoney.Factory
 
   alias ExMoney.{Repo, Login}
 
-  setup do
-    Ecto.Adapters.SQL.restart_test_transaction(Repo)
+  setup_all do
+    ExMoney.Saltedge.Test.LoginLogger.start_link
+
     :ok
   end
 

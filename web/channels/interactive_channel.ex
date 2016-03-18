@@ -44,19 +44,23 @@
     :ok
   end
 
-  def handle_in("send_refresh_request", %{"login_id" => login_id}, socket) do
+  def handle_in("send_refresh_request", %{"login_id" => saltedge_login_id}, socket) do
     body = """
       { "data": { "fetch_type": "recent" }}
     """
 
-    result = ExMoney.Saltedge.Client.request(:put, "logins/#{login_id}/refresh", body)
+    result = ExMoney.Saltedge.Client.request(:put, "logins/#{saltedge_login_id}/refresh", body)
     case result["data"]["refreshed"] do
       false ->
+        GenServer.cast(:login_logger, {:log, "", "refresh_request_failed", saltedge_login_id, result})
+
         push socket, "refresh_request_failed", %{msg: "Could not refresh login.<br/> Try again later."}
       true ->
         user = current_resource(socket)
         user_id = "user:#{user.id}"
         cache_ongoing_interactive(user_id)
+
+        GenServer.cast(:login_logger, {:log, "", "refresh_request_ok", saltedge_login_id, result})
 
         push socket, "refresh_request_ok", %{msg: "Request has been sent.<br/> Waiting for a response..."}
     end
@@ -64,12 +68,13 @@
     {:reply, :ok, socket}
   end
 
-  def handle_in("send_otp", %{"otp" => otp, "login_id" => login_id, "field" => field}, socket) do
+  def handle_in("send_otp", %{"otp" => otp, "login_id" => saltedge_login_id, "field" => field}, socket) do
     body = """
       { "data": { "fetch_type": "recent", "credentials": { "#{field}": "#{otp}" }}}
     """
 
-    result = ExMoney.Saltedge.Client.request(:put, "logins/#{login_id}/interactive", body)
+    result = ExMoney.Saltedge.Client.request(:put, "logins/#{saltedge_login_id}/interactive", body)
+    GenServer.cast(:login_logger, {:log, "", "interactive_sent", saltedge_login_id, result})
     Logger.info("OTP has been send with the following result => #{inspect(result)}")
 
     push socket, "otp_sent", %{title: "Transactions will by synced shortly", msg: "OTP has been sent"}

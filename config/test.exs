@@ -12,8 +12,8 @@ config :logger, level: :warn
 # Configure your database
 config :ex_money, ExMoney.Repo,
   adapter: Ecto.Adapters.Postgres,
-  username: "postgres",
-  password: "postgres",
-  database: "ex_money_test",
-  hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
+
+config :ex_money, :login_logger_worker, :login_logger_test
+
+import_config "test.secret.exs"

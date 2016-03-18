@@ -23,6 +23,7 @@ erl_crash.dump
 # variables.
 /config/prod.secret.exs
 /config/dev.secret.exs
+/config/test.secret.exs
 *.pem
 /log
 /web/static/assets/cache.appcache

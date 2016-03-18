@@ -1,7 +1,7 @@
 defmodule ExMoney.Saltedge.LoginController do
   use ExMoney.Web, :controller
 
-  alias ExMoney.{Repo, User}
+  alias ExMoney.{Repo, User, Login}
 
   plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.Unauthenticated
 
@@ -26,9 +26,11 @@ defmodule ExMoney.Saltedge.LoginController do
     redirect conn, external: connect_url
   end
 
-  def sync(conn, _params) do
+  def sync(conn, %{"id" => login_id}) do
     user = Guardian.Plug.current_resource(conn)
-    ExMoney.Saltedge.Login.sync(user.id)
+    login = Repo.get!(Login, login_id)
+
+    GenServer.call(:sync_worker, {:sync, user.id, login.saltedge_login_id})
 
     redirect(conn, to: "/settings/logins")
   end

@@ -3,9 +3,7 @@
 
   <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
     <h2 class="sub-header">
-      Logins
-      [<%= link "New", to: saltedge_login_path(@conn, :new) %>]
-      [<%= link "Sync", to: saltedge_login_path(@conn, :sync) %>]
+      Logins [<%= link "New", to: saltedge_login_path(@conn, :new) %>]
     </h2>
     <div class="table-responsive">
       <table class="table table-striped">
@@ -28,7 +26,7 @@
             <tr>
               <td><%= login.id %></td>
               <td><%= login.saltedge_login_id %></td>
-              <td><%= login.provider_name %></td>
+              <td><%= link login.provider_name, to: settings_login_path(@conn, :show, login.id) %></td>
               <td><%= login.status %></td>
               <td><%= login.interactive %></td>
               <td><%= login.last_refreshed_at %></td>
@@ -36,6 +34,7 @@
               <td><%= login.last_fail_at %></td>
               <td><%= login.last_fail_message %></td>
               <td>
+                <%= link "Sync", to: saltedge_login_path(@conn, :sync, login) %>
                 <%= link "Delete", to: settings_login_path(@conn, :delete, login), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %>
               </td>
             </tr>
