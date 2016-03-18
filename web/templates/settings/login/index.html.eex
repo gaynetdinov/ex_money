@@ -15,6 +15,11 @@
             <th>Saltedge id</th>
             <th>Name</th>
             <th>Status</th>
+            <th>Interactive</th>
+            <th>Last refresh at</th>
+            <th>Last request at</th>
+            <th>Last fail at</th>
+            <th>Last fail message</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -25,6 +30,11 @@
               <td><%= login.saltedge_login_id %></td>
               <td><%= login.provider_name %></td>
               <td><%= login.status %></td>
+              <td><%= login.interactive %></td>
+              <td><%= login.last_refreshed_at %></td>
+              <td><%= login.last_request_at %></td>
+              <td><%= login.last_fail_at %></td>
+              <td><%= login.last_fail_message %></td>
               <td>
                 <%= link "Delete", to: settings_login_path(@conn, :delete, login), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %>
               </td>
