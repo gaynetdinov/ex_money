@@ -15,11 +15,11 @@ defmodule ExMoney.Settings.AccountController do
 
   def show(conn, %{"id" => id}, _user, _claims) do
     account = Repo.get!(Account, id)
-    render(conn, :show,
+
+    render conn, :show,
       account: account,
       topbar: "dashboard",
       navigation: "accounts"
-    )
   end
 
   def new(conn, _params, _user, _claims) do

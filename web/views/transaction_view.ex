@@ -8,7 +8,7 @@ defmodule ExMoney.TransactionView do
   end
 
   def disabled_next_page?(page_number, total_pages) do
-    if (page_number + 1) == total_pages do
+    if (page_number + 1) >= total_pages do
       "disabled"
     end
   end
@@ -16,7 +16,7 @@ defmodule ExMoney.TransactionView do
   def build_next_page_url(page_number, total_pages) do
     next_page = page_number + 1
 
-    case next_page == total_pages do
+    case next_page >= total_pages do
       true -> "#"
       false -> "transactions?page=#{next_page}"
     end

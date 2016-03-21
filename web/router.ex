@@ -51,7 +51,7 @@ defmodule ExMoney.Router do
       get "/categories/sync", CategoryController, :sync
       resources "/categories", CategoryController
       resources "/rules", RuleController
-      resources "/logins", LoginController, only: [:index, :delete]
+      resources "/logins", LoginController, only: [:index, :delete, :show]
     end
 
     resources "/transactions", TransactionController
@@ -78,7 +78,7 @@ defmodule ExMoney.Router do
 
     scope "/logins" do
       get "/new", ExMoney.Saltedge.LoginController, :new
-      get "/sync", ExMoney.Saltedge.LoginController, :sync
+      get "/:id/sync", ExMoney.Saltedge.LoginController, :sync
     end
 
     scope "/accounts" do

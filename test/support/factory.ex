@@ -7,13 +7,13 @@ defmodule ExMoney.Factory do
       email: Faker.Internet.email,
       password: Faker.Lorem.word,
       saltedge_customer_id: Faker.Lorem.word,
-      saltedge_id: sequence(:saltedge_id, &(&1))
+      saltedge_id: sequence(:saltedge_id, &(&1)) + 1
     }
   end
 
   def factory(:login) do
     %ExMoney.Login{
-      saltedge_login_id: sequence(:saltedge_login_id, &(&1)),
+      saltedge_login_id: sequence(:saltedge_login_id, &(&1)) + 1,
       user: build(:user)
     }
   end
