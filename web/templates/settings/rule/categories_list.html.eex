@@ -1,9 +1,9 @@
 <select class="form-control" id="rule_target_id" name="rule[target_id]">
   <option value="">Choose category</option>
   <%= for {{name, id}, sub_categories} <- @target do %>
-    <option value="<%= id %>"><%= name %></option>
+    <option value="<%= id %>" <%= if id == @selected, do: "selected" %>><%= name %></option>
     <%= for {name, id} <- sub_categories do %>
-      <option value="<%= id %>">&nbsp;&nbsp;&nbsp;<%= name %></option>
+      <option value="<%= id %>" <%= if id == @selected, do: "selected" %>>&nbsp;&nbsp;&nbsp;<%= name %></option>
     <% end %>
   <% end %>
 </select>

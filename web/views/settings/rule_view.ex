@@ -4,7 +4,7 @@ defmodule ExMoney.Settings.RuleView do
   def target_name("assign_category", target_id, categories, _accounts) do
     case categories[target_id] do
       nil -> "Stale target, remove this rule"
-      category -> "Category: #{category.name}"
+      category -> "Category: #{category.humanized_name}"
     end
   end
 

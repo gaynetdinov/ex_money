@@ -27,7 +27,7 @@
 
               <td>
                 <%= link "Show", to: settings_rule_path(@conn, :show, rule), class: "btn btn-default btn-xs" %>
-                <%= link "Edit", to: settings_rule_path(@conn, :edit, rule), class: "btn btn-default btn-xs" %>
+                <%= link "Edit", to: settings_rule_path(@conn, :edit, rule, type: rule.type), class: "btn btn-default btn-xs" %>
                 <%=
                   link "Delete", to: settings_rule_path(@conn, :delete, rule),
                     method: :delete,
