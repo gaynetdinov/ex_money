@@ -88,7 +88,9 @@ function deleteTransaction() {
       },
       success: function(data, status, xhr) {
         var response = JSON.parse(data);
-        $$("#account_id_" + response.account_id).text(response.new_balance);
+        if (response.new_balance) {
+          $$("#account_id_" + response.account_id).text(response.new_balance);
+        }
       },
       error: function(xhr, status) {
         alert("Something went wrong, check server logs");

@@ -54,6 +54,8 @@ defmodule ExMoney.Mobile.DashboardView do
     recent_diff_compare = Decimal.compare(recent_diff, Decimal.new(0))
     recent_diff_str = Decimal.to_string(recent_diff)
 
+    unless currency_label, do: currency_label = ""
+
     cond do
       recent_diff_compare == Decimal.new(1) ->
         "<span style='color:green'>" <> recent_diff_str <> currency_label <> "&#x25B2; &nbsp;</span>"

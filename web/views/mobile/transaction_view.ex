@@ -20,4 +20,8 @@ defmodule ExMoney.Mobile.TransactionView do
       new_balance: new_balance,
     }
   end
+
+  def render("delete.json", %{new_balance: new_balance}) do
+    %{new_balance: new_balance}
+  end
 end

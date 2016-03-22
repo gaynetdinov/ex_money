@@ -118,21 +118,40 @@ defmodule ExMoney.Mobile.TransactionController do
   def delete(conn, %{"id" => id}) do
     transaction = Repo.get!(Transaction, id)
     account = Repo.get!(Account, transaction.account_id)
-    new_balance = Decimal.sub(account.balance, transaction.amount)
 
-    Repo.transaction(fn ->
-      tr_info = TransactionInfo.by_transaction_id(id) |> Repo.one
-      if tr_info, do: Repo.delete!(tr_info)
+    case transaction.saltedge_transaction_id do
+      nil ->
+        new_balance = Decimal.sub(account.balance, transaction.amount)
 
-      Repo.delete!(transaction)
+        Repo.transaction(fn ->
+          tr_info = TransactionInfo.by_transaction_id(id) |> Repo.one
+          if tr_info, do: Repo.delete!(tr_info)
 
-      Account.update_custom_changeset(account, %{balance: new_balance})
-      |> Repo.update!
-    end)
+          Repo.delete!(transaction)
 
-    render conn, :delete,
-      account_id: account.id,
-      new_balance: new_balance
+          Account.update_custom_changeset(account, %{balance: new_balance})
+          |> Repo.update!
+        end)
+
+        render conn, :delete,
+          account_id: account.id,
+          new_balance: new_balance
+      _ ->
+        Repo.transaction(fn ->
+          tr_info = TransactionInfo.by_transaction_id(id) |> Repo.one
+          if tr_info, do: Repo.delete!(tr_info)
+
+          Repo.delete!(transaction)
+        end)
+
+        body = """
+          { "data": [{ "transaction_id": #{transaction.saltedge_transaction_id} }]}
+        """
+
+        ExMoney.Saltedge.Client.request(:put, "transactions/duplicate", body)
+
+        render conn, :delete, new_balance: false
+    end
   end
 
   defp parse_date(month) do
