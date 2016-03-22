@@ -8,6 +8,7 @@
       <table class="table table-striped">
         <thead>
           <tr>
+            <th>Saltedge Id</th>
             <th>Date</th>
             <th>Payee</th>
             <th>Description</th>
@@ -19,6 +20,7 @@
         <tbody>
           <%= for transaction <- @transactions do %>
             <tr>
+              <td><%= transaction.saltedge_transaction_id %></td>
               <td><%= transaction.made_on %></td>
               <td><%= payee(transaction) %></td>
               <td><%= transaction.description %></td>
