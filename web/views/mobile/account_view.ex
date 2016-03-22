@@ -38,28 +38,40 @@ defmodule ExMoney.Mobile.AccountView do
     end)
 
     max_amount = Enum.reduce(categories_tree, [], fn({id, sub_category_ids}, acc) ->
+      category = parent_categories[id] || categories[id]
+
       case sub_category_ids do
         [] ->
-          category = parent_categories[id] || categories[id]
           [category.amount | acc]
         _ ->
           sub_amount = Enum.reduce(sub_category_ids, 0, fn(sub_category_id, acc) ->
             acc + categories[sub_category_id].amount
           end)
-          [sub_amount | acc]
+
+          total_amount = if categories[category.id] do
+            sub_amount + categories[category.id].amount
+          else
+            sub_amount
+          end
+
+          [total_amount | acc]
       end
     end) |> Enum.max
 
-
     Enum.reduce(categories_tree, [], fn({id, sub_category_ids}, acc) ->
       category = parent_categories[id] || categories[id]
-
       amount = case sub_category_ids do
         [] -> category.amount
         _ ->
-          Enum.reduce(sub_category_ids, 0, fn(sub_category_id, acc) ->
+          sub_categories_sum = Enum.reduce(sub_category_ids, 0, fn(sub_category_id, acc) ->
             acc + categories[sub_category_id].amount
           end)
+
+          if categories[category.id] do
+            sub_categories_sum + categories[category.id].amount
+          else
+            sub_categories_sum
+          end
       end
 
       sub_categories = Enum.reduce(sub_category_ids, [], fn(sub_category_id, acc) ->

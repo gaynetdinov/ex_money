@@ -29,7 +29,7 @@
                 <%= @current_month.label %>
               </div>
               <div class="col-33" align="right">
-                <a href="/m/accounts/<%= @account.id %>?date=<%= @next_month.date %>" class="link">
+                <a href="/m/accounts/<%= @account.id %>?date=<%= @next_month.date %>" class="link" data-ignore-cache="true">
                   <%= @next_month.label %> &#8594;
                 </a>
               </div>
@@ -42,7 +42,7 @@
                   <div class="item-inner">
                     <div class="item-title">Expenses</div>
                     <div class="item-after" style="color: black">
-                      <a href='/m/accounts/<%= @account.id %>/expenses?date=<%= @current_month.date %>' data-force="true" data-ignore-cache="true">
+                      <a href='/m/accounts/<%= @account.id %>/expenses?date=<%= @current_month.date %>' data-ignore-cache="true">
                         <%= expenses(@month_transactions) %> <%= @account.currency_label %>
                       </a>
                     </div>

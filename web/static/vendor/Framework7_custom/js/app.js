@@ -209,7 +209,7 @@ exMoney.onPageInit('transactions-screen', function(page) {
 exMoney.onPageInit('account-screen', function (page) {
   $$('a.category-bar').on('taphold', function () {
     var category_id = $$(this).data("category-id");
-    var date = $$("#current_date").data("current-date");
+    var date = page.query.date;
     var account_id = $$("#account_id").data("account-id");
 
     mainView.router.load({
