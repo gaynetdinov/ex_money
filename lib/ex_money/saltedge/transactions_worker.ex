@@ -120,7 +120,7 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
         by_saltedge_transaction_id(se_tran["saltedge_transaction_id"])
         |> Repo.one
 
-      if !existing_transaction do
+      if !existing_transaction and !se_tran["duplicated"] do
         se_tran = set_category_id(se_tran)
 
         changeset = Transaction.changeset(%Transaction{}, se_tran)
