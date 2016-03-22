@@ -14,8 +14,7 @@
             <th>Account</th>
             <th>Pattern</th>
             <th>Target</th>
-
-            <th></th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -24,12 +23,18 @@
               <td><%= rule.type %></td>
               <td><%= rule.account.name %></td>
               <td><%= rule.pattern %></td>
-              <td><%= rule.target_id %></td>
+              <td><%= target_name(rule.type, rule.target_id, @categories, @accounts) %></td>
 
-              <td class="text-right">
+              <td>
                 <%= link "Show", to: settings_rule_path(@conn, :show, rule), class: "btn btn-default btn-xs" %>
                 <%= link "Edit", to: settings_rule_path(@conn, :edit, rule), class: "btn btn-default btn-xs" %>
-                <%= link "Delete", to: settings_rule_path(@conn, :delete, rule), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %>
+                <%=
+                  link "Delete", to: settings_rule_path(@conn, :delete, rule),
+                    method: :delete,
+                    data: [confirm: "Are you sure?"],
+                    class: "btn btn-danger btn-xs",
+                    form: [style: "display: inline"]
+                %>
               </td>
             </tr>
           <% end %>

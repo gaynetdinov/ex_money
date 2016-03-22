@@ -34,8 +34,14 @@
               <td><%= login.last_fail_at %></td>
               <td><%= login.last_fail_message %></td>
               <td>
-                <%= link "Sync", to: saltedge_login_path(@conn, :sync, login) %>
-                <%= link "Delete", to: settings_login_path(@conn, :delete, login), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %>
+                <%= link "Sync", to: saltedge_login_path(@conn, :sync, login), class: "btn btn-default btn-xs"%>
+                <%=
+                  link "Delete", to: settings_login_path(@conn, :delete, login),
+                    method: :delete,
+                    data: [confirm: "Are you sure?"],
+                    class: "btn btn-danger btn-xs",
+                    form: [style: "display: inline"]
+                %>
               </td>
             </tr>
           <% end %>

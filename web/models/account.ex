@@ -54,6 +54,10 @@ defmodule ExMoney.Account do
     from l in ExMoney.Account, where: l.saltedge_account_id == ^account_id, limit: 1
   end
 
+  def by_ids(ids) do
+    from a in ExMoney.Account, where: a.id in ^(ids)
+  end
+
   def show_on_dashboard() do
     from acc in ExMoney.Account,
       where: acc.show_on_dashboard == true,

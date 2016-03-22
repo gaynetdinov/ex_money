@@ -9,8 +9,30 @@ defmodule ExMoney.Settings.RuleController do
   def index(conn, _params) do
     rules = Repo.all(from r in Rule, preload: [:account])
 
+    map = Enum.reduce(rules, %{account_ids: [], category_ids: []}, fn(rule, acc) ->
+      {_, acc} = case rule.type do
+        "assign_category" -> Map.get_and_update(acc, :category_ids, fn(current) -> {current, [rule.target_id | current]} end)
+        "withdraw_to_cash" -> Map.get_and_update(acc, :account_ids, fn(current) -> {current, [rule.target_id | current]} end)
+      end
+
+      acc
+    end)
+
+    categories = map.category_ids
+    |> Category.by_ids
+    |> Repo.all
+    |> Enum.reduce(%{}, fn(c, acc) -> Map.put(acc, c.id, c) end)
+
+    accounts = map.account_ids
+    |> List.flatten
+    |> Account.by_ids
+    |> Repo.all
+    |> Enum.reduce(%{}, fn(a, acc) -> Map.put(acc, a.id, a) end)
+
     render conn, :index,
       rules: rules,
+      categories: categories,
+      accounts: accounts,
       topbar: "settings",
       navigation: "rules"
   end

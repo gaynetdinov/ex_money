@@ -25,7 +25,13 @@
               <td><%= parent_category(category.parent) %></td>
               <td>
                 <%= link "Edit", to: settings_category_path(@conn, :edit, category), class: "btn btn-default btn-xs" %>
-                <%= link "Delete", to: settings_category_path(@conn, :delete, category), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %>
+                <%=
+                  link "Delete", to: settings_category_path(@conn, :delete, category),
+                    method: :delete,
+                    data: [confirm: "Are you sure?"],
+                    class: "btn btn-danger btn-xs",
+                    form: [style: "display: inline"]
+                %>
               </td>
             </tr>
           <% end %>
