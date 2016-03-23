@@ -38,29 +38,15 @@ defmodule ExMoney.Settings.RuleController do
   end
 
   def new(conn, params) do
-    target = case params["type"] do
-      nil -> []
-      "assign_category" ->
-        categories = Repo.all(Category)
-
-        Enum.reduce(categories, %{}, fn(category, acc) ->
-          if is_nil(category.parent_id) do
-            sub_categories = Enum.filter(categories, fn(c) -> c.parent_id == category.id end)
-            |> Enum.map(fn(sub_category) -> {sub_category.humanized_name, sub_category.id} end)
-            Map.put(acc, {category.humanized_name, category.id}, sub_categories)
-          else
-            acc
-          end
-        end)
-      "withdraw_to_cash" -> Repo.all(Account.only_custom)
-    end
-
+    type = params["type"]
+    target = build_target(type)
     accounts = Account.only_saltedge |> Repo.all
     changeset = Rule.changeset(%Rule{})
 
     render conn, :new,
       changeset: changeset,
       target: target,
+      type: type,
       accounts: accounts,
       topbar: "settings",
       navigation: "rules"
@@ -78,9 +64,13 @@ defmodule ExMoney.Settings.RuleController do
         |> redirect(to: settings_rule_path(conn, :index))
       {:error, changeset} ->
         accounts = Account.only_saltedge |> Repo.all
+        target = build_target(rule_params["type"])
+
         render conn, :new,
           changeset: changeset,
           accounts: accounts,
+          type: rule_params["type"],
+          target: target,
           topbar: "settings",
           navigation: "rules"
     end
@@ -88,33 +78,17 @@ defmodule ExMoney.Settings.RuleController do
 
   def show(conn, %{"id" => id}) do
     rule = Repo.get!(Rule, id)
-    render(conn, :show,
+    render conn, :show,
       rule: rule,
       topbar: "settings",
       navigation: "rules"
-    )
   end
 
-  def edit(conn, %{"id" => id}) do
+  def edit(conn, %{"id" => id} = params) do
     rule = Repo.get!(Rule, id)
 
-    target = case rule.type do
-      nil -> []
-      "assign_category" ->
-        categories = Repo.all(Category)
-
-        Enum.reduce(categories, %{}, fn(category, acc) ->
-          if is_nil(category.parent_id) do
-            sub_categories = Enum.filter(categories, fn(c) -> c.parent_id == category.id end)
-            |> Enum.map(fn(sub_category) -> {sub_category.humanized_name, sub_category.id} end)
-            Map.put(acc, {category.humanized_name, category.id}, sub_categories)
-          else
-            acc
-          end
-        end)
-      "withdraw_to_cash" -> Repo.all(Account.only_custom)
-    end
-
+    type = params["type"]
+    target = build_target(type)
     accounts = Account.only_saltedge |> Repo.all
     changeset = Rule.changeset(rule)
 
@@ -122,6 +96,7 @@ defmodule ExMoney.Settings.RuleController do
       rule: rule,
       changeset: changeset,
       target: target,
+      type: type,
       accounts: accounts,
       topbar: "settings",
       navigation: "rules"
@@ -129,6 +104,8 @@ defmodule ExMoney.Settings.RuleController do
 
   def update(conn, %{"id" => id, "rule" => rule_params}) do
     rule = Repo.get!(Rule, id)
+    type = rule_params["type"]
+    target = build_target(type)
     changeset = Rule.changeset(rule, rule_params)
 
     case Repo.update(changeset) do
@@ -139,12 +116,13 @@ defmodule ExMoney.Settings.RuleController do
         |> put_flash(:info, "Rule updated successfully.")
         |> redirect(to: settings_rule_path(conn, :show, rule))
       {:error, changeset} ->
-        render(conn, :edit,
+        render conn, :edit,
           rule: rule,
+          type: type,
           changeset: changeset,
+          target: target,
           topbar: "settings",
           navigation: "rules"
-        )
     end
   end
 
@@ -161,5 +139,24 @@ defmodule ExMoney.Settings.RuleController do
   defp apply_rule_for_all("false", _rule), do: :nothing
   defp apply_rule_for_all("true", rule) do
     GenServer.cast(:rule_processor, {:process_all, rule.id})
+  end
+
+  defp build_target(type) do
+    case type do
+      nil -> []
+      "assign_category" ->
+        categories = Repo.all(Category)
+
+        Enum.reduce(categories, %{}, fn(category, acc) ->
+          if is_nil(category.parent_id) do
+            sub_categories = Enum.filter(categories, fn(c) -> c.parent_id == category.id end)
+            |> Enum.map(fn(sub_category) -> {sub_category.humanized_name, sub_category.id} end)
+            Map.put(acc, {category.humanized_name, category.id}, sub_categories)
+          else
+            acc
+          end
+        end)
+      "withdraw_to_cash" -> Repo.all(Account.only_custom)
+    end
   end
 end

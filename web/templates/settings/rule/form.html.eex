@@ -12,7 +12,7 @@
 
   <div class="form-group">
     <%= label f, :rule_type, class: "control-label" %>
-    <%= select f, :type, ["Assign category": "assign_category", "Withdraw to cash": "withdraw_to_cash"], prompt: "Select rule type", class: "form-control", onchange: "window.location='/settings/rules/new?type=' + this.value;", value: @conn.params["type"] || @changeset.model.type %>
+    <%= select f, :type, ["Assign category": "assign_category", "Withdraw to cash": "withdraw_to_cash"], prompt: "Select rule type", class: "form-control", onchange: "window.location='/settings/rules/new?type=' + this.value;", value: @type || @changeset.model.type %>
   </div>
 
   <div class="form-group">
@@ -27,7 +27,7 @@
 
   <div class="form-group">
     <%= label f, :rule_target_id, class: "control-label" %>
-    <%= if @conn.params["type"] == "assign_category" do %>
+    <%= if @type == "assign_category" do %>
       <%= render "categories_list.html", target: @target, selected: @changeset.model.target_id %>
     <% else %>
       <%= render "accounts_list.html", target: @target, f: f %>

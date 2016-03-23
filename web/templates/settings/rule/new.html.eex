@@ -9,6 +9,7 @@
       accounts: @accounts,
       target: @target,
       conn: @conn,
+      type: @type,
       action: settings_rule_path(@conn, :create) %>
 
     <%= link "Back", to: settings_rule_path(@conn, :index) %>

@@ -9,6 +9,7 @@
       accounts: @accounts,
       conn: @conn,
       target: @target,
+      type: @type,
       action: settings_rule_path(@conn, :update, @rule)
     %>
 
