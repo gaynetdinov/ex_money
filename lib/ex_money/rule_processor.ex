@@ -33,12 +33,11 @@ defmodule ExMoney.RuleProcessor do
   def handle_cast({:process_all, rule_id}, _state) do
     rule = Repo.get(Rule, rule_id)
 
-    sql_like = "%#{rule.pattern}%"
     transactions = Repo.all(from tr in Transaction,
       join: tr_info in TransactionInfo, on: tr.id == tr_info.transaction_id,
       preload: [transaction_info: tr_info],
       where: tr.account_id == ^rule.account_id,
-      where: ilike(tr.description, ^sql_like) or ilike(tr_info.payee, ^sql_like))
+      where: fragment("description ~* ?", ^rule.pattern) or fragment("payee ~* ?", ^rule.pattern))
 
     Enum.each(transactions, fn(tr) ->
       GenServer.cast(:rule_processor, {:process, tr.id})
