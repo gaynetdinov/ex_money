@@ -22,7 +22,8 @@ config :ex_money, ExMoney.Endpoint,
 # Do not print debug messages in production
 config :logger, level: :debug
 
-config :ex_money, :login_logger_worker, :login_logger
+config :ex_money, :login_logger_worker,
+  [name: :login_logger, enabled: false]
 
 config :ex_money,
   saltedge_client_id: System.get_env("CLIENT_ID"),

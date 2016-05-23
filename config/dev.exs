@@ -37,7 +37,8 @@ config :ex_money, ExMoney.Repo,
   adapter: Ecto.Adapters.Postgres,
   pool_size: 10
 
-config :ex_money, :login_logger_worker, :login_logger
+config :ex_money, :login_logger_worker,
+  [name: :login_logger, enabled: true]
 
 # Put Saltedge credentials into dev.secret.exs
 # config :ex_money,

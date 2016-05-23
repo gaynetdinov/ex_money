@@ -220,6 +220,6 @@ defmodule CallbacksController do
   end
 
   defp add_login_event(callback, event, login_id, params) do
-    GenServer.cast(@login_logger_worker, {:log, callback, event, login_id, params})
+    GenServer.cast(@login_logger_worker.name, {:log, callback, event, login_id, params})
   end
 end
