@@ -17,7 +17,7 @@ defmodule CallbacksController do
     # FIXME WHAT A MESS
     case conn.assigns[:login] do
       nil ->
-        changeset = Ecto.Model.build(user, :logins)
+        changeset = Ecto.build_assoc(user, :logins)
         |> Login.success_callback_changeset(%{saltedge_login_id: login_id, user_id: user.id})
 
         case Repo.insert(changeset) do
@@ -106,7 +106,7 @@ defmodule CallbacksController do
 
     case conn.assigns[:login] do
       nil ->
-        changeset = Ecto.Model.build(user, :logins)
+        changeset = Ecto.build_assoc(user, :logins)
         |> Login.failure_callback_changeset(%{
           saltedge_login_id: login_id,
           last_fail_error_class: params["data"]["error_class"],

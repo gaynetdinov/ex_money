@@ -24,8 +24,10 @@ defmodule ExMoney.ModelCase do
   end
 
   setup tags do
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(ExMoney.Repo)
+
     unless tags[:async] do
-      Ecto.Adapters.SQL.restart_test_transaction(ExMoney.Repo, [])
+      Ecto.Adapters.SQL.Sandbox.mode(ExMoney.Repo, {:shared, self()})
     end
 
     :ok

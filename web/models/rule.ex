@@ -16,7 +16,7 @@ defmodule ExMoney.Rule do
   @required_fields ~w(type account_id pattern target_id)
   @optional_fields ~w()
 
-  def changeset(model, params \\ :empty) do
+  def changeset(model, params \\ %{}) do
     model
     |> cast(params, @required_fields, @optional_fields)
   end

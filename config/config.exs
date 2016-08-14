@@ -14,6 +14,8 @@ config :ex_money, ExMoney.Endpoint,
   pubsub: [name: ExMoney.PubSub,
            adapter: Phoenix.PubSub.PG2]
 
+config :ex_money, ecto_repos: [ExMoney.Repo]
+
 # Configures Elixir's Logger
 config :logger,
   format: "$time $metadata[$level] $message\n",

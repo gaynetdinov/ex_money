@@ -17,7 +17,7 @@ defmodule ExMoney.Category do
   @required_fields ~w(name)
   @optional_fields ~w(parent_id humanized_name)
 
-  def changeset(model, params \\ :empty) do
+  def changeset(model, params \\ %{}) do
     model
     |> cast(params, @required_fields, @optional_fields)
     |> Ecto.Changeset.put_change(:css_color, generate_color)
