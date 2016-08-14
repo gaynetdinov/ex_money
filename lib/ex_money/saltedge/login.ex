@@ -2,14 +2,16 @@ defmodule ExMoney.Saltedge.Login do
   alias ExMoney.{Login, Repo}
 
   def sync(user_id) do
-    logins = ExMoney.Saltedge.Client.request(:get, "logins")["data"]
+    logins = with {:ok, response} <- ExMoney.Saltedge.Client.request(:get, "logins"),
+              do: response["data"]
 
     store_or_update_logins(logins, user_id)
   end
 
   def sync(user_id, login_id) do
     login_url = "logins/#{login_id}"
-    login = ExMoney.Saltedge.Client.request(:get, login_url)["data"]
+    login = with {:ok, response} <- ExMoney.Saltedge.Client.request(:get, login_url),
+             do: response["data"]
 
     store_or_update_logins([login], user_id)
   end

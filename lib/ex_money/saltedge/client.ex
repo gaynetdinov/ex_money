@@ -1,5 +1,5 @@
 defmodule ExMoney.Saltedge.Client do
-  @base_url "https://www.saltedge.com/api/v2/"
+  @base_url "https://www.saltedge.com/api/v3/"
 
   @doc """
   A client for Saltedge API
@@ -51,9 +51,14 @@ defmodule ExMoney.Saltedge.Client do
       {"Service-secret", service_secret}
     ]
 
-    {:ok, response} = HTTPoison.request(method, url, body, headers)
-
-    response.body |> Poison.decode!
+    case HTTPoison.request(method, url, body, headers) do
+      {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
+        {:ok, Poison.decode!(body)}
+      {:ok, %HTTPoison.Response{body: body}} ->
+        {:error, Poison.decode!(body)}
+      {:error, %HTTPoison.Error{reason: reason}} ->
+        {:error, reason}
+    end
   end
 
   def signature(url) do

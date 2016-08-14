@@ -4,8 +4,12 @@ defmodule ExMoney.Saltedge.Account do
   def sync(user_id, saltedge_login_id) do
     # By some reason there is no way to fetch only login's accounts,
     # so fetch all and process only necessary ones.
-    accounts = ExMoney.Saltedge.Client.request(:get, "accounts")["data"]
-    |> Enum.reject(fn(account) -> saltedge_login_id != account["login_id"] end)
+    accounts = with {:ok, response} <- ExMoney.Saltedge.Client.request(:get, "accounts"),
+                do: response["data"]
+
+    accounts = Enum.reject accounts, fn(account) ->
+      saltedge_login_id != account["login_id"]
+    end
 
     Enum.each(accounts, fn(account) ->
       account = Map.put(account, "saltedge_account_id", account["id"])
