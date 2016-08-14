@@ -9,9 +9,13 @@ defmodule ExMoney.Saltedge.LoginLogger do
   end
 
   def handle_cast({:log, callback, event, saltedge_login_id, params}, state) do
-    case Login.by_saltedge_login_id(saltedge_login_id) |> Repo.one do
-      nil -> Logger.error("Could not create a login log entry, login with saltedge_login_id #{saltedge_login_id} not found")
-      login ->
+    login_logger_enabled = Application.get_env(:ex_money, :login_logger_worker)[:enabled]
+    login = Login.by_saltedge_login_id(saltedge_login_id) |> Repo.one
+
+    case {login_logger_enabled, login} do
+      {false, _} -> :nothing
+      {_, nil} -> Logger.error("Could not create a login log entry, login with saltedge_login_id #{saltedge_login_id} not found")
+      {_, login} ->
         changeset = LoginLog.changeset(%LoginLog{}, %{
           callback: callback,
           event: event,

@@ -9,36 +9,54 @@ defmodule ExMoney.Saltedge.Scheduler do
   end
 
   def init(:ok) do
-    Process.send_after(self(), :schedule, 100)
+    Process.send_after(self, :schedule, 100)
 
     {:ok, %{}}
   end
 
   def handle_info(:schedule, state) do
-    case current_hour() do
+    case current_hour do
       hour when hour >= 0 and hour < 7 ->
-        # FIXME: handle genserver answer
-        result = GenServer.call(:login_refresh_worker, :stop)
-        Logger.info("Time to sleep, LoginRefreshWorker has been stopped with result => #{inspect(result)}")
-        # Start transactions worker in 7 hours
-        Process.send_after(self(), :start_worker, 7 * 60 * 60 * 1000)
+        stop_worker(:login_refresh_worker)
+        stop_worker(:idle_worker)
 
-      _ -> Process.send_after(self(), :schedule, @interval)
+        Process.send_after(self, :start_worker, 7 * 60 * 60 * 1000)
+        Logger.info("Workers have been scheduled to start in 7 hours")
+      _ ->
+        Process.send_after(self, :schedule, @interval)
     end
 
     {:noreply, state}
   end
 
   def handle_info(:start_worker, state) do
-    result = Supervisor.restart_child(
-      ExMoney.Supervisor,
-      ExMoney.Saltedge.LoginRefreshWorker
-    )
-    Logger.info("Time to wake up, LoginRefreshWorker has been started with result => #{inspect(result)}")
+    start_worker(:login_refresh_worker, ExMoney.Saltedge.LoginRefreshWorker)
+    start_worker(:idle_worker, ExMoney.IdleWorker)
 
-    Process.send_after(self(), :schedule, @interval)
+    Process.send_after(self, :schedule, @interval)
 
     {:noreply, state}
+  end
+
+  defp start_worker(name, ref) do
+    Logger.info("Starting worker #{name}...")
+    pid = Process.whereis(name)
+
+    if !pid do
+      result = Supervisor.restart_child(ExMoney.Supervisor, ref)
+
+      Logger.info("Time to wake up, #{ref} has been started with result => #{inspect(result)}")
+    end
+  end
+
+  defp stop_worker(name) do
+    Logger.info("Stopping worker #{name}...")
+    pid = Process.whereis(name)
+
+    if pid && Process.alive?(pid) do
+      result = GenServer.call(name, :stop)
+      Logger.info("Time to sleep, #{name} has been stopped with result => #{inspect(result)}")
+    end
   end
 
   defp current_hour do
