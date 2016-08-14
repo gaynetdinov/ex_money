@@ -84,17 +84,16 @@ defmodule ExMoney.Router do
     scope "/accounts" do
       get "/sync", ExMoney.Saltedge.AccountController, :sync
     end
-
   end
 
   scope "/callbacks", as: :callbacks do
     pipe_through [:saltedge_api, :browser_session]
 
-    post "/success", CallbacksController, :success, as: :success
-    post "/failure", CallbacksController, :failure, as: :failure
-    post "/notify", CallbacksController, :notify, as: :notify
-    post "/interactive", CallbacksController, :interactive, as: :interactive
-    post "/destroy", CallbacksController, :destroy, as: :destroy
+    post "/success", ExMoney.Callbacks.SuccessCallbackController, :success, as: :success
+    post "/failure", ExMoney.Callbacks.FailureCallbackController, :failure, as: :failure
+    post "/notify", ExMoney.Callbacks.NotifyCallbackController, :notify, as: :notify
+    post "/interactive", ExMoney.Callbacks.InteractiveCallbackController, :interactive, as: :interactive
+    post "/destroy", ExMoney.Callbacks.DestroyCallbackController, :destroy, as: :destroy
   end
 
   scope "/api/v1", ExMoney.Api.V1, as: :api do

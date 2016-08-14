@@ -23,7 +23,7 @@ config :ex_money, ExMoney.Endpoint,
 config :logger, level: :debug
 
 config :ex_money, :login_logger_worker,
-  [name: :login_logger, enabled: false]
+  [name: ExMoney.Saltedge.LoginLogger, enabled: false]
 
 config :ex_money,
   saltedge_client_id: System.get_env("CLIENT_ID"),
