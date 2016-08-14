@@ -44,6 +44,7 @@ config :ex_money, :login_logger_worker,
 # config :ex_money,
 #   saltedge_client_id: "your client id"
 #   saltedge_service_secret: "your service secret"
+#
 # Also put database credentials into dev.descret.exs like this:
 # config :ex_money, ExMoney.Repo,
 #  username: "username",
