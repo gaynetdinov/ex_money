@@ -38,7 +38,7 @@ defmodule ExMoney.Mixfile do
       {:phoenix_html, "~> 2.6"},
       {:phoenix_live_reload, "~> 1.0", only: :dev},
       {:cowboy, "~> 1.0"},
-      {:httpoison, "~> 0.8.0"},
+      {:httpoison, "~> 0.9.0"},
       {:guardian, "0.10.1"},
       {:guardian_db, github: "hassox/guardian_db"},
       {:comeonin, "~> 2.0"},
