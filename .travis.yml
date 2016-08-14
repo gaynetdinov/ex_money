@@ -10,5 +10,7 @@ sudo: false
 
 script: mix test --trace
 
+services:
+  - postgresql
 before_script:
   - psql -c 'create database ex_money_test;' -U postgres
