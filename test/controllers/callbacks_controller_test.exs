@@ -11,7 +11,7 @@ defmodule ExMoney.CallbacksControllerTest.Success do
   end
 
   test "successful callback", %{conn: conn} do
-    user = create(:user)
+    user = insert(:user)
     login_id = 123
 
     body = [
@@ -35,7 +35,7 @@ defmodule ExMoney.CallbacksControllerTest.Success do
   end
 
   test "when updates login", %{conn: conn} do
-    login = create(:login)
+    login = insert(:login)
 
     body = [
       data: [
@@ -91,7 +91,7 @@ defmodule ExMoney.CallbacksControllerTest.Failure do
   end
 
   test "successful callback", %{conn: conn} do
-    user = create(:user)
+    user = insert(:user)
     login_id = 123
 
     body = [
@@ -151,7 +151,7 @@ defmodule ExMoney.CallbacksControllerTest.Notify do
   end
 
   test "successful callback when customer_id is saltedge_customer_id", %{conn: conn} do
-    login = create(:login)
+    login = insert(:login)
 
     body = [
       data: [
@@ -175,7 +175,7 @@ defmodule ExMoney.CallbacksControllerTest.Notify do
   end
 
   test "successful callback when customer_id is saltedge_id", %{conn: conn} do
-    login = create(:login)
+    login = insert(:login)
 
     body = [
       data: [
@@ -217,7 +217,7 @@ defmodule ExMoney.CallbacksControllerTest.Notify do
   end
 
   test "when a login is not found", %{conn: conn} do
-    user = create(:user)
+    user = insert(:user)
 
     body = [
       data: [
@@ -251,7 +251,7 @@ defmodule ExMoney.CallbacksControllerTest.Interactive do
   end
 
   test "successful callback", %{conn: conn} do
-    login = create(:login)
+    login = insert(:login)
 
     body = [
       data: [

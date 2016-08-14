@@ -1,7 +1,7 @@
 defmodule ExMoney.Factory do
   use ExMachina.Ecto, repo: ExMoney.Repo
 
-  def factory(:user) do
+  def user_factory do
     %ExMoney.User{
       name: Faker.Name.name,
       email: Faker.Internet.email,
@@ -11,7 +11,7 @@ defmodule ExMoney.Factory do
     }
   end
 
-  def factory(:login) do
+  def login_factory do
     %ExMoney.Login{
       saltedge_login_id: sequence(:saltedge_login_id, &(&1)) + 1,
       user: build(:user)
