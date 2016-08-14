@@ -17,7 +17,7 @@
   "httpoison": {:hex, :httpoison, "0.9.0", "68187a2daddfabbe7ca8f7d75ef227f89f0e1507f7eecb67e4536b3c516faddb", [:mix], [{:hackney, "~> 1.6.0", [hex: :hackney, optional: false]}]},
   "idna": {:hex, :idna, "1.2.0", "ac62ee99da068f43c50dc69acf700e03a62a348360126260e87f2b54eced86b2", [:rebar3], []},
   "jose": {:hex, :jose, "1.8.0", "1ee027c5c0ff3922e3bfe58f7891509e8f87f771ba609ee859e623cc60237574", [:mix, :rebar3], [{:base64url, "~> 0.0.1", [hex: :base64url, optional: false]}]},
-  "logger_file_backend": {:hex, :logger_file_backend, "0.0.5", "58e155bdd08c0c719a478e89b5c51321c0d14e5b7ab5dc29ea3b4fe9bcb349d4", [:mix], []},
+  "logger_file_backend": {:hex, :logger_file_backend, "0.0.7", "6bf4df77dab45d09617c6eed0c2f813f2123d352b366411b01e4378a3d106851", [:mix], []},
   "metrics": {:hex, :metrics, "1.0.1", "25f094dea2cda98213cecc3aeff09e940299d950904393b2a29d191c346a8486", [:rebar3], []},
   "mime": {:hex, :mime, "1.0.1", "05c393850524767d13a53627df71beeebb016205eb43bfbd92d14d24ec7a1b51", [:mix], []},
   "mimerl": {:hex, :mimerl, "1.0.2", "993f9b0e084083405ed8252b99460c4f0563e41729ab42d9074fd5e52439be88", [:rebar3], []},
