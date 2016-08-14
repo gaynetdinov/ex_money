@@ -10,7 +10,7 @@ defmodule ExMoney.CallbacksControllerTest.Success do
     :ok
   end
 
-  test "successful callback" do
+  test "successful callback", %{conn: conn} do
     user = create(:user)
     login_id = 123
 
@@ -25,7 +25,7 @@ defmodule ExMoney.CallbacksControllerTest.Success do
       ]
     ]
 
-    conn = post conn(), "/callbacks/success", body
+    conn = post conn, "/callbacks/success", body
     login = Repo.one(Login)
 
     assert conn.status == 200
@@ -34,7 +34,7 @@ defmodule ExMoney.CallbacksControllerTest.Success do
     assert login.user_id == user.id
   end
 
-  test "when updates login" do
+  test "when updates login", %{conn: conn} do
     login = create(:login)
 
     body = [
@@ -50,7 +50,7 @@ defmodule ExMoney.CallbacksControllerTest.Success do
       ]
     ]
 
-    conn = post conn(), "/callbacks/success", body
+    conn = post conn, "/callbacks/success", body
     login = Repo.one(Login)
 
     assert conn.status == 200
@@ -58,7 +58,7 @@ defmodule ExMoney.CallbacksControllerTest.Success do
     assert login.provider_score == "foo"
   end
 
-  test "when user is not found by customer_id" do
+  test "when user is not found by customer_id", %{conn: conn} do
     body = [
       data: [
         customer_id: "foobar",
@@ -70,7 +70,7 @@ defmodule ExMoney.CallbacksControllerTest.Success do
       ]
     ]
 
-    conn = post conn(), "/callbacks/success", body
+    conn = post conn, "/callbacks/success", body
     logins = Repo.all(Login)
 
     assert conn.status == 400
@@ -90,7 +90,7 @@ defmodule ExMoney.CallbacksControllerTest.Failure do
     :ok
   end
 
-  test "successful callback" do
+  test "successful callback", %{conn: conn} do
     user = create(:user)
     login_id = 123
 
@@ -107,7 +107,7 @@ defmodule ExMoney.CallbacksControllerTest.Failure do
       ]
     ]
 
-    conn = post conn(), "/callbacks/failure", body
+    conn = post conn, "/callbacks/failure", body
     login = Repo.one(Login)
 
     assert conn.status == 200
@@ -117,7 +117,7 @@ defmodule ExMoney.CallbacksControllerTest.Failure do
     assert login.saltedge_login_id == login_id
   end
 
-  test "when user is not found by customer_id" do
+  test "when user is not found by customer_id", %{conn: conn} do
     body = [
       data: [
         customer_id: "foobar",
@@ -129,7 +129,7 @@ defmodule ExMoney.CallbacksControllerTest.Failure do
       ]
     ]
 
-    conn = post conn(), "/callbacks/failure", body
+    conn = post conn, "/callbacks/failure", body
     logins = Repo.all(Login)
 
     assert conn.status == 400
@@ -150,7 +150,7 @@ defmodule ExMoney.CallbacksControllerTest.Notify do
     :ok
   end
 
-  test "successful callback when customer_id is saltedge_customer_id" do
+  test "successful callback when customer_id is saltedge_customer_id", %{conn: conn} do
     login = create(:login)
 
     body = [
@@ -165,7 +165,7 @@ defmodule ExMoney.CallbacksControllerTest.Notify do
       ]
     ]
 
-    conn = post conn(), "/callbacks/notify", body
+    conn = post conn, "/callbacks/notify", body
 
     login = Repo.one(Login)
 
@@ -174,7 +174,7 @@ defmodule ExMoney.CallbacksControllerTest.Notify do
     assert login.stage == "start"
   end
 
-  test "successful callback when customer_id is saltedge_id" do
+  test "successful callback when customer_id is saltedge_id", %{conn: conn} do
     login = create(:login)
 
     body = [
@@ -189,7 +189,7 @@ defmodule ExMoney.CallbacksControllerTest.Notify do
       ]
     ]
 
-    conn = post conn(), "/callbacks/notify", body
+    conn = post conn, "/callbacks/notify", body
     login = Repo.one(Login)
 
     assert conn.status == 200
@@ -197,7 +197,7 @@ defmodule ExMoney.CallbacksControllerTest.Notify do
     assert login.stage == "start"
   end
 
-  test "when user is not found" do
+  test "when user is not found", %{conn: conn} do
     body = [
       data: [
         customer_id: "foobar",
@@ -209,14 +209,14 @@ defmodule ExMoney.CallbacksControllerTest.Notify do
       ]
     ]
 
-    conn = post conn(), "/callbacks/notify", body
+    conn = post conn, "/callbacks/notify", body
     logins = Repo.all(Login)
 
     assert conn.status == 400
     assert logins == []
   end
 
-  test "when a login is not found" do
+  test "when a login is not found", %{conn: conn} do
     user = create(:user)
 
     body = [
@@ -230,7 +230,7 @@ defmodule ExMoney.CallbacksControllerTest.Notify do
       ]
     ]
 
-    conn = post conn(), "/callbacks/notify", body
+    conn = post conn, "/callbacks/notify", body
     logins = Repo.all(Login)
 
     assert conn.status == 200
@@ -250,7 +250,7 @@ defmodule ExMoney.CallbacksControllerTest.Interactive do
     :ok
   end
 
-  test "successful callback" do
+  test "successful callback", %{conn: conn} do
     login = create(:login)
 
     body = [
@@ -267,7 +267,7 @@ defmodule ExMoney.CallbacksControllerTest.Interactive do
       ]
     ]
 
-    conn = post conn(), "/callbacks/interactive", body
+    conn = post conn, "/callbacks/interactive", body
     login = Repo.one(Login)
 
     assert conn.status == 200
@@ -277,7 +277,7 @@ defmodule ExMoney.CallbacksControllerTest.Interactive do
     assert login.interactive_html == "<body>Interactive!</body>"
   end
 
-  test "when user is not found by customer_id" do
+  test "when user is not found by customer_id", %{conn: conn} do
     body = [
       data: [
         customer_id: "foobar",
@@ -289,7 +289,7 @@ defmodule ExMoney.CallbacksControllerTest.Interactive do
       ]
     ]
 
-    conn = post conn(), "/callbacks/interactive", body
+    conn = post conn, "/callbacks/interactive", body
     logins = Repo.all(Login)
 
     assert conn.status == 400

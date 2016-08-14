@@ -18,7 +18,7 @@ defmodule ExMoney.Mixfile do
   # Type `mix help compile.app` for more information.
   def application do
     [mod: {ExMoney, []},
-     applications: [:phoenix, :phoenix_html, :cowboy, :logger,
+     applications: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger,
                     :phoenix_ecto, :postgrex, :httpoison, :tzdata]]
   end
 
@@ -31,10 +31,11 @@ defmodule ExMoney.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.1"},
-      {:phoenix_ecto, "~> 2.0"},
+      {:phoenix, "~> 1.2"},
+      {:phoenix_pubsub, "~> 1.0"},
+      {:phoenix_ecto, "~> 3.0"},
       {:postgrex, ">= 0.0.0"},
-      {:phoenix_html, "~> 2.3"},
+      {:phoenix_html, "~> 2.6"},
       {:phoenix_live_reload, "~> 1.0", only: :dev},
       {:cowboy, "~> 1.0"},
       {:httpoison, "~> 0.8.0"},
@@ -56,6 +57,7 @@ defmodule ExMoney.Mixfile do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     ["ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
-     "ecto.reset": ["ecto.drop", "ecto.setup"]]
+     "ecto.reset": ["ecto.drop", "ecto.setup"],
+     "test": ["ecto.create --quiet", "ecto.migrate", "test"]]
   end
 end

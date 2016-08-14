@@ -41,23 +41,23 @@ defmodule ExMoney.Transaction do
   )
   @optional_fields ~w(category_id)
 
-  def changeset(model, params \\ :empty) do
+  def changeset(model, params \\ %{}) do
     model
     |> cast(params, @required_fields, @optional_fields)
   end
 
-  def changeset_custom(model, params \\ :empty) do
+  def changeset_custom(model, params \\ %{}) do
     model
     |> cast(params, ~w(amount category_id account_id made_on user_id), ~w(description ))
     |> negate_amount(params)
   end
 
-  def update_changeset(model, params \\ :empty) do
+  def update_changeset(model, params \\ %{}) do
     model
     |> cast(params, ~w(), ~w(category_id description))
   end
 
-  def negate_amount(changeset, :empty), do: changeset
+  def negate_amount(changeset, %{}), do: changeset
   def negate_amount(changeset, %{"type" => "income"}), do: changeset
 
   def negate_amount(changeset, %{"type" => "expense"}) do

@@ -26,22 +26,22 @@ defmodule ExMoney.Account do
   @required_fields ~w(name nature balance currency_code saltedge_login_id saltedge_account_id user_id)
   @optional_fields ~w()
 
-  def changeset(model, params \\ :empty) do
+  def changeset(model, params \\ %{}) do
     model
     |> cast(params, @required_fields, @optional_fields)
   end
 
-  def changeset_for_custom_account(model, params \\ :empty) do
+  def changeset_for_custom_account(model, params \\ %{}) do
     model
     |> cast(params, ~w(name balance currency_code user_id), ~w())
   end
 
-  def update_custom_changeset(model, params \\ :empty) do
+  def update_custom_changeset(model, params \\ %{}) do
     model
     |> cast(params, ~w(), ~w(name balance currency_code currency_label show_on_dashboard))
   end
 
-  def update_saltedge_changeset(model, params \\ :empty) do
+  def update_saltedge_changeset(model, params \\ %{}) do
     model
     |> cast(params, ~w(balance), ~w())
   end

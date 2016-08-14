@@ -61,23 +61,23 @@ defmodule ExMoney.Login do
       limit: 1
   end
 
-  def success_callback_changeset(model, params \\ :empty) do
+  def success_callback_changeset(model, params \\ %{}) do
     model
     |> cast(params, ~w(saltedge_login_id user_id), ~w())
     |> unique_constraint(:saltedge_login_id)
   end
 
-  def failure_callback_changeset(model, params \\ :empty) do
+  def failure_callback_changeset(model, params \\ %{}) do
     model
     |> cast(params, ~w(saltedge_login_id), ~w(last_fail_error_class last_fail_message))
   end
 
-  def notify_callback_changeset(model, params \\ :empty) do
+  def notify_callback_changeset(model, params \\ %{}) do
     model
     |> cast(params, ~w(stage), ~w())
   end
 
-  def interactive_callback_changeset(model, params \\ :empty) do
+  def interactive_callback_changeset(model, params \\ %{}) do
     model
     |> cast(params, ~w(stage interactive_fields_names), ~w(interactive_html))
   end
@@ -132,12 +132,12 @@ defmodule ExMoney.Login do
     fetch_all_tried
   )
 
-  def create_changeset(model, params \\ :empty) do
+  def create_changeset(model, params \\ %{}) do
     model
     |> cast(params, @required_fields, @optional_fields)
   end
 
-  def update_changeset(model, params \\ :empty) do
+  def update_changeset(model, params \\ %{}) do
     model
     |> cast(params, ~w(), @update_fields)
   end

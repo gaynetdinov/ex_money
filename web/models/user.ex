@@ -35,13 +35,13 @@ defmodule ExMoney.User do
       limit: 1
   end
 
-  def create_changeset(model, params \\ :empty) do
+  def create_changeset(model, params \\ %{}) do
     model
     |> cast(params, ~w(email password), ~w(name saltedge_customer_id))
     |> maybe_update_password
   end
 
-  def update_changeset(model, params \\ :empty) do
+  def update_changeset(model, params \\ %{}) do
     model
     |> cast(params, ~w(), ~w(name email password saltedge_id saltedge_customer_id last_login_at))
     |> maybe_update_password
