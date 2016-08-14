@@ -13,7 +13,12 @@ script: mix test --trace
 services:
   - postgresql
 
-before_script:
+addons:
+  postgresql: "9.4"
+
+before_install:
   - cp config/dev.secret.exs.example config/dev.secret.exs
+
+before_script:
   - cp config/test.secret.exs.example config/test.secret.exs
   - psql -c 'create database ex_money_test;' -U postgres
