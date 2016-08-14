@@ -1,4 +1,4 @@
-# ExMoney
+# ExMoney [![Build Status](https://travis-ci.org/gaynetdinov/ex_money.svg?branch=master)](https://travis-ci.org/gaynetdinov/ex_money)
 
 `ExMoney` is a [work-in-progress] self-hosted web application which helps you to track your personal finances.  
 It's built around [Spectre API](https://www.saltedge.com/products/spectre) so `ExMoney` can export bank transactions for you.
