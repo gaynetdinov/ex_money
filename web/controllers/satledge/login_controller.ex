@@ -16,7 +16,8 @@ defmodule ExMoney.Saltedge.LoginController do
           }
         }
       """
-    response = ExMoney.Saltedge.Client.request(:post, "tokens/create", body)
+
+    {:ok, response} = ExMoney.Saltedge.Client.request(:post, "tokens/create", body)
 
     user_changeset = User.update_changeset(user, %{token: response["data"]["token"]})
     Repo.update!(user_changeset)

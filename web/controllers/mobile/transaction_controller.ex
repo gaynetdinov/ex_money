@@ -148,7 +148,7 @@ defmodule ExMoney.Mobile.TransactionController do
           { "data": [{ "transaction_id": #{transaction.saltedge_transaction_id} }]}
         """
 
-        ExMoney.Saltedge.Client.request(:put, "transactions/duplicate", body)
+        {:ok, _} = ExMoney.Saltedge.Client.request(:put, "transactions/duplicate", body)
 
         render conn, :delete, new_balance: false
     end

@@ -49,7 +49,7 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
   defp fetch_recent(saltedge_account_id, from_id, acc) do
     endpoint = "transactions?account_id=#{saltedge_account_id}&from_id=#{from_id}"
 
-    response = ExMoney.Saltedge.Client.request(:get, endpoint)
+    {:ok, response} = ExMoney.Saltedge.Client.request(:get, endpoint)
 
     case {response["data"], response["meta"]["next_id"]} do
       {[], _} -> acc
@@ -92,7 +92,7 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
       endpoint = endpoint <> "&from_id=#{next_id}"
     end
 
-    response = ExMoney.Saltedge.Client.request(:get, endpoint)
+    {:ok, response} = ExMoney.Saltedge.Client.request(:get, endpoint)
 
     case {response["data"], response["meta"]["next_id"]} do
       {[], _} -> List.flatten(acc)

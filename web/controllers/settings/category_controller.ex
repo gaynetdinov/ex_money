@@ -88,7 +88,8 @@ defmodule ExMoney.Settings.CategoryController do
   end
 
   def sync(conn, _params) do
-    categories = ExMoney.Saltedge.Client.request(:get, "categories")["data"]
+    categories = with {:ok, response} <- ExMoney.Saltedge.Client.request(:get, "categories"),
+                  do: response["data"]
 
     Repo.transaction(fn ->
       Enum.each(categories, fn({main_category, sub_categories}) ->

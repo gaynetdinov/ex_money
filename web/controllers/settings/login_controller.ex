@@ -37,7 +37,7 @@ defmodule ExMoney.Settings.LoginController do
 
     Repo.delete!(login)
 
-    ExMoney.Saltedge.Client.request(:delete, "logins/#{login.saltedge_login_id}")
+    {:ok, _} = ExMoney.Saltedge.Client.request(:delete, "logins/#{login.saltedge_login_id}")
 
     conn
     |> put_flash(:info, "Login deleted successfully.")
