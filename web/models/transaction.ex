@@ -57,7 +57,7 @@ defmodule ExMoney.Transaction do
     |> cast(params, ~w(), ~w(category_id description))
   end
 
-  def negate_amount(changeset, %{}), do: changeset
+  def negate_amount(changeset, params) when params == %{}, do: changeset
   def negate_amount(changeset, %{"type" => "income"}), do: changeset
 
   def negate_amount(changeset, %{"type" => "expense"}) do
