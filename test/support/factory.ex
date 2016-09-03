@@ -17,4 +17,23 @@ defmodule ExMoney.Factory do
       user: build(:user)
     }
   end
+
+  def account_factory do
+    %ExMoney.Account {
+      saltedge_account_id: sequence(:saltedge_account_id, &(&1)) + 1,
+      login: build(:login),
+      name: sequence(:account_name, &"account name #{(&1)}"),
+      nature: "debit",
+      balance: Decimal.new(10),
+      currency_code: "EUR",
+      user: build(:user)
+    }
+  end
+
+  def accounts_balance_history do
+    %ExMoney.AccountsBalanceHistory {
+      account: build(:account),
+      balance: Decimal.new(10)
+    }
+  end
 end

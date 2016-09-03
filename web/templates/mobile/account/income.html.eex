@@ -3,7 +3,7 @@
     <div class="navbar">
       <div class="navbar-inner">
         <div class="left">
-          <a href="/m/accounts/<%= @account_id %>?date=<%= @date.value %>" class="link back" data-force="true" data-ignore-cache="true">
+          <a href="/m/accounts/<%= @account.id %>?date=<%= @date.value %>" class="link back" data-force="true" data-ignore-cache="true">
             <i class="icon icon-back"></i>&nbsp; Back
           </a>
         </div>
@@ -15,6 +15,8 @@
         <%= render ExMoney.SharedView, "transactions_list.html",
           transactions: @income,
           new_transaction_ids: [],
+          account: @account,
+          account_balance: @account_balance,
           from: @from %>
       </div>
     </div>

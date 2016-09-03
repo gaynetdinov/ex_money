@@ -11,6 +11,7 @@ defmodule ExMoney do
       worker(ExMoney.Repo, []),
       worker(ExMoney.Saltedge.TransactionsWorker, []),
       worker(ExMoney.IdleWorker, [], restart: :transient),
+      worker(ExMoney.AccountsBalanceHistoryWorker, []),
       worker(ExMoney.Saltedge.Scheduler, []),
       worker(ExMoney.Saltedge.SyncWorker, []),
       worker(ExMoney.RuleProcessor, []),

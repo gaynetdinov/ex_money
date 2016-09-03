@@ -19,4 +19,13 @@ defmodule ExMoney.SharedView do
   def category_name(category) do
     category.humanized_name
   end
+
+  def account_balance(_date, _, nil), do: ""
+  def account_balance(date, account_balance, account) do
+    date = to_string(date)
+    case account_balance[date] do
+      nil -> ""
+      balance -> "#{balance} #{account.currency_label}"
+    end
+  end
 end
