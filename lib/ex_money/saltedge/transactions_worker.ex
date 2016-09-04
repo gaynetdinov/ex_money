@@ -88,8 +88,11 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
     from_str = date_to_string(from)
     to_str = date_to_string(to)
     endpoint = "transactions?account_id=#{saltedge_account_id}&from_date=#{from_str}&to_date=#{to_str}"
-    if next_id do
-      endpoint = endpoint <> "&from_id=#{next_id}"
+
+    endpoint = if next_id do
+      endpoint <> "&from_id=#{next_id}"
+    else
+      endpoint
     end
 
     {:ok, response} = ExMoney.Saltedge.Client.request(:get, endpoint)

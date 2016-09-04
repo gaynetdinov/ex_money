@@ -4,7 +4,7 @@ defmodule ExMoney.Mixfile do
   def project do
     [app: :ex_money,
      version: "0.0.1",
-     elixir: "~> 1.2",
+     elixir: "~> 1.3",
      elixirc_paths: elixirc_paths(Mix.env),
      compilers: [:phoenix] ++ Mix.compilers,
      build_embedded: Mix.env == :prod,
@@ -41,11 +41,11 @@ defmodule ExMoney.Mixfile do
       {:httpoison, "~> 0.9.0"},
       {:guardian, "0.12.0"},
       {:guardian_db, "0.7.0"},
-      {:comeonin, "~> 2.0"},
+      {:comeonin, "~> 2.3"},
       {:ex_machina, "~> 1.0"},
       {:faker, "~> 0.5", only: :test},
       {:logger_file_backend, "0.0.7"},
-      {:timex, "1.0.0"}
+      {:timex, "1.0.2"}
     ]
   end
 

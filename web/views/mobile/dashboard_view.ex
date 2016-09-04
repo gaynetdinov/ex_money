@@ -54,7 +54,7 @@ defmodule ExMoney.Mobile.DashboardView do
     recent_diff_compare = Decimal.compare(recent_diff, Decimal.new(0))
     recent_diff_str = Decimal.to_string(recent_diff)
 
-    unless currency_label, do: currency_label = ""
+    currency_label = format_currency_label(currency_label)
 
     cond do
       recent_diff_compare == Decimal.new(1) ->
@@ -70,4 +70,7 @@ defmodule ExMoney.Mobile.DashboardView do
       Ecto.Date.compare(tr_1.inserted_at, tr_2.inserted_at) != :lt
     end)
   end
+
+  defp format_currency_label(nil), do: ""
+  defp format_currency_label(label), do: label
 end
