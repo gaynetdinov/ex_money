@@ -7,8 +7,11 @@ defmodule ExMoney.Paginator do
   alias ExMoney.Repo
 
   def paginate(query, params) do
-    page_number = params |> Map.get("page", 1) |> to_int(1)
-    if page_number <= 0, do: page_number = 1
+    page_number = params
+    |> Map.get("page", 1)
+    |> to_int(1)
+    |> avoid_negative_number
+
     page_size = params |> Map.get("page_size", 10) |> to_int(10)
 
     %ExMoney.Paginator{
@@ -18,6 +21,9 @@ defmodule ExMoney.Paginator do
       total_pages: total_pages(query, page_size)
     }
   end
+
+  defp avoid_negative_number(number) when number <= 0, do: 1
+  defp avoid_negative_number(value), do: value
 
   defp ceiling(float) do
     t = trunc(float)
