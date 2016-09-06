@@ -1,6 +1,11 @@
 <ul>
   <%= for {date, transactions} <- @transactions do %>
-    <li class="item-divider"><%= date %></li>
+    <li class="item-divider">
+    <div class="row">
+      <div class="col-50"><%= date %></div>
+      <div class="col-50" align="right"><%= account_balance(date, @account_balance, @account) %></div>
+    </div>
+    </li>
     <%= for transaction <- sort_by_inserted_at(transactions) do %>
       <li class="swipeout">
         <div class="swipeout-content">

@@ -1,7 +1,7 @@
 defmodule ExMoney.Mobile.AccountController do
   use ExMoney.Web, :controller
 
-  alias ExMoney.{Repo, Transaction, Account}
+  alias ExMoney.{Repo, Transaction, Account, AccountsBalanceHistory}
 
   import Ecto.Query
 
@@ -63,6 +63,7 @@ defmodule ExMoney.Mobile.AccountController do
     parsed_date = parse_date(date)
     from = first_day_of_month(parsed_date)
     to = last_day_of_month(parsed_date)
+    account_balance = account_balance(from, to, account.id)
 
     expenses = Transaction.expenses_by_month(account_id, from, to)
     |> Repo.all
@@ -82,7 +83,8 @@ defmodule ExMoney.Mobile.AccountController do
       expenses: expenses,
       date: %{label: formatted_date, value: date},
       from: from,
-      account_id: account.id
+      account: account,
+      account_balance: account_balance
   end
 
   def income(conn, %{"date" => date, "id" => account_id}) do
@@ -90,6 +92,7 @@ defmodule ExMoney.Mobile.AccountController do
     parsed_date = parse_date(date)
     from = first_day_of_month(parsed_date)
     to = last_day_of_month(parsed_date)
+    account_balance = account_balance(from, to, account.id)
 
     income = Transaction.income_by_month(account_id, from, to)
     |> Repo.all
@@ -109,7 +112,8 @@ defmodule ExMoney.Mobile.AccountController do
       income: income,
       date: %{label: formatted_date, value: date},
       from: from,
-      account_id: account.id
+      account: account,
+      account_balance: account_balance
   end
 
   defp parse_date(month) when month == "" or is_nil(month) do
@@ -158,5 +162,19 @@ defmodule ExMoney.Mobile.AccountController do
     {:ok, label} = Timex.DateFormat.format(date, "%b %Y", :strftime)
 
     %{date: previous_month, label: label}
+  end
+
+  defp account_balance(from, to, account_id) do
+    AccountsBalanceHistory.history(from, to, account_id)
+    |> Repo.all
+    |> Enum.reduce(%{}, fn(h, acc) ->
+      {:ok, {inserted_at, _}} = Ecto.DateTime.dump(h.inserted_at)
+
+      d = Timex.Date.from({inserted_at, {0, 0, 0}})
+      |> Timex.DateFormat.format("%Y-%m-%d", :strftime)
+      |> elem(1)
+
+      Map.put(acc, d, h.balance)
+    end)
   end
 end

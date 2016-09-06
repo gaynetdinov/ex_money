@@ -50,6 +50,8 @@
               <%= render ExMoney.SharedView, "transactions_list.html",
                 transactions: @recent_transactions,
                 new_transaction_ids: @new_transaction_ids,
+                account: nil,
+                account_balance: nil,
                 from: "/m/dashboard" %>
             </div>
           </div>

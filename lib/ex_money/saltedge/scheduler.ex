@@ -17,6 +17,7 @@ defmodule ExMoney.Saltedge.Scheduler do
   def handle_info(:schedule, state) do
     case current_hour do
       hour when hour >= 0 and hour < 7 ->
+        store_accounts_balance()
         stop_worker(:login_refresh_worker)
         stop_worker(:idle_worker)
 
@@ -36,6 +37,10 @@ defmodule ExMoney.Saltedge.Scheduler do
     Process.send_after(self, :schedule, @interval)
 
     {:noreply, state}
+  end
+
+  defp store_accounts_balance() do
+    :stored = GenServer.call(:accounts_balance_history_worker, :store_current_balance)
   end
 
   defp start_worker(name, ref) do
