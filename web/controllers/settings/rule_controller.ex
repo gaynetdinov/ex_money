@@ -7,7 +7,7 @@ defmodule ExMoney.Settings.RuleController do
   plug :scrub_params, "rule" when action in [:create, :update]
 
   def index(conn, _params) do
-    rules = Repo.all(from r in Rule, preload: [:account], order_by: r.inserted_at)
+    rules = Rule.with_account_ordered |> Repo.all
 
     map = Enum.reduce(rules, %{account_ids: [], category_ids: []}, fn(rule, acc) ->
       {_, acc} = case rule.type do
@@ -114,11 +114,13 @@ defmodule ExMoney.Settings.RuleController do
 
         conn
         |> put_flash(:info, "Rule updated successfully.")
-        |> redirect(to: settings_rule_path(conn, :show, rule))
+        |> redirect(to: settings_rule_path(conn, :index))
       {:error, changeset} ->
+        accounts = Account.only_saltedge |> Repo.all
         render conn, :edit,
           rule: rule,
           type: type,
+          accounts: accounts,
           changeset: changeset,
           target: target,
           topbar: "settings",

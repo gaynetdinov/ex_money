@@ -4,7 +4,7 @@
       <p>Oops, something went wrong! Please check the errors below:</p>
       <ul>
         <%= for {attr, message} <- f.errors do %>
-          <li><%= humanize(attr) %> <%= message %></li>
+          <li><%= humanize(attr) %> <%= translate_error(message) %></li>
         <% end %>
       </ul>
     </div>
@@ -12,12 +12,17 @@
 
   <div class="form-group">
     <%= label f, :rule_type, class: "control-label" %>
-    <%= select f, :type, ["Assign category": "assign_category", "Withdraw to cash": "withdraw_to_cash"], prompt: "Select rule type", class: "form-control", onchange: "window.location='/settings/rules/new?type=' + this.value;", value: @type || @changeset.model.type %>
+    <%= select f, :type, ["Assign category": "assign_category", "Withdraw to cash": "withdraw_to_cash"], prompt: "Select rule type", class: "form-control", onchange: "window.location='/settings/rules/new?type=' + this.value;", value: @type || @changeset.data.type %>
   </div>
 
   <div class="form-group">
     <%= label f, :rule_account_id, class: "control-label" %>
     <%= select f, :account_id, @accounts, prompt: "Select account", class: "form-control" %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :rule_position, class: "control-label" %>
+    <%= text_input f, :position, class: "form-control" %>
   </div>
 
   <div class="form-group">
@@ -28,7 +33,7 @@
   <div class="form-group">
     <%= label f, :rule_target_id, class: "control-label" %>
     <%= if @type == "assign_category" do %>
-      <%= render "categories_list.html", target: @target, selected: @changeset.model.target_id %>
+      <%= render "categories_list.html", target: @target, selected: @changeset.data.target_id %>
     <% else %>
       <%= render "accounts_list.html", target: @target, f: f %>
     <% end %>

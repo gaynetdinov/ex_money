@@ -14,6 +14,7 @@ defmodule ExMoney.Transaction do
     field :currency_code, :string
     field :description, :string
     field :duplicated, :boolean, default: false
+    field :rule_applied, :boolean, default: false
 
     has_one :transaction_info, ExMoney.TransactionInfo, on_delete: :delete_all
     belongs_to :category, ExMoney.Category
@@ -39,7 +40,7 @@ defmodule ExMoney.Transaction do
     account_id
     user_id
   )
-  @optional_fields ~w(category_id)
+  @optional_fields ~w(category_id rule_applied)
 
   def changeset(model, params \\ %{}) do
     model
@@ -54,7 +55,7 @@ defmodule ExMoney.Transaction do
 
   def update_changeset(model, params \\ %{}) do
     model
-    |> cast(params, ~w(), ~w(category_id description))
+    |> cast(params, ~w(), ~w(category_id description rule_applied))
   end
 
   def negate_amount(changeset, params) when params == %{}, do: changeset
