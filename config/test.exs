@@ -15,6 +15,6 @@ config :ex_money, ExMoney.Repo,
   pool: Ecto.Adapters.SQL.Sandbox
 
 config :ex_money, :login_logger_worker,
-  [name: :login_logger_test, enabled: true]
+  [name: ExMoney.Saltedge.Test.LoginLogger, enabled: true]
 
 import_config "test.secret.exs"

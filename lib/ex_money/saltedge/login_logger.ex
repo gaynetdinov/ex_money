@@ -8,6 +8,10 @@ defmodule ExMoney.Saltedge.LoginLogger do
     GenServer.start_link(__MODULE__, :ok, name: :login_logger)
   end
 
+  def log_event(callback, event, login_id, params) do
+    GenServer.cast(:login_logger, {:log, callback, event, login_id, params})
+  end
+
   def handle_cast({:log, callback, event, saltedge_login_id, params}, state) do
     login_logger_enabled = Application.get_env(:ex_money, :login_logger_worker)[:enabled]
     login = Login.by_saltedge_login_id(saltedge_login_id) |> Repo.one
