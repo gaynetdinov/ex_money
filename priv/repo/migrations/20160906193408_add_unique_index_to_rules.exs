@@ -2,6 +2,8 @@ defmodule ExMoney.Repo.Migrations.AddUniqueIndexToRules do
   use Ecto.Migration
 
   def change do
-    create unique_index(:rules, [:position, :account_id, :type])
+    rename table(:rules), :position, to: :priority
+
+    create unique_index(:rules, [:priority, :account_id])
   end
 end

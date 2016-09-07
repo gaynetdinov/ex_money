@@ -7,24 +7,24 @@ defmodule ExMoney.Rule do
     field :type, :string
     field :pattern, :string
     field :target_id, :integer
-    field :position, :integer
+    field :priority, :integer
 
     belongs_to :account, ExMoney.Account
 
     timestamps
   end
 
-  @required_fields ~w(type account_id pattern target_id position)
+  @required_fields ~w(type account_id pattern target_id priority)
   @optional_fields ~w()
 
   def changeset(model, params \\ %{}) do
     model
     |> cast(params, @required_fields, @optional_fields)
-    |> unique_constraint(:position,
-      name: :rules_position_account_id_type_index,
-      message: "has already been taken for given Rule account and Rule type"
+    |> unique_constraint(:priority,
+      name: :rules_priority_account_id_index,
+      message: "has already been taken for given account"
     )
-    |> validate_number(:position, greater_than: 0)
+    |> validate_number(:priority, greater_than: 0)
   end
 
   def by_account_id(account_id) do
@@ -34,6 +34,6 @@ defmodule ExMoney.Rule do
   def with_account_ordered() do
     from r in Rule,
       preload: [:account],
-      order_by: [:account_id, :type, :position]
+      order_by: [:account_id, :priority]
   end
 end

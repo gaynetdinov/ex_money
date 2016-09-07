@@ -19,7 +19,7 @@ defmodule ExMoney.RuleProcessor do
 
     Rule
     |> where([r], r.account_id == ^transaction.account_id)
-    |> order_by(asc: :position)
+    |> order_by(asc: :priority)
     |> Repo.all
     |> Enum.each(fn(rule) ->
       case rule.type do
@@ -89,7 +89,8 @@ defmodule ExMoney.RuleProcessor do
     end
   end
 
+  defp transaction_description(transaction, nil), do: transaction.description
   defp transaction_description(transaction, transaction_info) do
-    transaction.description <> " " <> transaction_info.payee
+    transaction.description <> " " <> to_string(transaction_info.payee)
   end
 end

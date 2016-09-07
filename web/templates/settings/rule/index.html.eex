@@ -12,7 +12,7 @@
           <tr>
             <th>Account</th>
             <th>Type</th>
-            <th>Position</th>
+            <th>Priority</th>
             <th>Pattern</th>
             <th>Target</th>
             <th>Actions</th>
@@ -23,7 +23,7 @@
             <tr>
               <td><%= rule.account.name %></td>
               <td><%= rule.type %></td>
-              <td><%= rule.position %></td>
+              <td><%= rule.priority %></td>
               <td><%= rule.pattern %></td>
               <td><%= target_name(rule.type, rule.target_id, @categories, @accounts) %></td>
 
