@@ -117,4 +117,57 @@ defmodule ExMoney.RuleProcessorTest do
       assert cash_transaction.amount == Decimal.mult(updated_transaction.amount, Decimal.new(-1))
     end
   end
+
+  describe "process_all callback" do
+    setup do
+      rule = insert(:rule, pattern: "foo", type: "assign_category", target_id: insert(:category).id)
+
+      {:ok, rule: rule}
+    end
+
+    test "applies rule for all matched transactions", %{rule: rule} do
+      tr_1 = insert(:transaction,
+        description: "qwe foo something",
+        account: rule.account,
+        saltedge_account_id: rule.account.saltedge_account_id
+      )
+      tr_2 = insert(:transaction,
+        transaction_info: build(:transaction_info, payee: "foo"),
+        account: rule.account,
+        saltedge_account_id: rule.account.saltedge_account_id
+      )
+      tr_3 = insert(:transaction,
+        description: "baz",
+        account: rule.account,
+        saltedge_account_id: rule.account.saltedge_account_id
+      )
+      tr_4 = insert(:transaction,
+        description: "foo",
+        rule_applied: true,
+        account: rule.account,
+        saltedge_account_id: rule.account.saltedge_account_id
+      )
+
+      RuleProcessor.handle_cast({:process_all, rule.id}, %{})
+
+      :timer.sleep(500)
+
+      tr_1 = Repo.get(Transaction, tr_1.id)
+      tr_2 = Repo.get(Transaction, tr_2.id)
+      tr_3 = Repo.get(Transaction, tr_3.id)
+      tr_4 = Repo.get(Transaction, tr_4.id)
+
+      assert tr_1.rule_applied
+      assert tr_1.category_id == rule.target_id
+
+      assert tr_2.rule_applied
+      assert tr_2.category_id == rule.target_id
+
+      refute tr_3.rule_applied
+      refute tr_3.category_id == rule.target_id
+
+      assert tr_4.rule_applied
+      refute tr_4.category_id == rule.target_id
+    end
+  end
 end
