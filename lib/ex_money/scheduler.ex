@@ -1,4 +1,4 @@
-defmodule ExMoney.Saltedge.Scheduler do
+defmodule ExMoney.Scheduler do
   use GenServer
   require Logger
 
@@ -15,43 +15,20 @@ defmodule ExMoney.Saltedge.Scheduler do
   end
 
   def handle_info(:schedule, state) do
-    case current_hour do
-      hour when hour >= 0 and hour < 7 ->
+    case current_hour() >= hour_to_sleep() do
+      true ->
         store_accounts_balance()
         stop_worker(:login_refresh_worker)
         stop_worker(:idle_worker)
-
-        Process.send_after(self, :start_worker, 7 * 60 * 60 * 1000)
-        Logger.info("Workers have been scheduled to start in 7 hours")
-      _ ->
+      false ->
         Process.send_after(self, :schedule, @interval)
     end
 
     {:noreply, state}
   end
 
-  def handle_info(:start_worker, state) do
-    start_worker(:login_refresh_worker, ExMoney.Saltedge.LoginRefreshWorker)
-    start_worker(:idle_worker, ExMoney.IdleWorker)
-
-    Process.send_after(self, :schedule, @interval)
-
-    {:noreply, state}
-  end
-
   defp store_accounts_balance() do
     :stored = GenServer.call(:accounts_balance_history_worker, :store_current_balance)
-  end
-
-  defp start_worker(name, ref) do
-    Logger.info("Starting worker #{name}...")
-    pid = Process.whereis(name)
-
-    if !pid do
-      result = Supervisor.restart_child(ExMoney.Supervisor, ref)
-
-      Logger.info("Time to wake up, #{ref} has been started with result => #{inspect(result)}")
-    end
   end
 
   defp stop_worker(name) do
@@ -64,9 +41,13 @@ defmodule ExMoney.Saltedge.Scheduler do
     end
   end
 
-  defp current_hour do
+  defp current_hour() do
     {_date, {hour, _min, _sec}} = :calendar.local_time()
 
     hour
+  end
+
+  defp hour_to_sleep() do
+    Application.get_env(:ex_money, :hour_to_sleep)
   end
 end

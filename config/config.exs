@@ -14,9 +14,10 @@ config :ex_money, ExMoney.Endpoint,
   pubsub: [name: ExMoney.PubSub,
            adapter: Phoenix.PubSub.PG2]
 
-config :ex_money, ecto_repos: [ExMoney.Repo]
+config :ex_money,
+  ecto_repos: [ExMoney.Repo],
+  hour_to_sleep: 23
 
-# Configures Elixir's Logger
 config :logger,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id],
