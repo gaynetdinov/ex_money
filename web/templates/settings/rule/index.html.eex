@@ -10,8 +10,9 @@
       <table class="table table-striped">
         <thead>
           <tr>
-            <th>Type</th>
             <th>Account</th>
+            <th>Type</th>
+            <th>Priority</th>
             <th>Pattern</th>
             <th>Target</th>
             <th>Actions</th>
@@ -20,8 +21,9 @@
         <tbody>
           <%= for rule <- @rules do %>
             <tr>
-              <td><%= rule.type %></td>
               <td><%= rule.account.name %></td>
+              <td><%= rule.type %></td>
+              <td><%= rule.priority %></td>
               <td><%= rule.pattern %></td>
               <td><%= target_name(rule.type, rule.target_id, @categories, @accounts) %></td>
 

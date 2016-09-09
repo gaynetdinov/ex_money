@@ -19,6 +19,7 @@ defmodule ExMoney.RuleProcessor do
 
     Rule
     |> where([r], r.account_id == ^transaction.account_id)
+    |> order_by(asc: :priority)
     |> Repo.all
     |> Enum.each(fn(rule) ->
       case rule.type do
@@ -37,6 +38,7 @@ defmodule ExMoney.RuleProcessor do
       join: tr_info in TransactionInfo, on: tr.id == tr_info.transaction_id,
       preload: [transaction_info: tr_info],
       where: tr.account_id == ^rule.account_id,
+      where: tr.rule_applied == false,
       where: fragment("description ~* ?", ^rule.pattern) or fragment("payee ~* ?", ^rule.pattern))
 
     Enum.each(transactions, fn(tr) ->
@@ -50,19 +52,17 @@ defmodule ExMoney.RuleProcessor do
     {:ok, re} = Regex.compile(rule.pattern, "i")
 
     if Regex.match?(re, transaction_description(transaction, transaction_info)) do
-      Transaction.update_changeset(transaction, %{category_id: rule.target_id})
-      |> Repo.update
+      Transaction.update_changeset(transaction, %{category_id: rule.target_id, rule_applied: true})
+      |> Repo.update!
     end
   end
 
   defp withdraw_to_cash(rule, transaction, transaction_info) do
     {:ok, re} = Regex.compile(rule.pattern, "i")
     withdraw_category = Category.by_name("withdraw") |> Repo.one
-    transfer_category = Category.by_name("transfer") |> Repo.one
     account = Repo.get(Account, rule.target_id)
 
     if Regex.match?(re, transaction_description(transaction, transaction_info)) &&
-      transaction.category_id == transfer_category.id &&
       Decimal.compare(transaction.amount, Decimal.new(0)) == Decimal.new(-1) do
 
       Repo.transaction(fn ->
@@ -76,18 +76,21 @@ defmodule ExMoney.RuleProcessor do
             "type" => "expense"
           }
         )
-        |> Repo.insert
+        |> Repo.insert!
+
+        Transaction.update_changeset(transaction, %{rule_applied: true})
+        |> Repo.update!
 
         # transaction.amount is negative, sub with something with negative => add
         new_balance = Decimal.sub(account.balance, transaction.amount)
-
         Account.update_custom_changeset(account, %{balance: new_balance})
         |> Repo.update!
       end)
     end
   end
 
+  defp transaction_description(transaction, nil), do: transaction.description
   defp transaction_description(transaction, transaction_info) do
-    transaction.description <> " " <> transaction_info.payee
+    transaction.description <> " " <> to_string(transaction_info.payee)
   end
 end

@@ -36,4 +36,44 @@ defmodule ExMoney.Factory do
       balance: Decimal.new(10)
     }
   end
+
+  def transaction_factory do
+    account = build(:account)
+
+    %ExMoney.Transaction{
+      saltedge_transaction_id: sequence(:saltedge_transaction_id, &(&1)) + 1,
+      mode: "normal",
+      status: "post",
+      made_on: Ecto.Date.from_erl({2016, 09, 01}),
+      amount: Decimal.new(10),
+      currency_code: "EUR",
+      description: "iban number date something",
+      duplicated: false,
+      saltedge_account_id: account.saltedge_account_id,
+      account: account,
+      user: build(:user),
+      category: build(:category),
+      transaction_info: build(:transaction_info)
+    }
+  end
+
+  def transaction_info_factory do
+    %ExMoney.TransactionInfo{}
+  end
+
+  def category_factory do
+    %ExMoney.Category{
+      name: sequence(:category_name, &("category-#{(&1)}"))
+    }
+  end
+
+  def rule_factory do
+    %ExMoney.Rule{
+      account: build(:account),
+      type: "assign_category",
+      target_id: sequence(:target_id, &(&1)) + 1,
+      pattern: "foo",
+      priority: sequence(:priority, &(&1)) + 1
+    }
+  end
 end

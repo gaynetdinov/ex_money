@@ -50,6 +50,7 @@ defmodule ExMoney.Web do
       use Phoenix.HTML
 
       import ExMoney.Router.Helpers
+      import ExMoney.ErrorHelper
     end
   end
 

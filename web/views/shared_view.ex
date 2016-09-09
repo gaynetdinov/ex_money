@@ -1,6 +1,14 @@
 defmodule ExMoney.SharedView do
   use ExMoney.Web, :view
 
+  def translate_error({message, values}) do
+    Enum.reduce values, message, fn {k, v}, acc ->
+      String.replace(acc, "%{#{k}}", to_string(v))
+    end
+  end
+
+  def translate_error(message), do: message
+
   def sort_by_inserted_at(transactions) do
     Enum.sort(transactions, fn(tr_1, tr_2) ->
       Ecto.Date.compare(tr_1.inserted_at, tr_2.inserted_at) != :lt
