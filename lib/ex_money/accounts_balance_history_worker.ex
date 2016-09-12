@@ -8,7 +8,8 @@ defmodule ExMoney.AccountsBalanceHistoryWorker do
   end
 
   def handle_call(:store_current_balance, _from, state) do
-    Repo.all(Account)
+    Account
+    |> Repo.all
     |> Enum.each(fn(account) ->
       %AccountsBalanceHistory{}
       |> AccountsBalanceHistory.changeset(%{account_id: account.id, balance: account.balance})
