@@ -39,10 +39,6 @@ config :logger, :error,
   format: "$time $metadata[$level] $message\n",
   metadata: [:module]
 
-# Import environment specific config. This must remain at the bottom
-# of this file so it overrides the configuration defined above.
-import_config "#{Mix.env}.exs"
-
 # Configure phoenix generators
 config :phoenix, :generators,
   migration: true,
@@ -60,3 +56,11 @@ config :guardian, Guardian,
 
 config :guardian_db, GuardianDb,
   repo: ExMoney.Repo
+
+config :ex_money, :saltedge,
+  base_url: "https://www.saltedge.com/api/v3",
+  private_key_path: "lib/saltedge_private.pem"
+
+# Import environment specific config. This must remain at the bottom
+# of this file so it overrides the configuration defined above.
+import_config "#{Mix.env}.exs"

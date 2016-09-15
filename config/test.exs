@@ -17,4 +17,7 @@ config :ex_money, ExMoney.Repo,
 config :ex_money, :login_logger_worker,
   [name: ExMoney.Saltedge.Test.LoginLogger, enabled: true]
 
+config :ex_money, :saltedge,
+  private_key_path: "test/support/fake_key"
+
 import_config "test.secret.exs"
