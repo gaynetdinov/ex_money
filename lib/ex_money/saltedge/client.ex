@@ -1,6 +1,4 @@
 defmodule ExMoney.Saltedge.Client do
-  @base_url "https://www.saltedge.com/api/v3/"
-
   @doc """
   A client for Saltedge API
 
@@ -38,7 +36,7 @@ defmodule ExMoney.Saltedge.Client do
     client_id = Application.get_env(:ex_money, :saltedge_client_id)
     service_secret = Application.get_env(:ex_money, :saltedge_service_secret)
 
-    url = @base_url <> endpoint
+    url = base_url() <> "/" <> endpoint
     str_method = to_string(method) |> String.upcase
     request = "#{expires_at}|#{str_method}|#{url}|#{body}"
 
@@ -67,18 +65,26 @@ defmodule ExMoney.Saltedge.Client do
   end
 
   defp read_private_key do
-    private_key
+    private_key()
     |> :public_key.pem_decode
     |> hd() |> :public_key.pem_entry_decode
   end
 
-  defp private_key do
-    System.get_env("SALTEDGE_KEY") || File.read!("./lib/saltedge_private.pem")
+  defp private_key() do
+    System.get_env("SALTEDGE_KEY") || File.read!(private_key_path())
+  end
+
+  defp private_key_path() do
+    Application.get_env(:ex_money, :saltedge)[:private_key_path]
   end
 
   defp expires_at do
     {mgsec, sec, _mcs} = :os.timestamp
 
     mgsec * 1_000_000 + sec + 60
+  end
+
+  defp base_url() do
+    Application.get_env(:ex_money, :saltedge)[:base_url]
   end
 end

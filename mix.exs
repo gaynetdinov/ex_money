@@ -45,7 +45,8 @@ defmodule ExMoney.Mixfile do
       {:ex_machina, "~> 1.0"},
       {:faker, "~> 0.5", only: :test},
       {:logger_file_backend, "0.0.7"},
-      {:timex, "1.0.2"}
+      {:timex, "1.0.2"},
+      {:bypass, "~> 0.1", only: :test}
     ]
   end
 
