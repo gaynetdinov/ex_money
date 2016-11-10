@@ -1,0 +1,14 @@
+<select class="form-control" id="favourite_transaction_category_id" name="favourite_transaction[category_id]">
+  <%= for {{name, id}, sub_categories} <- @categories do %>
+    <option <%= if id == @selected, do: "selected=selected" %> value="<%= id %>">
+      <%= name %>
+    </option>
+
+    <%= for {name, id} <- sub_categories do %>
+      <option <%= if id == @selected, do: "selected=selected" %> value="<%= id %>">
+        &#8627;&nbsp;<%= name %>
+      </option>
+    <% end %>
+  <% end %>
+</select>
+

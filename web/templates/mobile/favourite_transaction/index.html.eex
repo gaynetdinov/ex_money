@@ -1,0 +1,45 @@
+<div class="pages">
+  <div class="page navbar-fixed" data-page="favourite-transactions-screen">
+    <div class="navbar">
+      <div class="navbar-inner">
+        <div class="left">
+          <a href="/m/dashboard" class="link back" data-force="true" data-ignore-cache="true">
+            <i class="f7-icons">chevron_left</i>
+          </a>
+        </div>
+        <div class="center">Favourite transactions</div>
+        <div class="right">
+          <a href="/m/favourite_transactions/new" class="link">
+            <i class="f7-icons" style="font-size: 22px">add_round</i>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="page-content hide-navbar-on-scroll">
+      <div class="list-block">
+        <ul>
+        <%= for fav_transaction <- @fav_transactions do %>
+        <li class="swipeout fav-tr-li">
+          <div class="swipeout-content">
+            <div class="item-content">
+              <div class="item-inner">
+                <div class="item-title" id="fav_tr_<%= fav_transaction.id %>"><%= fav_transaction.name %> <small><%= fav_transaction.category.name %></small></div>
+                <%= if fav_transaction.fav do %>
+                  <div class='item-after'><i class='f7-icons color-red'>heart_fill</i></div>
+                <% end %>
+              </div>
+            </div>
+          </div>
+          <div class="swipeout-actions-right">
+            <a href="#" data-id="<%= fav_transaction.id %>" class="swipeout-delete bg-red delete-transaction">Delete</a>
+          </div>
+          <div class="swipeout-actions-left">
+            <a href="#" data-id="<%= fav_transaction.id %>" class="bg-red fav-transaction"><i class="f7-icons">heart</i></a>
+          </div>
+        </li>
+        <% end %>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

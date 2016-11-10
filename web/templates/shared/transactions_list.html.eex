@@ -7,7 +7,7 @@
     </div>
     </li>
     <%= for transaction <- sort_by_inserted_at(transactions) do %>
-      <li class="swipeout">
+      <li class="swipeout tr-li">
         <div class="swipeout-content">
           <div class="item-content <%= if Enum.member?(@new_transaction_ids, transaction.id), do: "new_transaction" %>">
 
