@@ -15,7 +15,6 @@
 
     <link href="<%= static_path(@conn, "/css/framework7.css") %>" rel="stylesheet">
     <link href="<%= static_path(@conn, "/css/mobile.css") %>" rel="stylesheet">
-
   </head>
 
   <body>

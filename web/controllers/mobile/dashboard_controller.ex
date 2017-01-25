@@ -1,7 +1,7 @@
 defmodule ExMoney.Mobile.DashboardController do
   use ExMoney.Web, :controller
 
-  alias ExMoney.{Repo, Transaction, User, Account}
+  alias ExMoney.{Repo, Transaction, User, Account, FavouriteTransaction}
 
   plug :put_layout, "mobile.html"
 
@@ -15,7 +15,7 @@ defmodule ExMoney.Mobile.DashboardController do
     render conn, :not_logged_in, changeset: changeset
   end
 
-  defp _overview(conn, _user) do
+  defp _overview(conn, user) do
     last_login_at = fetch_last_login_at
     transactions = Transaction.recent |> Repo.all
 
@@ -47,7 +47,14 @@ defmodule ExMoney.Mobile.DashboardController do
     render conn, :overview,
       recent_transactions: recent_transactions,
       accounts: accounts,
-      new_transaction_ids: new_transaction_ids
+      new_transaction_ids: new_transaction_ids,
+      fav_transaction: fav_transaction(user.id),
+      changeset: Transaction.changeset_custom(%Transaction{})
+  end
+
+  defp fav_transaction(user_id) do
+    FavouriteTransaction.fav_by_user_id(user_id)
+    |> Repo.one
   end
 
   defp fetch_last_login_at do

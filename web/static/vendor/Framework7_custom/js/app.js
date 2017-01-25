@@ -75,7 +75,7 @@ function applyBindings(channel) {
 }
 
 function deleteTransaction() {
-  $$('.swipeout').on('deleted', function (e) {
+  $$('.tr-li').on('deleted', function (e) {
     var id = $$(e.target).children("div.swipeout-actions-opened").find("a.delete-transaction").data('id');
     var csrf = document.querySelector("meta[name=csrf]").content;
 
@@ -102,6 +102,7 @@ function deleteTransaction() {
 var exMoney = new Framework7({
   modalTitle: 'ExMoney',
   scrollTopOnNavbarClick: true,
+  popupCloseByOutside: false,
   tapHold: true,
   tapHoldDelay: 500,
 
@@ -183,7 +184,50 @@ var exMoney = new Framework7({
       });
     }
 
-    if (page.name == 'overview-screen') { deleteTransaction(); }
+    if (page.name == 'overview-screen') {
+      deleteTransaction();
+
+      $$("#fav_tr_open").on("click", function(e) {
+        $$('.speed-dial-opened').removeClass('speed-dial-opened');
+        var fav_tr_popup = $$('#fav_tr_popup');
+        exMoney.popup(fav_tr_popup);
+
+        var csrf = document.querySelector("meta[name=csrf]").content;
+        var fav_calculator = exMoney.keypad({
+          input: '#new-fav-transaction-amount',
+          scrollToInput: false,
+          type: 'calculator',
+          onClose: function(p) {
+            console.log(p);
+            $$.ajax({
+              url: '/m/transactions/create_from_fav',
+              contentType: "application/json",
+              type: 'POST',
+              data: JSON.stringify(exMoney.formToData('#fav_tr_form')),
+              headers: {
+                "X-CSRF-TOKEN": csrf
+              },
+              success: function(data, status, xhr) {
+                if (xhr.status == 200) {
+                  exMoney.closeModal(fav_tr_popup);
+                  mainView.router.refreshPage();
+                } else {
+                  exMoney.alert(xhr.responseText);
+                }
+              },
+              error: function(xhr, status) {
+                alert("Something went wrong, check server logs");
+              }
+            });
+          }
+        });
+
+        $$('#fav_tr_popup').on('opened', function() {
+          fav_calculator.open();
+        });
+
+      });
+    }
   }
 });
 
@@ -204,6 +248,53 @@ exMoney.onPageInit('expenses-screen', function(page) {
 
 exMoney.onPageInit('transactions-screen', function(page) {
   deleteTransaction();
+});
+
+exMoney.onPageInit('favourite-transactions-screen', function(page) {
+  $$('.back').on('click', function(e) {
+    $$('.speed-dial-opened').removeClass('speed-dial-opened');
+  });
+
+  $$('.fav-transaction').on('click', function (e) {
+    var id = $$(this).data('id');
+    var swipeout_line = $$(this);
+    var csrf = document.querySelector("meta[name=csrf]").content;
+
+    $$.ajax({
+      url: '/m/favourite_transactions/' + id + "/fav?_format=json",
+      contentType: "application/json",
+      type: 'PUT',
+      headers: {
+        "X-CSRF-TOKEN": csrf
+      },
+      success: function(data, status, xhr) {
+        $$('.item-after').remove();
+        $$("<div class='item-after'><i class='f7-icons color-red'>heart</i></div>").insertAfter($$("#fav_tr_"+id));
+        exMoney.swipeoutClose($$(swipeout_line.parent().parent()));
+      },
+      error: function(xhr, status) {
+        alert("Something went wrong, check server logs");
+      }
+    });
+  });
+
+  $$('.fav-tr-li').on('deleted', function (e) {
+    var id = $$(e.target).children("div.swipeout-actions-opened").find("a.delete-transaction").data('id');
+    var csrf = document.querySelector("meta[name=csrf]").content;
+
+    $$.ajax({
+      url: '/m/favourite_transactions/' + id + "?_format=json",
+      contentType: "application/json",
+      type: 'DELETE',
+      headers: {
+        "X-CSRF-TOKEN": csrf
+      },
+      success: function(data, status, xhr) {},
+      error: function(xhr, status) {
+        alert("Something went wrong, check server logs");
+      }
+    });
+  });
 });
 
 exMoney.onPageInit('account-screen', function (page) {
@@ -244,6 +335,10 @@ exMoney.onPageInit('edit-transaction-screen', function (page) {
 exMoney.onPageInit('new-transaction-screen', function (page) {
   adjustSelectedCategory();
 
+  $$('#new_transaction_back').on('click', function(e) {
+    $$('.speed-dial-opened').removeClass('speed-dial-opened');
+  });
+
   $$('#transaction_category_id').on('change', function(e) {
     setTimeout(function() { adjustSelectedCategory(); }, 100);
   });
@@ -270,6 +365,44 @@ exMoney.onPageInit('new-transaction-screen', function (page) {
     if (xhr.status == 200) {
       mainView.router.back({
         url: '/m/dashboard',
+        ignoreCache: true,
+        force: true
+      });
+    } else {
+      exMoney.alert(xhr.responseText);
+    }
+  });
+
+  $$('a#expense-button').on('click', function (e) {
+    $$('a#expense-button').addClass('active');
+    $$('a#income-button').removeClass('active');
+    $$('#transaction_type').val('expense');
+  });
+
+  $$('a#income-button').on('click', function (e) {
+    $$('a#income-button').addClass('active');
+    $$('a#expense-button').removeClass('active');
+    $$('#transaction_type').val('income');
+  });
+});
+
+exMoney.onPageInit('new-favourite-transaction-screen', function (page) {
+  adjustSelectedCategory();
+
+  $$('.back').on('click', function(e) {
+    $$('.speed-dial-opened').removeClass('speed-dial-opened');
+  });
+
+  $$('#transaction_category_id').on('change', function(e) {
+    setTimeout(function() { adjustSelectedCategory(); }, 100);
+  });
+
+  $$('form.ajax-submit').on('submitted', function (e) {
+    var xhr = e.detail.xhr;
+
+    if (xhr.status == 200) {
+      mainView.router.back({
+        url: '/m/favourite_transactions',
         ignoreCache: true,
         force: true
       });

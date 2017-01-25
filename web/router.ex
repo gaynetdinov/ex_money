@@ -71,6 +71,11 @@ defmodule ExMoney.Router do
     get "/accounts/:id/income", AccountController, :income
     resources "/accounts", AccountController, only: [:show]
     resources "/transactions", TransactionController
+    post "/transactions/create_from_fav", TransactionController, :create_from_fav
+
+    resources "/favourite_transactions", FavouriteTransactionController do
+      put "/fav", FavouriteTransactionController, :fav, as: :fav, param: "id"
+    end
   end
 
   scope "/saltedge", as: :saltedge do

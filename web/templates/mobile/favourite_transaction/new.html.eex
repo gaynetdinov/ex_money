@@ -1,25 +1,25 @@
 <div class="pages">
-  <div class="page navbar-fixed" data-page="new-transaction-screen">
+  <div class="page navbar-fixed" data-page="new-favourite-transaction-screen">
     <div class="navbar">
       <div class="navbar-inner">
         <div class="left">
-          <a href="/m/dashboard" class="link back" id="new_transaction_back">
+          <a href="/m/dashboard" class="link back" id="new_favourite_transaction_back">
             <i class="icon icon-back"></i>&nbsp; Back
           </a>
         </div>
-        <div class="center">New transaction</div>
+        <div class="center">New favourite transaction</div>
       </div>
     </div>
     <div class="page-content">
       <div class="list-block reduced-margin">
-        <%= form_for @changeset, mobile_transaction_path(@conn, :create), [method: :post, class: "ajax-submit"], fn f -> %>
+        <%= form_for @changeset, mobile_favourite_transaction_path(@conn, :create), [method: :post, class: "ajax-submit"], fn f -> %>
           <ul>
             <li>
               <div class="item-content">
                 <div class="item-inner">
-                  <div class="item-title label">Amount</div>
+                  <div class="item-title label">Name</div>
                   <div class="item-input">
-                    <%= text_input(f, :amount, placeholder: "0.00", id: "new-transaction-amount", style: "text-align: right") %>
+                    <%= text_input(f, :name, placeholder: "Name", style: "text-align: right") %>
                   </div>
                 </div>
               </div>
@@ -56,16 +56,6 @@
                   </div>
                 </div>
               </a>
-            </li>
-            <li>
-              <div class="item-content">
-                <div class="item-inner">
-                  <div class="item-title label">Made on</div>
-                  <div class="item-input">
-                    <%= text_input(f, :made_on, placeholder: "Date", style: "text-align: right") %>
-                  </div>
-                </div>
-              </div>
             </li>
             <li>
               <div class="item-content">

@@ -1,6 +1,6 @@
 defmodule ExMoney.Mobile.TransactionController do
   use ExMoney.Web, :controller
-  alias ExMoney.{Repo, Transaction, Category, Account, TransactionInfo}
+  alias ExMoney.{Repo, Transaction, Category, Account, TransactionInfo, FavouriteTransaction}
 
   plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.Mobile.Unauthenticated
   plug :put_layout, "mobile.html"
@@ -88,6 +88,32 @@ defmodule ExMoney.Mobile.TransactionController do
   def create(conn, %{"transaction" => transaction_params}) do
     user = Guardian.Plug.current_resource(conn)
     transaction_params = Map.put(transaction_params, "user_id", user.id)
+    changeset = Transaction.changeset_custom(%Transaction{}, transaction_params)
+
+    Repo.transaction fn ->
+      transaction = Repo.insert!(changeset)
+      account = Repo.get!(Account, transaction.account_id)
+      new_balance = Decimal.add(account.balance, transaction.amount)
+      Account.update_custom_changeset(account, %{balance: new_balance})
+      |> Repo.update!
+    end
+
+    send_resp(conn, 200, "")
+  end
+
+  def create_from_fav(conn, params) do
+    amount =  params["transaction[amount]"]
+    fav_tr_id = params["transaction[fav_tr_id]"]
+    fav_tr = Repo.get!(FavouriteTransaction, fav_tr_id)
+
+    transaction_params = %{
+      "amount" => amount,
+      "user_id" => fav_tr.user_id,
+      "category_id" => fav_tr.category_id,
+      "account_id" => fav_tr.account_id,
+      "made_on" => Ecto.Date.from_erl(today()),
+      "type" => "expense"
+    }
     changeset = Transaction.changeset_custom(%Transaction{}, transaction_params)
 
     Repo.transaction fn ->
@@ -193,5 +219,10 @@ defmodule ExMoney.Mobile.TransactionController do
     else
       "/m/dashboard"
     end
+  end
+
+  defp today() do
+    {today, _} = :calendar.local_time()
+    today
   end
 end
