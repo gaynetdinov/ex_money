@@ -27,6 +27,12 @@ defmodule ExMoney.Router do
     plug Guardian.Plug.LoadResource
   end
 
+  pipeline :api_auth do
+    plug :accepts, ["json"]
+    plug Guardian.Plug.VerifyHeader, realm: "Token"
+    plug Guardian.Plug.LoadResource
+  end
+
   scope "/", ExMoney do
     pipe_through [:browser, :browser_session]
 
@@ -99,6 +105,11 @@ defmodule ExMoney.Router do
     post "/notify", ExMoney.Callbacks.NotifyCallbackController, :notify, as: :notify
     post "/interactive", ExMoney.Callbacks.InteractiveCallbackController, :interactive, as: :interactive
     post "/destroy", ExMoney.Callbacks.DestroyCallbackController, :destroy, as: :destroy
+  end
+
+  scope "/api/v2", ExMoney.Api.V2, as: :api do
+    pipe_through [:api_auth]
+    post "/login", SessionController, :login
   end
 
   scope "/api/v1", ExMoney.Api.V1, as: :api do
