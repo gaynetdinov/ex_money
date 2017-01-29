@@ -1,6 +1,8 @@
 defmodule ExMoney.Api.V1.SessionController do
   use ExMoney.Web, :controller
 
+  alias ExMoney.{Repo, User}
+
   def relogin(conn, _params) do
     case Guardian.Plug.current_resource(conn) do
       nil -> send_resp(conn, 200, "Unauthenticated")
@@ -18,8 +20,8 @@ defmodule ExMoney.Api.V1.SessionController do
   end
 
   defp update_last_login_at(user) do
-    ExMoney.User.update_changeset(user, %{last_login_at: :calendar.universal_time})
-    |> ExMoney.Repo.update
+    User.update_changeset(user, %{last_login_at: :calendar.universal_time})
+    |> Repo.update
   end
 
   defp store_last_login_at(timestamp) do
