@@ -109,7 +109,9 @@ defmodule ExMoney.Router do
 
   scope "/api/v2", ExMoney.Api.V2, as: :api do
     pipe_through [:api_auth]
+
     post "/login", SessionController, :login
+    resources "/accounts", AccountController, only: [:index]
   end
 
   scope "/api/v1", ExMoney.Api.V1, as: :api do
