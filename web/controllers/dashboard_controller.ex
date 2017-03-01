@@ -6,7 +6,9 @@ defmodule ExMoney.DashboardController do
   plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.Unauthenticated
 
   def overview(conn, _params) do
-    recent_transactions = Transaction.recent
+    user = Guardian.Plug.current_resource(conn)
+
+    recent_transactions = Transaction.recent(user.id)
     |> Repo.all
     |> Enum.group_by(fn(transaction) ->
       transaction.made_on
