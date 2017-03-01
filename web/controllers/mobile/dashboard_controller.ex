@@ -17,7 +17,7 @@ defmodule ExMoney.Mobile.DashboardController do
 
   defp _overview(conn, user) do
     last_login_at = fetch_last_login_at
-    transactions = Transaction.recent |> Repo.all
+    transactions = Transaction.recent(user.id) |> Repo.all
 
     new_recent_transactions = Enum.filter(transactions, fn(tr) ->
       Ecto.DateTime.compare(tr.inserted_at, last_login_at) != :lt

@@ -112,6 +112,7 @@ defmodule ExMoney.Router do
 
     post "/login", SessionController, :login
     resources "/accounts", AccountController, only: [:index]
+    get "/transactions/recent", TransactionController, :recent, as: :recent
   end
 
   scope "/api/v1", ExMoney.Api.V1, as: :api do
