@@ -11,7 +11,8 @@ defmodule ExMoney.Api.V2.AccountView do
        name: account.name,
        balance: account.balance,
        currency_code: account.currency_code,
-       show_on_dashboard: account.show_on_dashboard
+       show_on_dashboard: account.show_on_dashboard,
+       saltedge_account_id: account.saltedge_account_id
      }
   end
 end
