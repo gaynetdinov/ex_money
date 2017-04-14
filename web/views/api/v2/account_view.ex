@@ -10,6 +10,7 @@ defmodule ExMoney.Api.V2.AccountView do
        id: account.id,
        name: account.name,
        balance: account.balance,
+       balance_millicents: ExMoney.Money.to_millicents(account.balance),
        currency_code: account.currency_code,
        show_on_dashboard: account.show_on_dashboard,
        saltedge_account_id: account.saltedge_account_id

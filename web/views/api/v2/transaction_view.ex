@@ -12,6 +12,7 @@ defmodule ExMoney.Api.V2.TransactionView do
        id: transaction.id,
        made_on: transaction.made_on,
        amount: transaction.amount,
+       amount_millicents: ExMoney.Money.to_millicents(transaction.amount),
        currency_code: transaction.currency_code,
        description: transaction.description,
        account_id: transaction.account_id,
