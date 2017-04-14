@@ -54,14 +54,13 @@ defmodule ExMoney.Mobile.FavouriteTransactionController do
     case Repo.insert(changeset) do
       {:ok, _transaction} ->
         send_resp(conn, 200, "")
-      {:error, changeset} ->
+      {:error, _changeset} ->
         send_resp(conn, 422, "Something went wrong, check server logs")
     end
   end
 
   def delete(conn, %{"id" => id}) do
     transaction = Repo.get!(FavouriteTransaction, id)
-    account = Repo.get!(Account, transaction.account_id)
     Repo.delete!(transaction)
 
     send_resp(conn, 200, "")
@@ -79,17 +78,5 @@ defmodule ExMoney.Mobile.FavouriteTransactionController do
         acc
       end
     end)
-  end
-
-  # FIXME: that looks terrible, I'm really sorry.
-  defp validate_from_param(from) do
-    if String.match?(from, ~r/\A\/m\/accounts\/\d+\/(expenses|income)\?date=\d{4}-\d{1,2}\z/) or
-      String.match?(from, ~r/\A\/m\/transactions\?date=\d{4}-\d{1,2}\&category_id=\d+\&account_id=\d+\z/) or
-      String.match?(from, ~r/\A\/m\/accounts\/\d+\z/) do
-
-      from
-    else
-      "/m/dashboard"
-    end
   end
 end
