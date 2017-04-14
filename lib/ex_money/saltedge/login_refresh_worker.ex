@@ -6,6 +6,7 @@ defmodule ExMoney.Saltedge.LoginRefreshWorker do
   alias ExMoney.{Repo, Login}
 
   @interval 3_600_000
+  @mix_env Mix.env
 
   def start_link(_opts \\ []) do
     GenServer.start_link(__MODULE__, :ok, name: :login_refresh_worker)
@@ -14,14 +15,14 @@ defmodule ExMoney.Saltedge.LoginRefreshWorker do
   def init(:ok) do
     logins = Login.background_refresh |> Repo.all
 
-    case logins do
-      [] -> :ignore
-      logins ->
-        Enum.each(logins, fn(login) ->
-          Process.send_after(self(), {:refresh, login.id}, 100)
-        end)
+    if @mix_env == :dev or logins == [] do
+      :ignore
+    else
+      Enum.each logins, fn(login) ->
+        Process.send_after(self(), {:refresh, login.id}, 100)
+      end
 
-        {:ok, %{}}
+      {:ok, %{}}
     end
   end
 
