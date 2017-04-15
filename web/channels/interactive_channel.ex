@@ -18,7 +18,8 @@
 
   def handle_info({:interactive_callback_received, _html, fields}, socket) do
     case length(fields) do
-      1 -> push socket, "ask_otp", %{field: List.first(fields)}
+      1 ->
+        push socket, "ask_otp", %{field: List.first(fields)}
       _ ->
         user = current_resource(socket)
         interactive_done(user.id)
@@ -41,6 +42,7 @@
 
   def terminate(reason, _socket) do
     Logger.debug"> leave #{inspect reason}"
+
     :ok
   end
 

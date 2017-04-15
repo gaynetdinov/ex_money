@@ -70,7 +70,6 @@ defmodule ExMoney.Router do
     get "/dashboard", DashboardController, :overview
     get "/overview", DashboardController, :overview
     get "/login", SessionController, :new, as: :login
-    get "/logged_in", SessionController, :exist, as: :logged_in
     post "/login", SessionController, :create, as: :login
     get "/accounts/:id/refresh", AccountController, :refresh
     get "/accounts/:id/expenses", AccountController, :expenses

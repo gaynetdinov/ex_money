@@ -16,7 +16,7 @@ defmodule ExMoney.Mobile.DashboardController do
   end
 
   defp _overview(conn, user) do
-    last_login_at = fetch_last_login_at
+    last_login_at = fetch_last_login_at()
     transactions = Transaction.recent(user.id) |> Repo.all
 
     new_recent_transactions = Enum.filter(transactions, fn(tr) ->
