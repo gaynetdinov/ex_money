@@ -21,7 +21,9 @@
               <div class="item-subtitle">
                 <div class="row">
                   <div class="col-50">
-                    <%= category_name(transaction.category) %>
+                    <div class="chip">
+                      <div class="chip-label"><%= category_name(transaction.category) %></div>
+                    </div>
                   </div>
                   <div class="col-50" align="right">
                     <%= transaction.amount %> <%= transaction.account.currency_label %>
