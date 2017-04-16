@@ -1,6 +1,8 @@
 defmodule ExMoney.Account do
   use ExMoney.Web, :model
 
+  alias ExMoney.Account
+
   schema "accounts" do
     field :saltedge_account_id, :integer
     field :name, :string
@@ -50,38 +52,44 @@ defmodule ExMoney.Account do
   end
 
   def by_saltedge_login_id(login_ids) do
-    from l in ExMoney.Account, where: l.saltedge_login_id in ^login_ids
+    from l in Account, where: l.saltedge_login_id in ^login_ids
   end
 
   def by_saltedge_account_id(account_id) do
-    from l in ExMoney.Account, where: l.saltedge_account_id == ^account_id, limit: 1
+    from l in Account, where: l.saltedge_account_id == ^account_id, limit: 1
   end
 
   def by_ids(ids) do
-    from a in ExMoney.Account, where: a.id in ^(ids)
+    from a in Account, where: a.id in ^(ids)
   end
 
   def show_on_dashboard() do
-    from acc in ExMoney.Account,
+    from acc in Account,
       where: acc.show_on_dashboard == true,
       order_by: acc.name
   end
 
   def by_user_id(user_id) do
-    from a in ExMoney.Account, where: a.user_id == ^user_id
+    from a in Account, where: a.user_id == ^user_id
   end
 
   def only_custom do
-    from a in ExMoney.Account,
+    from a in Account,
       where: is_nil(a.saltedge_account_id),
       select: {a.name, a.id},
       order_by: a.name
   end
 
   def only_saltedge do
-    from a in ExMoney.Account,
+    from a in Account,
       where: not is_nil(a.saltedge_account_id),
       select: {a.name, a.id},
       order_by: a.name
+  end
+
+  def by_id_with_login(account_id) do
+    from a in Account,
+      where: a.id == ^account_id,
+      preload: [:login]
   end
 end

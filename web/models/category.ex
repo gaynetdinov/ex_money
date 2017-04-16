@@ -57,7 +57,7 @@ defmodule ExMoney.Category do
   end
 
   def generate_color() do
-    h = :random.uniform()
+    h = :rand.uniform()
     s = 0.5
     v = 0.95
 

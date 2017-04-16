@@ -3,8 +3,6 @@ defmodule ExMoney.Mobile.AccountController do
 
   alias ExMoney.{Repo, Transaction, Account, AccountsBalanceHistory}
 
-  import Ecto.Query
-
   plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.Mobile.Unauthenticated
   plug :put_layout, "mobile.html"
 
@@ -13,10 +11,7 @@ defmodule ExMoney.Mobile.AccountController do
     from = first_day_of_month(parsed_date)
     to = last_day_of_month(parsed_date)
 
-    account = Account
-    |> where([a], a.id == ^account_id)
-    |> preload(:login)
-    |> Repo.one
+    account = Account.by_id_with_login(account_id) |> Repo.one
 
     month_transactions = Transaction.by_month(account_id, from, to)
     |> Repo.all
@@ -65,14 +60,8 @@ defmodule ExMoney.Mobile.AccountController do
     to = last_day_of_month(parsed_date)
     account_balance = account_balance(from, to, account.id)
 
-    expenses = Transaction.expenses_by_month(account_id, from, to)
-    |> Repo.all
-    |> Enum.group_by(fn(transaction) ->
-      transaction.made_on
-    end)
-    |> Enum.sort(fn({date_1, _transactions}, {date_2, _transaction}) ->
-      Ecto.Date.compare(date_1, date_2) != :lt
-    end)
+    scope = Transaction.expenses_by_month(account_id, from, to)
+    expenses = fetch_and_process_transactions(scope)
 
     {:ok, formatted_date} = Timex.DateFormat.format(parsed_date, "%b %Y", :strftime)
 
@@ -94,14 +83,8 @@ defmodule ExMoney.Mobile.AccountController do
     to = last_day_of_month(parsed_date)
     account_balance = account_balance(from, to, account.id)
 
-    income = Transaction.income_by_month(account_id, from, to)
-    |> Repo.all
-    |> Enum.group_by(fn(transaction) ->
-      transaction.made_on
-    end)
-    |> Enum.sort(fn({date_1, _transactions}, {date_2, _transaction}) ->
-      Ecto.Date.compare(date_1, date_2) != :lt
-    end)
+    scope = Transaction.income_by_month(account_id, from, to)
+    income = fetch_and_process_transactions(scope)
 
     {:ok, formatted_date} = Timex.DateFormat.format(parsed_date, "%b %Y", :strftime)
 
@@ -175,6 +158,15 @@ defmodule ExMoney.Mobile.AccountController do
       |> elem(1)
 
       Map.put(acc, d, h.balance)
+    end)
+  end
+
+  defp fetch_and_process_transactions(scope) do
+    scope
+    |> Repo.all
+    |> Enum.group_by(fn(transaction) -> transaction.made_on end)
+    |> Enum.sort(fn({date_1, _transactions}, {date_2, _transaction}) ->
+      Ecto.Date.compare(date_1, date_2) != :lt
     end)
   end
 end

@@ -3,6 +3,9 @@ defmodule ExMoney.Api.V1.SessionController do
 
   alias ExMoney.{Repo, User}
 
+  # Standalone web app on iPhone stores token in local storage
+  # and every time when it is opened, it sends this token, so
+  # Guardian can reauthenticate it.
   def relogin(conn, _params) do
     case Guardian.Plug.current_resource(conn) do
       nil ->
@@ -15,6 +18,7 @@ defmodule ExMoney.Api.V1.SessionController do
 
         store_last_login_at(user.last_login_at)
         update_last_login_at(user)
+
         conn = Guardian.Plug.sign_in(conn, user)
         send_resp(conn, 200, Guardian.Plug.current_token(conn))
     end
