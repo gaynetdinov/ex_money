@@ -97,6 +97,14 @@ defmodule ExMoney.Transaction do
       where: tr.account_id == ^account_id
   end
 
+  def by_month(account_ids, from, to) when is_list(account_ids) do
+    from tr in Transaction,
+      preload: [:account, :category],
+      where: tr.made_on >= ^from,
+      where: tr.made_on <= ^to,
+      where: tr.account_id in ^account_ids
+  end
+
   def by_month(account_id, from, to) do
     from tr in Transaction,
       where: tr.made_on >= ^from,
@@ -120,6 +128,18 @@ defmodule ExMoney.Transaction do
     Transaction.by_month(account_id, from ,to)
     |> where([tr], tr.amount > 0)
     |> preload([:transaction_info, :category, :account])
+  end
+
+  def group_by_month_by_category_without_withdraw(account_ids, from, to) do
+    from tr in Transaction,
+      join: c in assoc(tr, :category),
+      where: c.name != "withdraw",
+      where: tr.made_on >= ^from,
+      where: tr.made_on <= ^to,
+      where: tr.account_id in ^account_ids,
+      group_by: [c.id],
+      select: {c, sum(tr.amount)},
+      having: sum(tr.amount) < 0
   end
 
   def group_by_month_by_category(account_id, from, to) do

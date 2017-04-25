@@ -1,7 +1,7 @@
 <div class="views">
   <div class="view view-main">
     <div class="pages">
-      <div class="page navbar-fixed" data-page="account-screen" >
+      <div class="page navbar-fixed" data-page="account-screen">
         <div class="navbar">
           <div class="navbar-inner">
             <div class="left">

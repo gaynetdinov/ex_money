@@ -1,4 +1,4 @@
-defmodule ExMoney.Mobile.AccountController do
+defmodule ExMoney.Mobile.BudgetController do
   use ExMoney.Web, :controller
 
   alias ExMoney.DateHelper
@@ -7,17 +7,26 @@ defmodule ExMoney.Mobile.AccountController do
   plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.Mobile.Unauthenticated
   plug :put_layout, "mobile.html"
 
-  def show(conn, %{"id" => account_id} = params) do
+  def index(conn, params) do
+    accounts = Account.in_budget |> Repo.all
+
+    _index(conn, params, accounts)
+  end
+
+  defp _index(conn, _, []) do
+    render conn, :setup
+  end
+
+  defp _index(conn, params, accounts) do
     parsed_date = DateHelper.parse_date(params["date"])
     from = DateHelper.first_day_of_month(parsed_date)
     to = DateHelper.last_day_of_month(parsed_date)
 
-    account = Account.by_id_with_login(account_id) |> Repo.one
-
-    month_transactions = Transaction.by_month(account_id, from, to)
+    account_ids = Enum.map(accounts, fn(acc) -> acc.id end)
+    month_transactions = Transaction.by_month(account_ids, from, to)
     |> Repo.all
 
-    categories = Transaction.group_by_month_by_category(account_id, from, to)
+    categories = Transaction.group_by_month_by_category_without_withdraw(account_ids, from, to)
     |> Repo.all
     |> Enum.reduce(%{}, fn({category, amount}, acc) ->
       {float_amount, _} = Decimal.to_string(amount, :normal)
@@ -39,77 +48,63 @@ defmodule ExMoney.Mobile.AccountController do
     previous_month = DateHelper.previous_month(parsed_date)
     next_month = DateHelper.next_month(parsed_date)
 
-    render conn, :show,
-      account: account,
+    currency_label = if month_transactions != [] do
+      List.first(month_transactions).account.currency_label
+    else
+      ""
+    end
+
+    render conn, :index,
       month_transactions: month_transactions,
+      currency_label: currency_label,
       categories: categories,
       current_month: current_month,
       previous_month: previous_month,
       next_month: next_month
   end
 
-  def refresh(conn, %{"id" => account_id}) do
-    account = Repo.get(Account, account_id)
-
-    render conn, :refresh, account: account
-  end
-
-  def expenses(conn, %{"date" => date, "id" => account_id}) do
-    account = Repo.get!(Account, account_id)
+  def expenses(conn, %{"date" => date}) do
     parsed_date = DateHelper.parse_date(date)
     from = DateHelper.first_day_of_month(parsed_date)
     to = DateHelper.last_day_of_month(parsed_date)
-    account_balance = account_balance(from, to, account.id)
 
-    scope = Transaction.expenses_by_month(account_id, from, to)
+    budget_account_ids = Account.in_budget
+    |> Repo.all
+    |> Enum.map(fn(acc) -> acc.id end)
+
+    scope = Transaction.expenses_by_month(budget_account_ids, from, to)
     expenses = fetch_and_process_transactions(scope)
 
     {:ok, formatted_date} = Timex.DateFormat.format(parsed_date, "%b %Y", :strftime)
 
-    from = URI.encode_www_form("/m/accounts/#{account_id}/expenses?date=#{date}")
+    from = URI.encode_www_form("/m/budget/expenses?date=#{date}")
 
     render conn, :expenses,
       expenses: expenses,
       date: %{label: formatted_date, value: date},
-      from: from,
-      account: account,
-      account_balance: account_balance
+      from: from
   end
 
-  def income(conn, %{"date" => date, "id" => account_id}) do
-    account = Repo.get!(Account, account_id)
+  def income(conn, %{"date" => date}) do
     parsed_date = DateHelper.parse_date(date)
     from = DateHelper.first_day_of_month(parsed_date)
     to = DateHelper.last_day_of_month(parsed_date)
-    account_balance = account_balance(from, to, account.id)
 
-    scope = Transaction.income_by_month(account_id, from, to)
+    budget_account_ids = Account.in_budget
+    |> Repo.all
+    |> Enum.map(fn(acc) -> acc.id end)
+
+    scope = Transaction.income_by_month(budget_account_ids, from, to)
     income = fetch_and_process_transactions(scope)
 
     {:ok, formatted_date} = Timex.DateFormat.format(parsed_date, "%b %Y", :strftime)
 
-    from = URI.encode_www_form("/m/accounts/#{account_id}/income?date=#{date}")
+    from = URI.encode_www_form("/m/budget/income?date=#{date}")
 
     render conn, :income,
       income: income,
       date: %{label: formatted_date, value: date},
-      from: from,
-      account: account,
-      account_balance: account_balance
-  end
-
-  defp account_balance(from, to, account_id) do
-    AccountsBalanceHistory.history(from, to, account_id)
-    |> Repo.all
-    |> Enum.reduce(%{}, fn(h, acc) ->
-      {:ok, {inserted_at, _}} = Ecto.DateTime.dump(h.inserted_at)
-
-      d = Timex.Date.from({inserted_at, {0, 0, 0}})
-      |> Timex.DateFormat.format("%Y-%m-%d", :strftime)
-      |> elem(1)
-
-      Map.put(acc, d, h.balance)
-    end)
+      from: from
   end
 
   defp fetch_and_process_transactions(scope) do

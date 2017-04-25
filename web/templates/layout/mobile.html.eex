@@ -18,6 +18,38 @@
   </head>
 
   <body>
+    <div class="panel-overlay"></div>
+    <div class="panel panel-left panel-reveal" style="background: #bfbfc5;">
+        <div class="card">
+          <div class="card-header"><strong>ExMoney</strong></div>
+          <div class="card-content">
+            <div class="list-block">
+              <ul>
+                <a href="/m/dashboard" class="item-link item-content close-panel no-animation" data-force="true" data-ignore-cache="true">
+                  <div class="item-inner">
+                    <div class="item-title">Dashboard</div>
+                  </div>
+                </a>
+                <a href="/m/budget" class="item-link item-content close-panel no-animation" data-force="true" data-ignore-cache="true">
+                  <div class="item-inner">
+                    <div class="item-title">Budget</div>
+                  </div>
+                </a>
+                <a href="/m/settings" class="item-link item-content close-panel no-animation" data-force="true" data-ignore-cache="true">
+                  <div class="item-inner">
+                    <div class="item-title">Settings</div>
+                  </div>
+                </a>
+                <a href="#" class="item-link item-content close-panel">
+                  <div class="item-inner">
+                    <div class="item-title">About</div>
+                  </div>
+                </a>
+              </ul>
+            </div>
+          </div>
+        </div>
+    </div>
     <%= render @view_module, @view_template, assigns %>
 
     <script src="<%= static_path(@conn, "/js/app.js") %>"></script>

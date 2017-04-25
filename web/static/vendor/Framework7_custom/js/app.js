@@ -198,7 +198,6 @@ var exMoney = new Framework7({
           scrollToInput: false,
           type: 'calculator',
           onClose: function(p) {
-            console.log(p);
             $$.ajax({
               url: '/m/transactions/create_from_fav',
               contentType: "application/json",
@@ -238,16 +237,50 @@ function adjustSelectedCategory() {
   category.text(category.text().replace(/\u21b3/g, ""));
 };
 
-exMoney.onPageInit('income-screen', function(page) {
+exMoney.onPageInit('account-income-screen', function(page) {
   deleteTransaction();
 });
 
-exMoney.onPageInit('expenses-screen', function(page) {
+exMoney.onPageInit('account-expenses-screen', function(page) {
   deleteTransaction();
 });
 
 exMoney.onPageInit('transactions-screen', function(page) {
   deleteTransaction();
+});
+
+exMoney.onPageInit('settings-budget-page', function(page) {
+  console.log('foo');
+  $$('.budget-account').on('click', function (e) {
+    var id = $$(this).data('id');
+    var swipeout_line = $$(this);
+    var csrf = document.querySelector("meta[name=csrf]").content;
+
+    $$.ajax({
+      url: '/m/settings/budget/setup',
+      contentType: "application/json",
+      data: JSON.stringify({account_id: id}),
+      type: 'PUT',
+      headers: {
+        "X-CSRF-TOKEN": csrf
+      },
+      success: function(data, status, xhr) {
+        $$(swipeout_line.parent().parent()).find('.item-after').remove();
+        include_to_budget = JSON.parse(data).include_to_budget;
+        if (include_to_budget) {
+          $$(swipeout_line.parent()).find('i').text('close');
+          $$("<div class='item-after'><i class='f7-icons color-blue'>check</i></div>").insertAfter($$("#account_tr_"+id));
+        } else {
+          $$(swipeout_line.parent()).find('i').text('check');
+        }
+        exMoney.swipeoutClose($$(swipeout_line.parent().parent()));
+      },
+      error: function(xhr, status) {
+        alert(JSON.parse(xhr.response).msg);
+        exMoney.swipeoutClose($$(swipeout_line.parent().parent()));
+      }
+    });
+  });
 });
 
 exMoney.onPageInit('favourite-transactions-screen', function(page) {
@@ -293,6 +326,18 @@ exMoney.onPageInit('favourite-transactions-screen', function(page) {
       error: function(xhr, status) {
         alert("Something went wrong, check server logs");
       }
+    });
+  });
+});
+
+exMoney.onPageInit('budget-screen', function (page) {
+  $$('a.category-bar').on('taphold', function () {
+    var category_id = $$(this).data("category-id");
+    var date = page.query.date || $$("#current_date").data("current-date");
+
+    mainView.router.load({
+      url: '/m/transactions?category_id='+category_id+'&date='+date,
+      ignoreCache: true
     });
   });
 });

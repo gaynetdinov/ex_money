@@ -81,6 +81,16 @@ defmodule ExMoney.Router do
     resources "/favourite_transactions", FavouriteTransactionController do
       put "/fav", FavouriteTransactionController, :fav, as: :fav, param: "id"
     end
+
+    get "/budget", BudgetController, :index
+    get "/budget/expenses", BudgetController, :expenses
+    get "/budget/income", BudgetController, :income
+
+    scope "/settings", as: :setting do
+      get "/", SettingController, :index
+      resources "/budget", Setting.BudgetController, only: [:index]
+      put "/budget/setup", Setting.BudgetController, :setup
+    end
   end
 
   scope "/saltedge", as: :saltedge do

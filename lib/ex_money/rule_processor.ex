@@ -60,6 +60,7 @@ defmodule ExMoney.RuleProcessor do
   defp withdraw_to_cash(rule, transaction, transaction_info) do
     {:ok, re} = Regex.compile(rule.pattern, "i")
     withdraw_category = Category.by_name("withdraw") |> Repo.one
+
     account = Repo.get(Account, rule.target_id)
 
     if Regex.match?(re, transaction_description(transaction, transaction_info)) &&
@@ -78,10 +79,10 @@ defmodule ExMoney.RuleProcessor do
         )
         |> Repo.insert!
 
-        Transaction.update_changeset(transaction, %{rule_applied: true})
+        Transaction.update_changeset(transaction, %{rule_applied: true, category_id: withdraw_category.id})
         |> Repo.update!
 
-        # transaction.amount is negative, sub with something with negative => add
+        # transaction.amount is negative, sub with something negative -> add
         new_balance = Decimal.sub(account.balance, transaction.amount)
         Account.update_custom_changeset(account, %{balance: new_balance})
         |> Repo.update!

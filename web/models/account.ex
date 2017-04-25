@@ -11,6 +11,7 @@ defmodule ExMoney.Account do
     field :currency_code, :string
     field :currency_label, :string
     field :show_on_dashboard, :boolean
+    field :include_to_budget, :boolean
 
     belongs_to :login, ExMoney.Login,
       foreign_key: :saltedge_login_id,
@@ -43,7 +44,7 @@ defmodule ExMoney.Account do
 
   def update_custom_changeset(model, params \\ %{}) do
     model
-    |> cast(params, ~w(), ~w(name balance currency_code currency_label show_on_dashboard))
+    |> cast(params, ~w(), ~w(name balance currency_code currency_label show_on_dashboard include_to_budget))
   end
 
   def update_saltedge_changeset(model, params \\ %{}) do
@@ -63,9 +64,15 @@ defmodule ExMoney.Account do
     from a in Account, where: a.id in ^(ids)
   end
 
-  def show_on_dashboard() do
+  def show_on_dashboard do
     from acc in Account,
       where: acc.show_on_dashboard == true,
+      order_by: acc.name
+  end
+
+  def in_budget do
+    from acc in Account,
+      where: acc.include_to_budget == true,
       order_by: acc.name
   end
 

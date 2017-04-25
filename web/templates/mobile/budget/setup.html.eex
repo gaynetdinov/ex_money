@@ -1,0 +1,23 @@
+<div class="pages">
+  <div class="page navbar-fixed" data-page="budget-setup-page">
+    <div class="navbar">
+      <div class="navbar-inner">
+        <div class="left">
+          <a href="#" class="link open-panel" data-panel="left">
+            <i class="icon icon-bars"></i>
+          </a>
+        </div>
+        <div class="center">Budget</div>
+      </div>
+    </div>
+    <div class="page-content">
+      <div class="card">
+        <div class="card-content">
+          <div class="card-content-inner" style="text-align: center">
+            To start using Budget, <br/>you need to <a href="/m/settings/budget" data-force="true" data-ignore-cache="true">setup</a> it first.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
