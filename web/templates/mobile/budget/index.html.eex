@@ -14,7 +14,7 @@
       <div class="content-block-title" align="center">
         <div class="row">
           <div class="col-33" align="left">
-            <a href="/m/budget?date=<%= @previous_month.date %>" class="link back" data-force="true">
+            <a href="/m/budget?date=<%= @previous_month.date %>" class="link back" data-ignore-cache="true" data-force="true">
               &#8592; <%= @previous_month.label %>
             </a>
           </div>

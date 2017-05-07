@@ -15,7 +15,7 @@
         <div class="card-content">
           <div class="list-block">
             <ul>
-              <a href="/m/settings/budget" class="item-link item-content" data-force="true" data-ignore-cache="true">
+              <a href="/m/settings/budget" class="item-link item-content" data-ignore-cache="true">
                 <div class="item-inner">
                   <div class="item-title">Budget</div>
                 </div>

@@ -25,17 +25,17 @@
           <div class="card-content">
             <div class="list-block">
               <ul>
-                <a href="/m/dashboard" class="item-link item-content close-panel no-animation" data-force="true" data-ignore-cache="true">
+                <a href="/m/dashboard" class="item-link item-content close-panel no-animation" data-ignore-cache="true">
                   <div class="item-inner">
                     <div class="item-title">Dashboard</div>
                   </div>
                 </a>
-                <a href="/m/budget" class="item-link item-content close-panel no-animation" data-force="true" data-ignore-cache="true">
+                <a href="/m/budget" class="item-link item-content close-panel no-animation" data-ignore-cache="true">
                   <div class="item-inner">
                     <div class="item-title">Budget</div>
                   </div>
                 </a>
-                <a href="/m/settings" class="item-link item-content close-panel no-animation" data-force="true" data-ignore-cache="true">
+                <a href="/m/settings" class="item-link item-content close-panel no-animation" data-ignore-cache="true">
                   <div class="item-inner">
                     <div class="item-title">Settings</div>
                   </div>

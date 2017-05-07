@@ -232,7 +232,8 @@ defmodule ExMoney.Mobile.TransactionController do
   defp validate_from_param(from) do
     if String.match?(from, ~r/\A\/m\/accounts\/\d+\/(expenses|income)\?date=\d{4}-\d{1,2}\z/) or
       String.match?(from, ~r/\A\/m\/transactions\?date=\d{4}-\d{1,2}\&category_id=\d+\&account_id=\d+\z/) or
-      String.match?(from, ~r/\A\/m\/accounts\/\d+\z/) do
+      String.match?(from, ~r/\A\/m\/accounts\/\d+\z/) or
+      String.match?(from, ~r/\A\/m\/budget\?date=\d{4}-\d{1,2}\z/) do
 
       from
     else
