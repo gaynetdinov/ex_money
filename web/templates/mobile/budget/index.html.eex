@@ -1,0 +1,98 @@
+<div class="pages">
+  <div class="page navbar-fixed" data-page="budget-screen">
+    <div class="navbar">
+      <div class="navbar-inner">
+        <div class="left">
+          <a href="#" class="link open-panel" data-panel="left">
+            <i class="icon icon-bars"></i>
+          </a>
+        </div>
+        <div class="center">Budget</div>
+      </div>
+    </div>
+    <div class="page-content hide-navbar-on-scroll">
+      <div class="content-block-title" align="center">
+        <div class="row">
+          <div class="col-33" align="left">
+            <a href="/m/budget?date=<%= @previous_month.date %>" class="link back" data-ignore-cache="true" data-force="true">
+              &#8592; <%= @previous_month.label %>
+            </a>
+          </div>
+          <div class="col-33" id="current_date" data-current-date="<%= @current_month.date %>">
+            <%= @current_month.label %>
+          </div>
+          <div class="col-33" align="right">
+            <a href="/m/budget?date=<%= @next_month.date %>" class="link" data-ignore-cache="true">
+              <%= @next_month.label %> &#8594;
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="list-block">
+          <ul>
+            <li class="item-content">
+              <div class="item-inner">
+                <div class="item-title">Expenses</div>
+                <div class="item-after" style="color: black">
+                  <a href='/m/budget/expenses?date=<%= @current_month.date %>' data-ignore-cache="true">
+                    <%= expenses(@month_transactions) %> <%= @currency_label %>
+                  </a>
+                </div>
+              </div>
+            </li>
+            <li class="item-content">
+              <div class="item-inner">
+                <div class="item-title">Income</div>
+                <div class="item-after" style="color: black">
+                  <a href='/m/budget/income?date=<%= @current_month.date %>' data-ignore-cache="true">
+                    <%= income(@month_transactions) %> <%= @currency_label %>
+                  </a>
+                </div>
+              </div>
+            </li>
+            <li class="item-content">
+              <div class="item-inner">
+                <div class="item-title">Balance</div>
+                <div class="item-after" style="color: black">
+                  <%= balance(@month_transactions) %> <%= @currency_label %>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="row">
+          <div class="container horizontal flat">
+            <h3>Top Expenses</h3>
+            <%= for {{id, category, color, width, amount}, sub_categories} <- categories_chart_data(@categories) do %>
+              <div class="progress-bar horizontal accordion-item">
+                <a href="#" class="category-bar item-content item-link" style="color: black" data-category-id="<%= id %>">
+                  <div class="progress-track">
+                    <div class="progress-fill" style="width:<%= width %>; background: <%= color %>">
+                      <span><%= Float.to_string(amount, compact: true, decimals: 1) %>&nbsp;<%= raw category %></span>
+                    </div>
+                  </div>
+                </a>
+                <div class="accordion-item-content" style="margin-left: 20px">
+                  <%= if Enum.count(sub_categories) > 0 do %>
+                    <div class="progress-bar horizontal">
+                      <%= for {id, category, _color, width, amount} <- sub_categories do %>
+                        <a href="#" class="category-bar" style="color: black" data-category-id="<%= id %>">
+                          <div class="progress-track" style="margin-top: 10px">
+                            <div class="progress-fill" style="width:<%= width %>; background: #b3b3b3">
+                              <span><%= Float.to_string(amount, compact: true, decimals: 1) %>&nbsp;<%= raw category %></span>
+                            </div>
+                          </div>
+                        </a>
+                      <% end %>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

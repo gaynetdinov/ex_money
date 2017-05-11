@@ -1,0 +1,29 @@
+<div class="pages">
+  <div class="page navbar-fixed" data-page="setting-expenses-page">
+    <div class="navbar">
+      <div class="navbar-inner">
+        <div class="left">
+          <a href="#" class="link open-panel" data-panel="left">
+            <i class="icon icon-bars"></i>
+          </a>
+        </div>
+        <div class="center">Settings</div>
+      </div>
+    </div>
+    <div class="page-content">
+      <div class="card">
+        <div class="card-content">
+          <div class="list-block">
+            <ul>
+              <a href="/m/settings/budget" class="item-link item-content" data-ignore-cache="true">
+                <div class="item-inner">
+                  <div class="item-title">Budget</div>
+                </div>
+              </a>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

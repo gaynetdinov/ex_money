@@ -90,11 +90,13 @@ defmodule ExMoney.RuleProcessorTest do
     end
 
     test "withdraw to cash", %{transaction: transaction} do
+      saltedge_account_id = transaction.account.saltedge_account_id
+
       cash_account = insert(:account)
       transfer_transaction = insert(:transaction,
         description: "bar foo baz",
         account: transaction.account,
-        saltedge_account_id: transaction.account.saltedge_account_id,
+        saltedge_account_id: saltedge_account_id,
         amount: Decimal.new(-10)
       )
       category = insert(:category, name: "withdraw")
@@ -110,11 +112,13 @@ defmodule ExMoney.RuleProcessorTest do
       RuleProcessor.handle_cast({:process, transfer_transaction.id}, %{})
 
       updated_transaction = Repo.get(Transaction, transfer_transaction.id)
-      cash_transaction = Repo.get_by(Transaction, category_id: category.id)
+      cash_transaction = Repo.get_by(Transaction, category_id: category.id, account_id: cash_account.id)
+      saltedge_transaction = Repo.get_by(Transaction, id: transfer_transaction.id)
 
       assert updated_transaction.rule_applied
       assert cash_transaction.account_id == cash_account.id
       assert cash_transaction.amount == Decimal.mult(updated_transaction.amount, Decimal.new(-1))
+      assert saltedge_transaction.category_id == category.id
     end
   end
 

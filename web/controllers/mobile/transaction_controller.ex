@@ -1,5 +1,7 @@
 defmodule ExMoney.Mobile.TransactionController do
   use ExMoney.Web, :controller
+
+  alias ExMoney.DateHelper
   alias ExMoney.{Repo, Transaction, Category, Account, TransactionInfo, FavouriteTransaction}
 
   plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.Mobile.Unauthenticated
@@ -12,9 +14,10 @@ defmodule ExMoney.Mobile.TransactionController do
       nil -> [category.id | Repo.all(Category.sub_categories_by_id(category.id))]
       _parent_id -> [category.id]
     end
-    parsed_date = parse_date(date)
-    from = first_day_of_month(parsed_date)
-    to = last_day_of_month(parsed_date)
+
+    parsed_date = DateHelper.parse_date(date)
+    from = DateHelper.first_day_of_month(parsed_date)
+    to = DateHelper.last_day_of_month(parsed_date)
 
     transactions = Transaction.by_month_by_category(account_id, from, to, category_ids)
     |> Repo.all
@@ -33,12 +36,47 @@ defmodule ExMoney.Mobile.TransactionController do
     end |> URI.encode_www_form
 
     render conn, :index,
-      currency_label: account.currency_label,
       transactions: transactions,
       date: %{label: formatted_date, value: date},
       category: category.humanized_name,
       from: from,
-      account_id: account.id
+      slug: "accounts/#{account.id}"
+  end
+
+  def index(conn, %{"date" => date, "category_id" => category_id}) do
+    category = Repo.get!(Category, category_id)
+    category_ids = case category.parent_id do
+      nil -> [category.id | Repo.all(Category.sub_categories_by_id(category.id))]
+      _parent_id -> [category.id]
+    end
+
+    parsed_date = DateHelper.parse_date(date)
+    from = DateHelper.first_day_of_month(parsed_date)
+    to = DateHelper.last_day_of_month(parsed_date)
+
+    budget_account_ids = Account.in_budget
+    |> Repo.all
+    |> Enum.map(fn(acc) -> acc.id end)
+
+    transactions = Transaction.by_month_by_category(budget_account_ids, from, to, category_ids)
+    |> Repo.all
+    |> Enum.group_by(fn(transaction) ->
+      transaction.made_on
+    end)
+    |> Enum.sort(fn({date_1, _transactions}, {date_2, _transaction}) ->
+      Ecto.Date.compare(date_1, date_2) != :lt
+    end)
+
+    {:ok, formatted_date} = Timex.DateFormat.format(parsed_date, "%b %Y", :strftime)
+
+    from = URI.encode_www_form("/m/budget?date=#{date}")
+
+    render conn, :index,
+      transactions: transactions,
+      date: %{label: formatted_date, value: date},
+      category: category.humanized_name,
+      from: from,
+      slug: "budget"
   end
 
   def new(conn, _params) do
@@ -111,7 +149,7 @@ defmodule ExMoney.Mobile.TransactionController do
       "user_id" => fav_tr.user_id,
       "category_id" => fav_tr.category_id,
       "account_id" => fav_tr.account_id,
-      "made_on" => Ecto.Date.from_erl(today()),
+      "made_on" => Ecto.Date.from_erl(DateHelper.today),
       "type" => "expense"
     }
     changeset = Transaction.changeset_custom(%Transaction{}, transaction_params)
@@ -176,25 +214,6 @@ defmodule ExMoney.Mobile.TransactionController do
     end
   end
 
-  defp parse_date(month) do
-    {:ok, date} = Timex.DateFormat.parse(month, "{YYYY}-{0M}")
-    date
-  end
-
-  defp first_day_of_month(date) do
-    Timex.Date.from({{date.year, date.month, 0}, {0, 0, 0}})
-    |> Timex.DateFormat.format("%Y-%m-%d", :strftime)
-    |> elem(1)
-  end
-
-  defp last_day_of_month(date) do
-    days_in_month = Timex.Date.days_in_month(date)
-
-    Timex.Date.from({{date.year, date.month, days_in_month}, {23, 59, 59}})
-    |> Timex.DateFormat.format("%Y-%m-%d", :strftime)
-    |> elem(1)
-  end
-
   defp categories_list do
     categories_dict = Repo.all(Category)
 
@@ -213,16 +232,12 @@ defmodule ExMoney.Mobile.TransactionController do
   defp validate_from_param(from) do
     if String.match?(from, ~r/\A\/m\/accounts\/\d+\/(expenses|income)\?date=\d{4}-\d{1,2}\z/) or
       String.match?(from, ~r/\A\/m\/transactions\?date=\d{4}-\d{1,2}\&category_id=\d+\&account_id=\d+\z/) or
-      String.match?(from, ~r/\A\/m\/accounts\/\d+\z/) do
+      String.match?(from, ~r/\A\/m\/accounts\/\d+\z/) or
+      String.match?(from, ~r/\A\/m\/budget\?date=\d{4}-\d{1,2}\z/) do
 
       from
     else
       "/m/dashboard"
     end
-  end
-
-  defp today() do
-    {today, _} = :calendar.local_time()
-    today
   end
 end

@@ -4,6 +4,11 @@
       <div class="page navbar-fixed" data-page="overview-screen">
         <div class="navbar">
           <div class="navbar-inner">
+            <div class="left">
+              <a href="#" class="link open-panel" data-panel="left">
+                <i class="icon icon-bars"></i>
+              </a>
+            </div>
             <div class="center">ExMoney</div>
           </div>
         </div>
