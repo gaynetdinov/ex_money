@@ -18,6 +18,10 @@
               <td colspan="2"><strong>Transaction</strong></td>
             </tr>
             <tr>
+              <td class="label-cell">Id</td>
+              <td><%= @transaction.saltedge_transaction_id %></td>
+            </tr>
+            <tr>
               <td class="label-cell">Description</td>
               <td><%= @transaction.description %></td>
             </tr>
