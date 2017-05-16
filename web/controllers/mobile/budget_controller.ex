@@ -2,7 +2,7 @@ defmodule ExMoney.Mobile.BudgetController do
   use ExMoney.Web, :controller
 
   alias ExMoney.DateHelper
-  alias ExMoney.{Repo, Transaction, Account, AccountsBalanceHistory}
+  alias ExMoney.{Repo, Transaction, Account}
 
   plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.Mobile.Unauthenticated
   plug :put_layout, "mobile.html"

@@ -355,6 +355,22 @@ exMoney.onPageInit('account-screen', function (page) {
   });
 });
 
+exMoney.onPageInit('edit-category-screen', function (page) {
+  $$('form.ajax-submit').on('submitted', function (e) {
+    var xhr = e.detail.xhr;
+
+    if (xhr.status == 200) {
+      mainView.router.back({
+        url: '/m/settings/categories',
+        ignoreCache: true,
+        force: true
+      });
+    } else {
+      exMoney.alert(xhr.responseText);
+    }
+  });
+});
+
 exMoney.onPageInit('edit-transaction-screen', function (page) {
   adjustSelectedCategory();
 

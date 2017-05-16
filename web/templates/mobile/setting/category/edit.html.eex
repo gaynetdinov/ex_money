@@ -1,0 +1,74 @@
+<div class="pages">
+  <div class="page navbar-fixed" data-page="edit-category-screen">
+    <div class="navbar">
+      <div class="navbar-inner">
+        <div class="left">
+          <a href="/m/settings/categories" class="link back" data-reload="true" data-force="true" data-ignore-cache="true">
+            <i class="icon icon-back"></i>&nbsp; Back
+          </a>
+        </div>
+        <div class="center">Edit category</div>
+      </div>
+    </div>
+    <div class="page-content">
+      <div class="list-block reduced-margin">
+        <%= form_for @changeset, mobile_setting_category_path(@conn, :update, @category), [method: :put, class: "ajax-submit"], fn f -> %>
+          <ul>
+            <%= if not is_nil(@category.parent_id) do %>
+              <li>
+                <a href="#" class="item-link smart-select smart-category-select" data-back-on-select="true" data-open-in="popup" data-searchbar="true" data-page-title="Parent Category">
+                  <%= render "parent_categories_list.html", categories: @parent_categories, selected: @category.parent_id %>
+                  <div class="item-content">
+                    <div class="item-inner">
+                      <div class="item-title">Parent</div>
+                    </div>
+                  </div>
+                </a>
+              </li>
+            <% end %>
+            <li class="align-top">
+              <div class="item-content">
+                <div class="item-inner">
+                  <div class="item-title label">Name</div>
+                  <div class="item-input">
+                    <%= text_input(f, :name, placeholder: "Name", style: "text-align: right") %>
+                  </div>
+                </div>
+              </div>
+            </li>
+            <li class="align-top">
+              <div class="item-content">
+                <div class="item-inner">
+                  <div class="item-title label">Human name</div>
+                  <div class="item-input">
+                    <%= text_input(f, :humanized_name, placeholder: "Humanized Name", style: "text-align: right") %>
+                  </div>
+                </div>
+              </div>
+            </li>
+            <li>
+              <div class="item-content">
+                <div class="item-inner">
+                  <div class="item-title label">Hidden</div>
+                  <div class="item-input" style="text-align: right">
+                    <%= checkbox(f, :hidden, style: "text-align: right") %>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
+
+          <div class="content-block">
+            <div class="row">
+              <div class="col-25"></div>
+              <div class="col-50" align="center">
+                <button class="button active button-big" type="submit">Update</button>
+              </div>
+              <div class="col-25"></div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
