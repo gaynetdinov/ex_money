@@ -249,6 +249,14 @@ exMoney.onPageInit('transactions-screen', function(page) {
   deleteTransaction();
 });
 
+exMoney.onPageInit('budget-expenses-screen', function(page) {
+  deleteTransaction();
+});
+
+exMoney.onPageInit('budget-income-screen', function(page) {
+  deleteTransaction();
+});
+
 exMoney.onPageInit('settings-budget-page', function(page) {
   console.log('foo');
   $$('.budget-account').on('click', function (e) {
