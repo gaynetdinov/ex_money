@@ -20,6 +20,12 @@
                   <div class="item-title">Budget</div>
                 </div>
               </a>
+
+              <a href="/m/settings/categories" class="item-link item-content" data-ignore-cache="true">
+                <div class="item-inner">
+                  <div class="item-title">Categories</div>
+                </div>
+              </a>
             </ul>
           </div>
         </div>

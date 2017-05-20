@@ -7,6 +7,7 @@ defmodule ExMoney.Category do
     field :name, :string
     field :humanized_name, :string
     field :css_color, :string
+    field :hidden, :boolean
 
     timestamps
 
@@ -24,34 +25,76 @@ defmodule ExMoney.Category do
     |> put_humanized_name
   end
 
+  def update_changeset(model, params \\ %{}) do
+    model
+    |> cast(params, ~w(), ~w(name humanized_name parent_id hidden))
+  end
+
+  def visible do
+    from c in Category, where: c.hidden != true
+  end
+
+  def list_with_hidden do
+    from c in Category,
+      order_by: c.name, preload: [:parent]
+  end
+
   def list do
-    from c in Category, order_by: c.name, preload: [:parent]
+    from c in Category,
+      where: c.hidden != true,
+      order_by: c.name, preload: [:parent]
+  end
+
+  def by_id_with_parent(id) do
+    from c in Category,
+      where: c.hidden != true,
+      where: c.id == ^id, preload: [:parent]
   end
 
   def by_name(name) do
-    from c in Category, where: c.name == ^name, limit: 1
+    from c in Category,
+      where: c.hidden != true,
+      where: c.name == ^name, limit: 1
   end
 
-  def parents do
+  def parents_with_hidden do
     from c in Category,
       where: is_nil(c.parent_id),
       order_by: c.name,
       select: {c.humanized_name, c.id}
   end
 
+  def parents do
+    from c in Category,
+      where: is_nil(c.parent_id),
+      where: c.hidden != true,
+      order_by: c.name,
+      select: {c.humanized_name, c.id}
+  end
+
   def by_ids(ids) do
     from c in Category,
+      where: c.hidden != true,
       where: c.id in ^(ids)
   end
 
   def sub_categories_by_id(id) do
     from c in Category,
       where: c.parent_id == ^id,
+      where: c.hidden != true,
       select: c.id
+  end
+
+  def sub_categories do
+    from c in Category,
+      where: not is_nil(c.parent_id),
+      where: c.hidden != true,
+      select: {c.humanized_name, c.id}
   end
 
   def select_list do
     from c in Category,
+      where: c.hidden != true,
       select: {c.humanized_name, c.id},
       order_by: c.humanized_name
   end

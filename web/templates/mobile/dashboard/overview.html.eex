@@ -19,7 +19,7 @@
             <i class="f7-icons">close</i>
           </a>
           <div class="speed-dial-buttons">
-            <a href="/m/favourite_transactions">
+            <a href="/m/favourite_transactions" data-ignore-cache="true">
               <i class="f7-icons" style="font-size: 22px">gear</i>
             </a>
             <%= if @fav_transaction do %>
@@ -27,7 +27,7 @@
                 <i class="f7-icons" style="font-size: 22px">heart</i>
               </a>
             <% end %>
-            <a href="/m/transactions/new" class="link" id="new_transaction_fab">
+            <a href="/m/transactions/new" class="link" id="new_transaction_fab" data-ignore-cache="true">
               <i class="f7-icons" style="font-size: 22px">compose</i>
             </a>
           </div>

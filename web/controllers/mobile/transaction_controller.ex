@@ -215,7 +215,7 @@ defmodule ExMoney.Mobile.TransactionController do
   end
 
   defp categories_list do
-    categories_dict = Repo.all(Category)
+    categories_dict = Category.visible |> Repo.all
 
     Enum.reduce(categories_dict, %{}, fn(category, acc) ->
       if is_nil(category.parent_id) do

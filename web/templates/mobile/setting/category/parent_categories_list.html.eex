@@ -1,0 +1,7 @@
+<select class="form-control" id="category_parent_id" name="category[parent_id]">
+  <%= for {name, id} <- @categories do %>
+    <option <%= if id == @selected, do: "selected=selected" %> value="<%= id %>">
+      <%= name %>
+    </option>
+  <% end %>
+</select>

@@ -90,6 +90,8 @@ defmodule ExMoney.Router do
       get "/", SettingController, :index
       resources "/budget", Setting.BudgetController, only: [:index]
       put "/budget/setup", Setting.BudgetController, :setup
+
+      resources "/categories", Setting.CategoryController, only: [:index, :edit, :update]
     end
   end
 
