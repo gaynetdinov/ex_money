@@ -59,7 +59,7 @@ defmodule ExMoney.RuleProcessor do
 
   defp withdraw_to_cash(rule, transaction, transaction_info) do
     {:ok, re} = Regex.compile(rule.pattern, "i")
-    withdraw_category = Category.by_name("withdraw") |> Repo.one
+    withdraw_category = Category.by_name_with_hidden("withdraw") |> Repo.one
 
     account = Repo.get(Account, rule.target_id)
 

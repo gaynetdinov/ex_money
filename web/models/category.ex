@@ -57,6 +57,11 @@ defmodule ExMoney.Category do
       where: c.name == ^name, limit: 1
   end
 
+  def by_name_with_hidden(name) do
+    from c in Category,
+      where: c.name == ^name, limit: 1
+  end
+
   def parents_with_hidden do
     from c in Category,
       where: is_nil(c.parent_id),
@@ -74,7 +79,6 @@ defmodule ExMoney.Category do
 
   def by_ids(ids) do
     from c in Category,
-      where: c.hidden != true,
       where: c.id in ^(ids)
   end
 

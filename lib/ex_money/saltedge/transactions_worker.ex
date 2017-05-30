@@ -153,7 +153,7 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
   end
 
   defp find_or_create_category(name) do
-    case Category.by_name(name) |> Repo.one do
+    case Category.by_name_with_hidden(name) |> Repo.one do
       nil ->
         changeset = Category.changeset(%Category{}, %{name: name})
         Repo.insert!(changeset)
