@@ -112,6 +112,13 @@ defmodule ExMoney.Transaction do
       where: tr.account_id == ^account_id
   end
 
+  def expenses_by_month_by_category(account_id, from, to, category_ids) do
+    Transaction.by_month(account_id, from, to)
+    |> where([tr], tr.amount < 0)
+    |> where([tr], tr.category_id in ^(category_ids))
+    |> preload([:transaction_info, :category, :account])
+  end
+
   def by_month_by_category(account_id, from, to, category_ids) do
     Transaction.by_month(account_id, from, to)
     |> where([tr], tr.category_id in ^(category_ids))
@@ -119,15 +126,26 @@ defmodule ExMoney.Transaction do
   end
 
   def expenses_by_month(account_id, from, to) do
-    Transaction.by_month(account_id, from ,to)
-    |> where([tr], tr.amount < 0)
+    from tr in Transaction.by_month(account_id, from, to),
+      join: c in assoc(tr, :category),
+      where: tr.amount < 0,
+      where: c.name != "withdraw",
+      preload: [:transaction_info, :category, :account]
+  end
+
+  def income_by_month_by_category(account_id, from, to, category_ids) do
+    Transaction.by_month(account_id, from, to)
+    |> where([tr], tr.amount > 0 )
+    |> where([tr], tr.category_id in ^(category_ids))
     |> preload([:transaction_info, :category, :account])
   end
 
   def income_by_month(account_id, from ,to) do
-    Transaction.by_month(account_id, from ,to)
-    |> where([tr], tr.amount > 0)
-    |> preload([:transaction_info, :category, :account])
+    from tr in Transaction.by_month(account_id, from, to),
+      join: c in assoc(tr, :category),
+      where: tr.amount > 0,
+      where: c.name != "withdraw",
+      preload: [:transaction_info, :category, :account]
   end
 
   def group_by_month_by_category_without_withdraw(account_ids, from, to) do
@@ -148,9 +166,9 @@ defmodule ExMoney.Transaction do
       where: tr.made_on >= ^from,
       where: tr.made_on <= ^to,
       where: tr.account_id == ^account_id,
+      where: tr.amount < 0,
       group_by: [c.id],
-      select: {c, sum(tr.amount)},
-      having: sum(tr.amount) < 0
+      select: {c, sum(tr.amount)}
   end
 
   # FIXME cache instead of db

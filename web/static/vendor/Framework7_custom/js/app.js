@@ -344,7 +344,7 @@ exMoney.onPageInit('budget-screen', function (page) {
     var date = page.query.date || $$("#current_date").data("current-date");
 
     mainView.router.load({
-      url: '/m/transactions?category_id='+category_id+'&date='+date,
+      url: '/m/transactions?category_id='+category_id+'&date='+date+'&type=expenses',
       ignoreCache: true
     });
   });
