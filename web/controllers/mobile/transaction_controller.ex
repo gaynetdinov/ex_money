@@ -43,7 +43,7 @@ defmodule ExMoney.Mobile.TransactionController do
       slug: "accounts/#{account.id}"
   end
 
-  def index(conn, %{"date" => date, "category_id" => category_id}) do
+  def index(conn, %{"date" => date, "category_id" => category_id, "type" => type}) do
     category = Repo.get!(Category, category_id)
     category_ids = case category.parent_id do
       nil -> [category.id | Repo.all(Category.sub_categories_by_id(category.id))]
@@ -58,7 +58,14 @@ defmodule ExMoney.Mobile.TransactionController do
     |> Repo.all
     |> Enum.map(fn(acc) -> acc.id end)
 
-    transactions = Transaction.by_month_by_category(budget_account_ids, from, to, category_ids)
+    query = case type do
+      "expenses" ->
+        Transaction.expenses_by_month_by_category(budget_account_ids, from, to, category_ids)
+      "income" ->
+        Transaction.income_by_month_by_category(budget_account_ids, from, to, category_ids)
+    end
+
+    transactions = query
     |> Repo.all
     |> Enum.group_by(fn(transaction) ->
       transaction.made_on

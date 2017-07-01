@@ -29,7 +29,8 @@ defmodule ExMoney.Mobile.BudgetView do
         end
       else
         case Map.has_key?(acc, category.parent_id) do
-          false -> Map.put(acc, category.parent_id, [id])
+          false ->
+            Map.put(acc, category.parent_id, [id])
           true ->
             sub_categories = Map.get(acc, category.parent_id, [])
             Map.put(acc, category.parent_id, [id | sub_categories])
@@ -60,6 +61,7 @@ defmodule ExMoney.Mobile.BudgetView do
 
     Enum.reduce(categories_tree, [], fn({id, sub_category_ids}, acc) ->
       category = parent_categories[id] || categories[id]
+
       amount = case sub_category_ids do
         [] -> category.amount
         _ ->
