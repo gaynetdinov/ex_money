@@ -1,5 +1,5 @@
 %{"base64url": {:hex, :base64url, "0.0.1", "36a90125f5948e3afd7be97662a1504b934dd5dac78451ca6e9abf85a10286be", [], [], "hexpm"},
-  "bypass": {:hex, :bypass, "0.5.1", "cf3e8a4d376ee1dcd89bf362dfaf1f4bf4a6e19895f52fdc2bafbd8207ce435f", [:mix], [{:cowboy, "~> 1.0", [hex: :cowboy, repo: "hexpm", optional: false]}, {:plug, "~> 1.0", [hex: :plug, repo: "hexpm", optional: false]}], "hexpm"},
+  "bypass": {:hex, :bypass, "0.7.0", "591d2ac1d87ba1bb84f62656a79de2fe3909993a211021a881825b59c9f7f58f", [:mix], [{:cowboy, "~> 1.0", [hex: :cowboy, repo: "hexpm", optional: false]}, {:plug, "~> 1.0", [hex: :plug, repo: "hexpm", optional: false]}], "hexpm"},
   "certifi": {:hex, :certifi, "1.2.1", "c3904f192bd5284e5b13f20db3ceac9626e14eeacfbb492e19583cf0e37b22be", [:rebar3], [], "hexpm"},
   "combine": {:hex, :combine, "0.9.2", "cd3c8721f378ebe032487d8a4fa2ced3181a456a3c21b16464da8c46904bb552", [], [], "hexpm"},
   "comeonin": {:hex, :comeonin, "2.5.2", "bbad773af30a7632a63053014d5cfebf6df2c1ad114167b4db02f05b5c60901b", [:make, :mix], [], "hexpm"},
