@@ -21,8 +21,9 @@ defmodule ExMoney.ChannelCase do
       use Phoenix.ChannelTest
 
       alias ExMoney.Repo
-      import Ecto.Model
-      import Ecto.Query, only: [from: 2]
+      import Ecto
+      import Ecto.Changetset
+      import Ecto.Query, only: [from: 1, from: 2]
 
 
       # The default endpoint for testing

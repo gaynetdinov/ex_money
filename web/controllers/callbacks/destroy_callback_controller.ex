@@ -8,7 +8,7 @@ defmodule ExMoney.Callbacks.DestroyCallbackController do
   plug Plugs.SetUser
   plug Plugs.SetLogin
 
-  def destroy(conn, _params) do
+  def destroy(conn, params) do
     login = conn.assigns[:login]
 
     @login_logger.log_event("destroy", "callback_received", login.saltedge_login_id, params)

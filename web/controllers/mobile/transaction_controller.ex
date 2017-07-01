@@ -87,7 +87,7 @@ defmodule ExMoney.Mobile.TransactionController do
   end
 
   def new(conn, _params) do
-    categories = categories_list
+    categories = categories_list()
     uncategorized = Map.keys(categories)
     |> Enum.find(fn({name, _id}) -> name == "Uncategorized" end)
     categories = Map.delete(categories, uncategorized)
@@ -105,7 +105,7 @@ defmodule ExMoney.Mobile.TransactionController do
 
   def edit(conn, %{"id" => id, "from" => from}) do
     transaction = Repo.get(Transaction, id)
-    categories = categories_list
+    categories = categories_list()
     changeset = Transaction.update_changeset(transaction)
 
     render conn, :edit,

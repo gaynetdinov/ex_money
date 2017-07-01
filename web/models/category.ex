@@ -21,7 +21,7 @@ defmodule ExMoney.Category do
   def changeset(model, params \\ %{}) do
     model
     |> cast(params, @required_fields, @optional_fields)
-    |> Ecto.Changeset.put_change(:css_color, generate_color)
+    |> Ecto.Changeset.put_change(:css_color, generate_color())
     |> put_humanized_name
   end
 
