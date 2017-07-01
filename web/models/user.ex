@@ -16,7 +16,7 @@ defmodule ExMoney.User do
     has_many :logins, ExMoney.Login
     has_many :accounts, ExMoney.Account
 
-    timestamps
+    timestamps()
   end
 
   def by_email(email) do

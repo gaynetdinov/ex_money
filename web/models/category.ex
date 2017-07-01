@@ -9,7 +9,7 @@ defmodule ExMoney.Category do
     field :css_color, :string
     field :hidden, :boolean
 
-    timestamps
+    timestamps()
 
     has_many :transactions, ExMoney.Transaction
     belongs_to :parent, ExMoney.Category

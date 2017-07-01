@@ -35,7 +35,7 @@ defmodule ExMoney.Login do
       foreign_key: :saltedge_login_id
     has_many :login_logs, ExMoney.LoginLog, on_delete: :delete_all
 
-    timestamps
+    timestamps()
   end
 
   def background_refresh do

@@ -9,7 +9,7 @@ defmodule ExMoney.Scheduler do
   end
 
   def init(:ok) do
-    Process.send_after(self, :schedule, 100)
+    Process.send_after(self(), :schedule, 100)
 
     {:ok, %{}}
   end
@@ -21,7 +21,7 @@ defmodule ExMoney.Scheduler do
         stop_worker(:login_refresh_worker)
         stop_worker(:idle_worker)
       false ->
-        Process.send_after(self, :schedule, @interval)
+        Process.send_after(self(), :schedule, @interval)
     end
 
     {:noreply, state}

@@ -11,7 +11,7 @@ defmodule ExMoney.Rule do
 
     belongs_to :account, ExMoney.Account
 
-    timestamps
+    timestamps()
   end
 
   @required_fields ~w(type account_id pattern target_id priority)

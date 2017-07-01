@@ -27,7 +27,7 @@ defmodule ExMoney.TransactionInfo do
 
     belongs_to :transaction, ExMoney.Transaction
 
-    timestamps
+    timestamps()
   end
 
   @required_fields ~w()

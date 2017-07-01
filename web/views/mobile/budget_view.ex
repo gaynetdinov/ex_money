@@ -110,7 +110,7 @@ defmodule ExMoney.Mobile.BudgetView do
   defp add_width(category, amount, max_amount) do
     percent = (amount * 100) / max_amount
     |> Float.round(0)
-    |> Float.to_string(compact: true, decimals: 0)
+    |> :erlang.float_to_binary(decimals: 0)
 
     if percent == "0" do
       nil

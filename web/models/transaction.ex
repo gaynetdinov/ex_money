@@ -24,7 +24,7 @@ defmodule ExMoney.Transaction do
       foreign_key: :saltedge_account_id,
       references: :saltedge_account_id
 
-    timestamps
+    timestamps()
   end
 
   @required_fields ~w(

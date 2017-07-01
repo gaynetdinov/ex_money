@@ -9,7 +9,7 @@ defmodule ExMoney.Mobile.DashboardView do
      Enum.reduce(categories, [], fn({category, color, amount}, acc) ->
        percent = (amount * 100) / max
        |> Float.round(0)
-       |> Float.to_string(compact: true, decimals: 0)
+       |> :erlang.float_to_binary(decimals: 0)
 
        if percent == "0" do
          acc
