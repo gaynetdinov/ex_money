@@ -9,7 +9,7 @@ defmodule ExMoney.Transaction do
     field :saltedge_transaction_id, :integer
     field :mode, :string
     field :status, :string
-    field :made_on, Ecto.Date
+    field :made_on, :date
     field :amount, :decimal
     field :currency_code, :string
     field :description, :string
@@ -83,8 +83,8 @@ defmodule ExMoney.Transaction do
   end
 
   def recent(user_id) do
-    current_date = Timex.Date.local
-    from = Timex.Date.shift(current_date, days: -15)
+    current_date = Timex.local
+    from = Timex.shift(current_date, days: -15)
 
     from tr in Transaction,
       where: tr.made_on >= ^from,

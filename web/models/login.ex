@@ -13,18 +13,18 @@ defmodule ExMoney.Login do
     field :interactive, :boolean, default: false
     field :provider_score, :string
     field :provider_name, :string
-    field :last_fail_at, Ecto.DateTime
+    field :last_fail_at, :naive_datetime
     field :last_fail_message, :string
     field :last_fail_error_class, :string
-    field :last_request_at, Ecto.DateTime
-    field :last_success_at, Ecto.DateTime
+    field :last_request_at, :naive_datetime
+    field :last_success_at, :naive_datetime
     field :status, :string
     field :country_code, :string
     field :interactive_html, :string
     field :interactive_fields_names, {:array, :string}
     field :stage, :string
     field :store_credentials, :boolean, default: false
-    field :last_refreshed_at, Ecto.DateTime
+    field :last_refreshed_at, :naive_datetime
 
     field :fetch_all_tried, :boolean, default: false
 

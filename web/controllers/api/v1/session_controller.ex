@@ -25,11 +25,13 @@ defmodule ExMoney.Api.V1.SessionController do
   end
 
   defp update_last_login_at(user) do
-    User.update_changeset(user, %{last_login_at: :calendar.universal_time})
+    User.update_changeset(user, %{last_login_at: NaiveDateTime.utc_now()})
     |> Repo.update
   end
 
   defp store_last_login_at(timestamp) do
+    IO.inspect "timestamp"
+    IO.inspect timestamp
     case :ets.lookup(:ex_money_cache, "last_login_at") do
       [] -> :ets.insert(:ex_money_cache, {"last_login_at", timestamp})
       _value -> :ets.update_element(:ex_money_cache, "last_login_at", {2, timestamp})

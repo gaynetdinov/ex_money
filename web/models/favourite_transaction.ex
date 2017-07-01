@@ -7,7 +7,7 @@ defmodule ExMoney.FavouriteTransaction do
 
   schema "favourite_transactions" do
     field :name, :string
-    field :made_on, Ecto.Date
+    field :made_on, :date
     field :amount, :decimal
     field :currency_code, :string
     field :description, :string

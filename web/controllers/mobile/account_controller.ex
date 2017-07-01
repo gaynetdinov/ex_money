@@ -64,7 +64,7 @@ defmodule ExMoney.Mobile.AccountController do
     scope = Transaction.expenses_by_month(account_id, from, to)
     expenses = fetch_and_process_transactions(scope)
 
-    {:ok, formatted_date} = Timex.DateFormat.format(parsed_date, "%b %Y", :strftime)
+    {:ok, formatted_date} = Timex.format(parsed_date, "%b %Y", :strftime)
 
     from = URI.encode_www_form("/m/accounts/#{account_id}/expenses?date=#{date}")
 
@@ -86,7 +86,7 @@ defmodule ExMoney.Mobile.AccountController do
     scope = Transaction.income_by_month(account_id, from, to)
     income = fetch_and_process_transactions(scope)
 
-    {:ok, formatted_date} = Timex.DateFormat.format(parsed_date, "%b %Y", :strftime)
+    {:ok, formatted_date} = Timex.format(parsed_date, "%b %Y", :strftime)
 
     from = URI.encode_www_form("/m/accounts/#{account_id}/income?date=#{date}")
 
@@ -102,13 +102,12 @@ defmodule ExMoney.Mobile.AccountController do
     AccountsBalanceHistory.history(from, to, account_id)
     |> Repo.all
     |> Enum.reduce(%{}, fn(h, acc) ->
-      {:ok, {inserted_at, _}} = Ecto.DateTime.dump(h.inserted_at)
+      inserted_at =
+        h.inserted_at
+        |> NaiveDateTime.to_date()
+        |> Date.to_string()
 
-      d = Timex.Date.from({inserted_at, {0, 0, 0}})
-      |> Timex.DateFormat.format("%Y-%m-%d", :strftime)
-      |> elem(1)
-
-      Map.put(acc, d, h.balance)
+      Map.put(acc, inserted_at, h.balance)
     end)
   end
 
@@ -117,7 +116,7 @@ defmodule ExMoney.Mobile.AccountController do
     |> Repo.all
     |> Enum.group_by(fn(transaction) -> transaction.made_on end)
     |> Enum.sort(fn({date_1, _transactions}, {date_2, _transaction}) ->
-      Ecto.Date.compare(date_1, date_2) != :lt
+      Date.compare(date_1, date_2) != :lt
     end)
   end
 end

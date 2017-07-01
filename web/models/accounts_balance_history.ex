@@ -17,15 +17,17 @@ defmodule ExMoney.AccountsBalanceHistory do
   end
 
   def history(from, to, account_id) do
-    {:ok, from} = Ecto.Date.cast(from)
-    from = Ecto.DateTime.from_date(from)
+    {:ok, from} = Date.from_iso8601(from)
+    erl_from = Date.to_erl(from)
+    {:ok, naive_from} = NaiveDateTime.from_erl({erl_from, {0, 0, 0}})
 
-    {:ok, to} = Ecto.Date.cast(to)
-    to = Ecto.DateTime.from_date(to)
+    {:ok, to} = Date.from_iso8601(to)
+    erl_to = Date.to_erl(to)
+    {:ok, naive_to} = NaiveDateTime.from_erl({erl_to, {0, 0, 0}})
 
     from h in AccountsBalanceHistory,
       where: h.account_id == ^account_id,
-      where: h.inserted_at >= ^from,
-      where: h.inserted_at <= ^to
+      where: h.inserted_at >= ^naive_from,
+      where: h.inserted_at <= ^naive_to
   end
 end

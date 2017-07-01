@@ -44,7 +44,7 @@ defmodule ExMoney.Factory do
       saltedge_transaction_id: sequence(:saltedge_transaction_id, &(&1)) + 1,
       mode: "normal",
       status: "post",
-      made_on: Ecto.Date.from_erl({2016, 09, 01}),
+      made_on: Date.new(2016, 09, 01),
       amount: Decimal.new(10),
       currency_code: "EUR",
       description: "iban number date something",

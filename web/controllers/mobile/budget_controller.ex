@@ -75,7 +75,7 @@ defmodule ExMoney.Mobile.BudgetController do
     scope = Transaction.expenses_by_month(budget_account_ids, from, to)
     expenses = fetch_and_process_transactions(scope)
 
-    {:ok, formatted_date} = Timex.DateFormat.format(parsed_date, "%b %Y", :strftime)
+    {:ok, formatted_date} = Timex.format(parsed_date, "%b %Y", :strftime)
 
     from = URI.encode_www_form("/m/budget/expenses?date=#{date}")
 
@@ -97,7 +97,7 @@ defmodule ExMoney.Mobile.BudgetController do
     scope = Transaction.income_by_month(budget_account_ids, from, to)
     income = fetch_and_process_transactions(scope)
 
-    {:ok, formatted_date} = Timex.DateFormat.format(parsed_date, "%b %Y", :strftime)
+    {:ok, formatted_date} = Timex.format(parsed_date, "%b %Y", :strftime)
 
     from = URI.encode_www_form("/m/budget/income?date=#{date}")
 
@@ -112,7 +112,7 @@ defmodule ExMoney.Mobile.BudgetController do
     |> Repo.all
     |> Enum.group_by(fn(transaction) -> transaction.made_on end)
     |> Enum.sort(fn({date_1, _transactions}, {date_2, _transaction}) ->
-      Ecto.Date.compare(date_1, date_2) != :lt
+      Date.compare(date_1, date_2) != :lt
     end)
   end
 end

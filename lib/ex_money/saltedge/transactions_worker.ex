@@ -27,8 +27,8 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
 
   defp fetch_recent_and_store(account, nil) do
     Logger.info("There are no transactions in DB for account with id #{account.name}")
-    to = Timex.Date.now
-    from = Timex.Date.shift(to, months: -2)
+    to = Timex.local
+    from = Timex.shift(to, months: -2)
 
     transactions = fetch_custom(account.saltedge_account_id, from, to, nil, [])
 
@@ -64,8 +64,8 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
   end
 
   defp fetch_all(account) do
-    to = Timex.Date.now
-    from = Timex.Date.shift(to, months: -1)
+    to = Timex.local
+    from = Timex.shift(to, months: -1)
 
     transactions = fetch_all(account.saltedge_account_id, from, to, [])
 
@@ -78,8 +78,8 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
     case fetch_custom(saltedge_account_id, from, to, nil, []) do
       [] -> List.flatten(acc)
       transactions_chunk ->
-        new_from = Timex.Date.shift(from, months: -1)
-        new_to = Timex.Date.shift(from, days: -1)
+        new_from = Timex.shift(from, months: -1)
+        new_to = Timex.shift(from, days: -1)
         fetch_all(saltedge_account_id, new_from, new_to, [transactions_chunk | acc])
     end
   end
@@ -163,7 +163,7 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
   end
 
   defp date_to_string(date) do
-    {:ok, str_date} = Timex.DateFormat.format(date, "%Y-%m-%d", :strftime)
+    {:ok, str_date} = Timex.format(date, "%Y-%m-%d", :strftime)
     str_date
   end
 

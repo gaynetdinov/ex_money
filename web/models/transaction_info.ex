@@ -6,9 +6,9 @@ defmodule ExMoney.TransactionInfo do
   schema "transactions_info" do
     field :record_number, :string
     field :information, :string
-    field :time, Ecto.DateTime
-    field :posting_date, Ecto.Date
-    field :posting_time, Ecto.DateTime
+    field :time, :naive_datetime
+    field :posting_date, :date
+    field :posting_time, :naive_datetime
     field :account_number, :string
     field :original_amount, :decimal
     field :original_currency_code, :string

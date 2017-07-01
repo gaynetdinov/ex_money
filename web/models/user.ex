@@ -11,7 +11,7 @@ defmodule ExMoney.User do
     field :saltedge_id, :integer
     field :saltedge_token, :string
     field :password, :string, virtual: true
-    field :last_login_at, Ecto.DateTime
+    field :last_login_at, :naive_datetime
 
     has_many :logins, ExMoney.Login
     has_many :accounts, ExMoney.Account
