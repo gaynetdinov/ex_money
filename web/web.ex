@@ -32,7 +32,7 @@ defmodule ExMoney.Web do
 
       alias ExMoney.Repo
       import Ecto
-      import Ecto.Model
+      import Ecto.Changeset
       import Ecto.Query, only: [from: 1, from: 2]
 
       import ExMoney.Router.Helpers
@@ -66,7 +66,7 @@ defmodule ExMoney.Web do
 
       alias ExMoney.Repo
       import Ecto
-      import Ecto.Model
+      import Ecto.Changeset
       import Ecto.Query, only: [from: 1, from: 2]
     end
   end

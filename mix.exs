@@ -32,14 +32,14 @@ defmodule ExMoney.Mixfile do
       {:phoenix_live_reload, "~> 1.0", only: :dev},
       {:cowboy, "~> 1.0"},
       {:httpoison, "~> 0.12"},
-      {:guardian, "0.12.0"},
-      {:guardian_db, "0.7.0"},
-      {:comeonin, "~> 2.3"},
-      {:ex_machina, "~> 1.0"},
-      {:faker, "~> 0.5", only: :test},
-      {:logger_file_backend, "0.0.7"},
+      {:guardian, "~> 0.14"},
+      {:guardian_db, "~> 0.8"},
+      {:comeonin, "~> 3.1"},
+      {:ex_machina, "~> 2.0"},
+      {:faker, "~> 0.7", only: :test},
+      {:logger_file_backend, "0.0.10"},
       {:timex, "1.0.2"},
-      {:bypass, "~> 0.1", only: :test}
+      {:bypass, "~> 0.2", only: :test}
     ]
   end
 

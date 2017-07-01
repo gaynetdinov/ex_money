@@ -39,23 +39,25 @@ defmodule ExMoney.Transaction do
     saltedge_account_id
     account_id
     user_id
-  )
-  @optional_fields ~w(category_id rule_applied)
+  )a
+  @optional_fields ~w(category_id rule_applied)a
 
   def changeset(model, params \\ %{}) do
     model
-    |> cast(params, @required_fields, @optional_fields)
+    |> cast(params, @required_fields ++ @optional_fields)
+    |> validate_required(@required_fields)
   end
 
   def changeset_custom(model, params \\ %{}) do
     model
-    |> cast(params, ~w(amount category_id account_id made_on user_id), ~w(description ))
+    |> cast(params, ~w(amount category_id account_id made_on user_id description)a)
+    |> validate_required(~w(amount category_id account_id made_on user_id)a)
     |> negate_amount(params)
   end
 
   def update_changeset(model, params \\ %{}) do
     model
-    |> cast(params, ~w(), ~w(category_id description rule_applied))
+    |> cast(params, ~w(category_id description rule_applied))
   end
 
   def negate_amount(changeset, params) when params == %{}, do: changeset

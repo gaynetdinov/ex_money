@@ -12,7 +12,8 @@ defmodule ExMoney.AccountsBalanceHistory do
 
   def changeset(model, params \\ %{}) do
     model
-    |> cast(params, ~w(balance account_id), ~w())
+    |> cast(params, ~w(balance account_id)a)
+    |> validate_required(~w(balance account_id)a)
   end
 
   def history(from, to, account_id) do

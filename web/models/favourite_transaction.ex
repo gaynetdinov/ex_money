@@ -20,16 +20,10 @@ defmodule ExMoney.FavouriteTransaction do
     timestamps()
   end
 
-  @required_fields ~w(
-    name
-    account_id
-    user_id
-  )
-  @optional_fields ~w(category_id made_on currency_code description amount fav)
-
   def changeset(model, params \\ %{}) do
     model
-    |> cast(params, @required_fields, @optional_fields)
+    |> cast(params, ~w(name account_id user_id category_id currency_code description amount fav)a)
+    |> validate_required(~w(name account_id user_id)a)
   end
 
   def by_user_id(user_id) do

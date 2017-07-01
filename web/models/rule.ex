@@ -14,12 +14,12 @@ defmodule ExMoney.Rule do
     timestamps()
   end
 
-  @required_fields ~w(type account_id pattern target_id priority)
-  @optional_fields ~w()
+  @required_fields ~w(type account_id pattern target_id priority)a
 
   def changeset(model, params \\ %{}) do
     model
-    |> cast(params, @required_fields, @optional_fields)
+    |> cast(params, @required_fields)
+    |> validate_required(@required_fields)
     |> unique_constraint(:priority,
       name: :rules_priority_account_id_index,
       message: "has already been taken for given account"

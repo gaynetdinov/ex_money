@@ -30,7 +30,6 @@ defmodule ExMoney.TransactionInfo do
     timestamps()
   end
 
-  @required_fields ~w()
   @optional_fields ~w(
     transaction_id
     record_number
@@ -53,7 +52,7 @@ defmodule ExMoney.TransactionInfo do
     units
     additional
     unit_price
-  )
+  )a
 
   @doc """
   Creates a changeset based on the `model` and `params`.
@@ -63,7 +62,7 @@ defmodule ExMoney.TransactionInfo do
   """
   def changeset(model, params \\ %{}) do
     model
-    |> cast(params, @required_fields, @optional_fields)
+    |> cast(params, @optional_fields)
   end
 
   def by_transaction_id(transaction_id) do
