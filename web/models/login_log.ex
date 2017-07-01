@@ -9,7 +9,7 @@ defmodule ExMoney.LoginLog do
 
     belongs_to :login, ExMoney.Login
 
-    timestamps
+    timestamps()
   end
 
   @required_fields ~w(event callback login_id)

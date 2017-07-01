@@ -7,7 +7,7 @@ defmodule ExMoney.AccountsBalanceHistory do
     field :balance, :decimal
     belongs_to :account, ExMoney.Account
 
-    timestamps
+    timestamps()
   end
 
   def changeset(model, params \\ %{}) do

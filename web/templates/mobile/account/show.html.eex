@@ -77,7 +77,7 @@
                     <a href="#" class="category-bar item-content item-link" style="color: black" data-category-id="<%= id %>">
                       <div class="progress-track">
                         <div class="progress-fill" style="width:<%= width %>; background: <%= color %>">
-                          <span><%= Float.to_string(amount, compact: true, decimals: 1) %>&nbsp;<%= raw category %></span>
+                          <span><%= :erlang.float_to_binary(amount, decimals: 1) %>&nbsp;<%= raw category %></span>
                         </div>
                       </div>
                     </a>
@@ -88,7 +88,7 @@
                             <a href="#" class="category-bar" style="color: black" data-category-id="<%= id %>">
                               <div class="progress-track" style="margin-top: 10px">
                                 <div class="progress-fill" style="width:<%= width %>; background: #b3b3b3">
-                                  <span><%= Float.to_string(amount, compact: true, decimals: 1) %>&nbsp;<%= raw category %></span>
+                                  <span><%= :erlang.float_to_binary(amount, decimals: 1) %>&nbsp;<%= raw category %></span>
                                 </div>
                               </div>
                             </a>

@@ -8,7 +8,7 @@ defmodule ExMoney.IdleWorker do
   end
 
   def init(:ok) do
-    Process.send_after(self, :keep_alive, 1000)
+    Process.send_after(self(), :keep_alive, 1000)
 
     {:ok, %{}}
   end
@@ -16,7 +16,7 @@ defmodule ExMoney.IdleWorker do
   def handle_info(:keep_alive, state) do
     HTTPoison.request(:get, "https://#{System.get_env("HOME_URL")}", "", [], [recv_timeout: 30000])
 
-    Process.send_after(self, :keep_alive, @interval)
+    Process.send_after(self(), :keep_alive, @interval)
 
     {:noreply, state}
   end

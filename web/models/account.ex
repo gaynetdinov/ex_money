@@ -26,7 +26,7 @@ defmodule ExMoney.Account do
     has_many :balance_history, ExMoney.AccountsBalanceHistory,
       on_delete: :delete_all
 
-    timestamps
+    timestamps()
   end
 
   @required_fields ~w(name nature balance currency_code saltedge_login_id saltedge_account_id user_id)

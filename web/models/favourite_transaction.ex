@@ -17,7 +17,7 @@ defmodule ExMoney.FavouriteTransaction do
     belongs_to :user, ExMoney.User
     belongs_to :account, ExMoney.Account
 
-    timestamps
+    timestamps()
   end
 
   @required_fields ~w(

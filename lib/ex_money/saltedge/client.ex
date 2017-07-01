@@ -38,12 +38,12 @@ defmodule ExMoney.Saltedge.Client do
 
     url = base_url() <> "/" <> endpoint
     str_method = to_string(method) |> String.upcase
-    request = "#{expires_at}|#{str_method}|#{url}|#{body}"
+    request = "#{expires_at()}|#{str_method}|#{url}|#{body}"
 
     headers = [
       {"Accept", "application/json"},
       {"Content-type", "application/json"},
-      {"Expires-at", expires_at},
+      {"Expires-at", expires_at()},
       {"Signature", signature(request)},
       {"Client-id", client_id},
       {"Service-secret", service_secret}

@@ -5,12 +5,12 @@
 
   def join("login_refresh:interactive", _message, socket) do
     user_id = socket.assigns.guardian_default_claims["aud"]
-    store_pid(self, user_id)
+    store_pid(self(), user_id)
 
     Process.flag(:trap_exit, true)
 
     with {true, interactive_fields_names} <- ongoing_interactive?(user_id) do
-      Process.send_after(self, {:interactive_callback_received, nil, interactive_fields_names}, 10)
+      Process.send_after(self(), {:interactive_callback_received, nil, interactive_fields_names}, 10)
     end
 
     {:ok, socket}
