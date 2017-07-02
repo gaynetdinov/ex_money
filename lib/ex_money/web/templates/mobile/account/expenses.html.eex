@@ -1,0 +1,24 @@
+<div class="pages">
+  <div class="page navbar-fixed" data-page="account-expenses-screen">
+    <div class="navbar">
+      <div class="navbar-inner">
+        <div class="left">
+          <a href="/m/accounts/<%= @account.id %>?date=<%= @date.value %>" class="link back" data-force="true" data-ignore-cache="true">
+            <i class="icon icon-back"></i>&nbsp; Back
+          </a>
+        </div>
+        <div class="center">Expenses for <%= @date.label %></div>
+      </div>
+    </div>
+    <div class="page-content hide-navbar-on-scroll">
+      <div class="list-block reduced-margin media-list">
+        <%= render ExMoney.Web.SharedView, "transactions_list.html",
+          transactions: @expenses,
+          new_transaction_ids: [],
+          account: @account,
+          account_balance: @account_balance,
+          from: @from %>
+      </div>
+    </div>
+  </div>
+</div>

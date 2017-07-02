@@ -7,7 +7,7 @@ defmodule ExMoney do
     :ets.new(:ex_money_cache, [:set, :public, :named_table])
 
     children = [
-      supervisor(ExMoney.Endpoint, []),
+      supervisor(ExMoney.Web.Endpoint, []),
       worker(ExMoney.Repo, []),
       worker(ExMoney.Saltedge.TransactionsWorker, []),
       worker(ExMoney.IdleWorker, [], restart: :transient),
@@ -22,10 +22,5 @@ defmodule ExMoney do
 
     opts = [strategy: :one_for_one, name: ExMoney.Supervisor]
     Supervisor.start_link(children, opts)
-  end
-
-  def config_change(changed, _new, removed) do
-    ExMoney.Endpoint.config_change(changed, removed)
-    :ok
   end
 end

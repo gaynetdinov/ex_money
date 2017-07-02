@@ -1,5 +1,5 @@
-defmodule ExMoney.Callbacks.FailureCallbackControllerTest do
-  use ExMoney.ConnCase
+defmodule ExMoney.Web.Callbacks.FailureCallbackControllerTest do
+  use ExMoney.Web.ConnCase
   import ExMoney.Factory
 
   alias ExMoney.{Repo, Login}

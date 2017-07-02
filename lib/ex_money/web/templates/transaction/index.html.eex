@@ -1,0 +1,50 @@
+<div class="row">
+  <%= render ExMoney.Web.SharedView, "dashboard_navbar.html", conn: @conn, navigation: @navigation %>
+
+  <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+    <h1 class="page-header">Transactions [<%= link "New", to: transaction_path(@conn, :new) %>]</h1>
+
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Saltedge Id</th>
+            <th>Date</th>
+            <th>Payee</th>
+            <th>Description</th>
+            <th>Category</th>
+            <th>Amount</th>
+            <th>Account</th>
+          </tr>
+        </thead>
+        <tbody>
+          <%= for transaction <- @transactions do %>
+            <tr>
+              <td><%= transaction.saltedge_transaction_id %></td>
+              <td><%= transaction.made_on %></td>
+              <td><%= payee(transaction) %></td>
+              <td><%= transaction.description %></td>
+              <td><%= transaction.category.humanized_name %></td>
+              <td><%= transaction.amount %></td>
+              <td><%= account(transaction) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    <nav>
+      <ul class="pager">
+        <li class="previous <%= disabled_previous_page?(@page_number, @total_pages) %>">
+          <a href="<%= build_previous_page_url(@page_number) %>">
+            <span aria-hidden="true">&larr;</span> Newer
+          </a>
+        </li>
+        <li class="next <%= disabled_next_page?(@page_number, @total_pages) %>">
+          <a href="<%= build_next_page_url(@page_number, @total_pages)%>">
+            Older <span aria-hidden="true">&rarr;</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>

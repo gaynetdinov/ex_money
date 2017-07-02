@@ -1,0 +1,67 @@
+.container {
+  width: 100%;
+  background: #fff;
+  padding: 15px;
+  overflow: hidden;
+  float: left;
+}
+
+.horizontal .progress-bar {
+  float: left;
+  width: 100%;
+}
+
+.horizontal .progress-track {
+  position: relative;
+  width: 100%;
+  height: 30px;
+  background: #ebebeb;
+}
+
+.horizontal .progress-fill {
+  position: relative;
+  height: 30px;
+  width: 50%;
+  text-align: left;
+  font-size: 16px;
+  line-height: 30px;
+}
+
+.reduced-margin {
+  margin: 15px 0;
+}
+
+.new_transaction {
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 1) 100%),
+                    linear-gradient(to right, rgba(240, 150, 40, 1) 0%, rgba(240, 140, 40, 1) 100%);
+  background-clip: content-box, padding-box;
+}
+
+.item-content {
+  padding-left: 12px !important;
+}
+
+.item-inner {
+  margin-left: 3px !important;
+}
+
+.blurred {
+  -webkit-filter: blur(5px);
+}
+
+.list-item-arrow {
+  padding-right: 35px;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20viewBox%3D'0%200%2060%20120'%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%3E%3Cpath%20d%3D'm60%2061.5-38.25%2038.25-9.75-9.75%2029.25-28.5-29.25-28.5%209.75-9.75z'%20fill%3D'%23c7c7cc'%2F%3E%3C%2Fsvg%3E");
+  background-size: 10px 20px;
+  background-repeat: no-repeat;
+  background-position: 95% center;
+  background-position: -webkit-calc(100% - 15px) center;
+  background-position: calc(100% - 15px) center;
+}
+
+-moz-user-select: none;
+-webkit-user-select: none;
+user-select: none;
+
+
+/*# sourceMappingURL=mobile.css.map*/

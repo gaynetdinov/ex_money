@@ -1,4 +1,4 @@
-defmodule ExMoney.ConnCase do
+defmodule ExMoney.Web.ConnCase do
   @moduledoc """
   This module defines the test case to be used by
   tests that require setting up a connection.
@@ -25,10 +25,10 @@ defmodule ExMoney.ConnCase do
       import Ecto.Changeset
       import Ecto.Query, only: [from: 1, from: 2]
 
-      import ExMoney.Router.Helpers
+      import ExMoney.Web.Router.Helpers
 
       # The default endpoint for testing
-      @endpoint ExMoney.Endpoint
+      @endpoint ExMoney.Web.Endpoint
     end
   end
 

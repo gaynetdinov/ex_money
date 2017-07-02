@@ -1,0 +1,44 @@
+<div class="row">
+  <%= render ExMoney.Web.SharedView, "settings_navbar.html", conn: @conn, navigation: @navigation %>
+
+  <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+    <h2 class="sub-header"><%= @login.provider_name %></h2>
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Event</th>
+            <th>Callback</th>
+            <th width="50%">Params</th>
+          </tr>
+        </thead>
+        <tbody>
+          <%= for log <- @logs do %>
+            <tr>
+              <td><%= log.inserted_at %></td>
+              <td><%= log.event %></td>
+              <td><%= log.callback %></td>
+              <td><%= show_params(log.params) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <nav>
+      <ul class="pager">
+        <li class="previous <%= disabled_previous_page?(@page_number, @total_pages) %>">
+          <a href="<%= build_previous_page_url(@login.id, @page_number) %>">
+            <span aria-hidden="true">&larr;</span>
+          </a>
+        </li>
+        <li class="next <%= disabled_next_page?(@page_number, @total_pages) %>">
+          <a href="<%= build_next_page_url(@login.id, @page_number, @total_pages)%>">
+            <span aria-hidden="true">&rarr;</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
