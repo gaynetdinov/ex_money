@@ -13,7 +13,7 @@ defmodule ExMoney.Saltedge.LoginRefreshWorker do
   end
 
   def init(:ok) do
-    logins = Login.background_refresh |> Repo.all
+    logins = Login.background_refresh() |> Repo.all
 
     if @mix_env == :dev or logins == [] do
       :ignore
@@ -30,13 +30,13 @@ defmodule ExMoney.Saltedge.LoginRefreshWorker do
     login = Repo.get(Login, login_id)
     last_refreshed_at = last_refreshed_at(login.last_refreshed_at)
 
-    case NaiveDateTime.diff(last_refreshed_at, NaiveDateTime.utc_now(), :secs) do
-      secs when secs >= 3600 ->
+    case NaiveDateTime.diff(NaiveDateTime.utc_now(), last_refreshed_at, :second) do
+      seconds when seconds >= 3600 ->
         refresh_login(login)
 
         Process.send_after(self(), {:refresh, login_id}, @interval)
-      secs when secs < 3600 ->
-        next_run = 3600 - secs
+      seconds when seconds < 3600 ->
+        next_run = 3600 - seconds
 
         Process.send_after(self(), {:refresh, login_id}, next_run * 1000)
     end
