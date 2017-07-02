@@ -30,8 +30,6 @@ defmodule ExMoney.Api.V1.SessionController do
   end
 
   defp store_last_login_at(timestamp) do
-    IO.inspect "timestamp"
-    IO.inspect timestamp
     case :ets.lookup(:ex_money_cache, "last_login_at") do
       [] -> :ets.insert(:ex_money_cache, {"last_login_at", timestamp})
       _value -> :ets.update_element(:ex_money_cache, "last_login_at", {2, timestamp})
