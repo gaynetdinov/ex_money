@@ -39,12 +39,13 @@ defmodule ExMoney.Factory do
 
   def transaction_factory do
     account = build(:account)
+    {:ok, made_on} = Date.new(2016, 09, 01)
 
     %ExMoney.Transaction{
       saltedge_transaction_id: sequence(:saltedge_transaction_id, &(&1)) + 1,
       mode: "normal",
       status: "post",
-      made_on: Date.new(2016, 09, 01),
+      made_on: made_on,
       amount: Decimal.new(10),
       currency_code: "EUR",
       description: "iban number date something",
