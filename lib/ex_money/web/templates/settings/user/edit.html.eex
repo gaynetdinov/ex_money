@@ -1,0 +1,53 @@
+<div class="row">
+  <%= render ExMoney.Web.SharedView, "settings_navbar.html", conn: @conn, navigation: @navigation %>
+
+  <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+    <h2>Edit account</h2>
+
+    <%= if get_flash(@conn, :info) do %>
+      <div class="alert alert-success"><%= get_flash(@conn, :info) %></div>
+    <% end %>
+
+    <%= form_for @changeset, settings_user_path(@conn, :update), fn f -> %>
+      <%= if @changeset.action do %>
+        <div class="alert alert-danger">
+          <p>Oops, something went wrong! Please check the errors below:</p>
+          <ul>
+            <%= for {attr, message} <- f.errors do %>
+              <li><%= humanize(attr) %> <%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="form-group">
+        <label for="account_name">Name</label>
+        <%= text_input f, :name, class: "form-control", placeholder: "Name" %>
+      </div>
+
+      <div class="form-group">
+        <label for="account_name">Email</label>
+        <%= text_input f, :email, class: "form-control", placeholder: "Email" %>
+      </div>
+
+      <div class="form-group">
+        <label for="account_name">Password</label>
+        <%= password_input f, :password, class: "form-control", placeholder: "New password" %>
+      </div>
+
+      <div class="form-group">
+        <label for="account_name">Saltedge Customer ID</label>
+        <%= text_input f, :saltedge_customer_id, class: "form-control", placeholder: "Saltedge Customer ID" %>
+      </div>
+
+      <div class="form-group">
+        <label for="account_name">Saltedge ID</label>
+        <%= text_input f, :saltedge_id, class: "form-control", placeholder: "Saltedge ID" %>
+      </div>
+
+      <div class="form-group">
+        <%= submit "Submit", class: "btn btn-primary" %>
+      </div>
+    <% end %>
+  </div>
+</div>

@@ -1,3 +1,3 @@
-defmodule ExMoney.LayoutViewTest do
-  use ExMoney.ConnCase, async: true
+defmodule ExMoney.Web.LayoutViewTest do
+  use ExMoney.Web.ConnCase, async: true
 end

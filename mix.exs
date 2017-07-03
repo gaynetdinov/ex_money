@@ -19,12 +19,12 @@ defmodule ExMoney.Mixfile do
                     :phoenix_ecto, :postgrex, :httpoison, :tzdata]]
   end
 
-  defp elixirc_paths(:test), do: ["lib", "web", "test/support"]
-  defp elixirc_paths(_),     do: ["lib", "web"]
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(_),     do: ["lib"]
 
   defp deps do
     [
-      {:phoenix, "~> 1.2"},
+      {:phoenix, "~> 1.3-rc", override: true},
       {:phoenix_pubsub, "~> 1.0"},
       {:phoenix_ecto, "~> 3.0"},
       {:postgrex, ">= 0.0.0"},

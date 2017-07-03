@@ -1,0 +1,13 @@
+{
+  "repository": {},
+  "dependencies": {
+    "phoenix": "file:../deps/phoenix",
+    "phoenix_html": "file:../deps/phoenix_html",
+    "babel-brunch": "^5.1.2",
+    "brunch": "^2.10.7",
+    "clean-css-brunch": ">= 1.0 < 1.8",
+    "css-brunch": ">= 1.0 < 1.8",
+    "javascript-brunch": ">= 1.0 < 1.8",
+    "uglify-js-brunch": ">= 1.0 < 1.8"
+  }
+}

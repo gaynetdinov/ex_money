@@ -1,4 +1,4 @@
-defmodule ExMoney.ChannelCase do
+defmodule ExMoney.Web.ChannelCase do
   @moduledoc """
   This module defines the test case to be used by
   channel tests.
@@ -27,7 +27,7 @@ defmodule ExMoney.ChannelCase do
 
 
       # The default endpoint for testing
-      @endpoint ExMoney.Endpoint
+      @endpoint ExMoney.Web.Endpoint
     end
   end
 

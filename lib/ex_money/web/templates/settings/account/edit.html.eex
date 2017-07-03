@@ -1,0 +1,15 @@
+<div class="row">
+  <%= render ExMoney.Web.SharedView, "settings_navbar.html", conn: @conn, navigation: @navigation %>
+
+  <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+    <h2>Edit account</h2>
+
+    <%=
+      render "form.html",
+        changeset: @changeset,
+        action: settings_account_path(@conn, :update, @account)
+    %>
+
+    <%= link "Back", to: settings_account_path(@conn, :index) %>
+  </div>
+</div>

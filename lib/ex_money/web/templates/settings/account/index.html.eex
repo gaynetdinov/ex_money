@@ -1,0 +1,41 @@
+<div class="row">
+  <%= render ExMoney.Web.SharedView, "settings_navbar.html", conn: @conn, navigation: @navigation %>
+
+  <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+    <h2 class="sub-header">
+      Accounts [<%= link "New", to: settings_account_path(@conn, :new) %>]
+    </h2>
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Id</th>
+          <th>Saltedge id</th>
+          <th>Saltedge login id</th>
+          <th>Name</th>
+          <th>Balance</th>
+          <th>Show on Dashboard</th>
+          <th>Currency</th>
+          <th>Currency label</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= for account <- @accounts do %>
+          <tr>
+            <td><%= account.id %></td>
+            <td><%= account.saltedge_account_id %></td>
+            <td><%= account.saltedge_login_id %></td>
+            <td><%= account.name %></td>
+            <td><%= account.balance %></td>
+            <td><%= account.show_on_dashboard %></td>
+            <td><%= account.currency_code %></td>
+            <td><%= account.currency_label %></td>
+            <td><%= link "Edit", to: settings_account_path(@conn, :edit, account), class: "btn btn-default btn-xs" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
+

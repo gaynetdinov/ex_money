@@ -1,0 +1,30 @@
+<div class="pages">
+  <div class="page navbar-fixed" data-page="transactions-screen">
+    <div class="navbar">
+      <div class="navbar-inner">
+        <div class="left">
+          <a href="/m/<%= @slug %>?date=<%= @date.value %>" class="link back" data-force="true" data-ignore-cache="true">
+            <i class="icon icon-back"></i>&nbsp; Back
+          </a>
+        </div>
+        <div class="center"><%= @category %></div>
+      </div>
+    </div>
+    <div class="page-content hide-navbar-on-scroll">
+      <div class="list-block reduced-margin media-list">
+        <%= if length(@transactions) == 0 do %>
+          <div class="content-block">
+            There are no transactions for such category anymore.
+          </div>
+        <% else %>
+          <%= render ExMoney.Web.SharedView, "transactions_list.html",
+            transactions: @transactions,
+            new_transaction_ids: [],
+            account: nil,
+            account_balance: nil,
+            from: @from %>
+          <% end %>
+      </div>
+    </div>
+  </div>
+</div>

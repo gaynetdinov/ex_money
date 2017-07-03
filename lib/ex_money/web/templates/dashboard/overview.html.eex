@@ -1,0 +1,34 @@
+<div class="row">
+  <%= render ExMoney.Web.SharedView, "dashboard_navbar.html", conn: @conn, navigation: @navigation %>
+
+  <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+    <h1 class="page-header">Dashboard</h1>
+    <div class="row placeholders">
+      <%= for account <- @accounts do %>
+        <div class="col-xs-6 col-sm-3 placeholder">
+          <h4><%= account.balance %> <%= account.currency_label %></h4>
+          <span class="text-muted"><%= account.name %></span>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="row">
+      <h2 class="sub-header">Recent transactions</h2>
+      <%= for {date, transactions} <- @recent_transactions do %>
+        <div class="panel panel-default">
+          <div class="panel-heading"><%= date %></div>
+
+          <table class="table recent-transactions-table">
+            <%= for transaction <- transactions do %>
+              <tr>
+                <td width="50%"><%= description(transaction) %></td>
+                <td width="25%"><%= transaction.category.humanized_name %></td>
+                <td width="25%" align="right"><%= transaction.amount %> <%= transaction.account.currency_label %></td>
+              </tr>
+            <% end %>
+          </table>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
