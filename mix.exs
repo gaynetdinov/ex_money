@@ -4,7 +4,7 @@ defmodule ExMoney.Mixfile do
   def project do
     [app: :ex_money,
      version: "0.0.1",
-     elixir: "~> 1.3",
+     elixir: "~> 1.4",
      elixirc_paths: elixirc_paths(Mix.env),
      compilers: [:phoenix] ++ Mix.compilers,
      build_embedded: Mix.env == :prod,
@@ -28,18 +28,18 @@ defmodule ExMoney.Mixfile do
       {:phoenix_pubsub, "~> 1.0"},
       {:phoenix_ecto, "~> 3.0"},
       {:postgrex, ">= 0.0.0"},
-      {:phoenix_html, "~> 2.6"},
+      {:phoenix_html, "~> 2.9"},
       {:phoenix_live_reload, "~> 1.0", only: :dev},
       {:cowboy, "~> 1.0"},
-      {:httpoison, "~> 0.9.0"},
-      {:guardian, "0.12.0"},
-      {:guardian_db, "0.7.0"},
-      {:comeonin, "~> 2.3"},
-      {:ex_machina, "~> 1.0"},
-      {:faker, "~> 0.5", only: :test},
-      {:logger_file_backend, "0.0.7"},
-      {:timex, "1.0.2"},
-      {:bypass, "~> 0.1", only: :test}
+      {:httpoison, "~> 0.12"},
+      {:guardian, "~> 0.14"},
+      {:guardian_db, "~> 0.8"},
+      {:comeonin, "~> 3.1"},
+      {:ex_machina, "~> 2.0"},
+      {:faker, "~> 0.7", only: :test},
+      {:logger_file_backend, "0.0.10"},
+      {:timex, "~> 3.1"},
+      {:bypass, "~> 0.2", only: :test}
     ]
   end
 

@@ -9,7 +9,7 @@ defmodule ExMoney.Transaction do
     field :saltedge_transaction_id, :integer
     field :mode, :string
     field :status, :string
-    field :made_on, Ecto.Date
+    field :made_on, :date
     field :amount, :decimal
     field :currency_code, :string
     field :description, :string
@@ -39,23 +39,25 @@ defmodule ExMoney.Transaction do
     saltedge_account_id
     account_id
     user_id
-  )
-  @optional_fields ~w(category_id rule_applied)
+  )a
+  @optional_fields ~w(category_id rule_applied)a
 
   def changeset(model, params \\ %{}) do
     model
-    |> cast(params, @required_fields, @optional_fields)
+    |> cast(params, @required_fields ++ @optional_fields)
+    |> validate_required(@required_fields)
   end
 
   def changeset_custom(model, params \\ %{}) do
     model
-    |> cast(params, ~w(amount category_id account_id made_on user_id), ~w(description ))
+    |> cast(params, ~w(amount category_id account_id made_on user_id description)a)
+    |> validate_required(~w(amount category_id account_id made_on user_id)a)
     |> negate_amount(params)
   end
 
   def update_changeset(model, params \\ %{}) do
     model
-    |> cast(params, ~w(), ~w(category_id description rule_applied))
+    |> cast(params, ~w(category_id description rule_applied))
   end
 
   def negate_amount(changeset, params) when params == %{}, do: changeset
@@ -81,8 +83,8 @@ defmodule ExMoney.Transaction do
   end
 
   def recent(user_id) do
-    current_date = Timex.Date.local
-    from = Timex.Date.shift(current_date, days: -15)
+    current_date = Timex.local
+    from = Timex.shift(current_date, days: -15)
 
     from tr in Transaction,
       where: tr.made_on >= ^from,

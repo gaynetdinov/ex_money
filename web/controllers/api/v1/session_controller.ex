@@ -25,7 +25,7 @@ defmodule ExMoney.Api.V1.SessionController do
   end
 
   defp update_last_login_at(user) do
-    User.update_changeset(user, %{last_login_at: :calendar.universal_time})
+    User.update_changeset(user, %{last_login_at: NaiveDateTime.utc_now()})
     |> Repo.update
   end
 

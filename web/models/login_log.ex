@@ -12,12 +12,13 @@ defmodule ExMoney.LoginLog do
     timestamps()
   end
 
-  @required_fields ~w(event callback login_id)
-  @optional_fields ~w(params description)
+  @required_fields ~w(event callback login_id)a
+  @optional_fields ~w(params description)a
 
   def changeset(model, params \\ %{}) do
     model
-    |> cast(params, @required_fields, @optional_fields)
+    |> cast(params, @required_fields ++ @optional_fields)
+    |> validate_required(@required_fields)
   end
 
   def by_login_id(id) do

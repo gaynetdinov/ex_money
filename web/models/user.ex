@@ -11,7 +11,7 @@ defmodule ExMoney.User do
     field :saltedge_id, :integer
     field :saltedge_token, :string
     field :password, :string, virtual: true
-    field :last_login_at, Ecto.DateTime
+    field :last_login_at, :naive_datetime
 
     has_many :logins, ExMoney.Login
     has_many :accounts, ExMoney.Account
@@ -37,21 +37,23 @@ defmodule ExMoney.User do
 
   def create_changeset(model, params \\ %{}) do
     model
-    |> cast(params, ~w(email password), ~w(name saltedge_customer_id))
+    |> cast(params, ~w(email password name saltedge_customer_id)a)
+    |> validate_required(~w(email password)a)
     |> maybe_update_password
   end
 
   def update_changeset(model, params \\ %{}) do
     model
-    |> cast(params, ~w(), ~w(name email password saltedge_id saltedge_customer_id last_login_at))
+    |> cast(params, ~w(name email password saltedge_id saltedge_customer_id last_login_at)a)
     |> maybe_update_password
   end
 
-  def login_changeset(model), do: model |> cast(%{}, ~w(), ~w(email password))
+  def login_changeset(model), do: model |> cast(%{}, ~w(email password)a)
 
   def login_changeset(model, params) do
     model
-    |> cast(params, ~w(email password), ~w())
+    |> cast(params, ~w(email password)a)
+    |> validate_required(~w(email password)a)
     |> validate_password
   end
 

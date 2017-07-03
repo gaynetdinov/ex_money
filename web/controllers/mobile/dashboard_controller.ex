@@ -20,7 +20,7 @@ defmodule ExMoney.Mobile.DashboardController do
     transactions = Transaction.recent(user.id) |> Repo.all
 
     new_recent_transactions = Enum.filter(transactions, fn(tr) ->
-      Ecto.DateTime.compare(tr.inserted_at, last_login_at) != :lt
+      NaiveDateTime.compare(tr.inserted_at, last_login_at) != :lt
     end)
 
     new_transaction_ids = Enum.map(new_recent_transactions, fn(tr) -> tr.id end)
@@ -29,7 +29,7 @@ defmodule ExMoney.Mobile.DashboardController do
       transaction.made_on
     end)
     |> Enum.sort(fn({date_1, _transactions_1}, {date_2, _transactions_2}) ->
-      Ecto.Date.compare(date_1, date_2) != :lt
+      Date.compare(date_1, date_2) != :lt
     end)
 
     accounts = Account.show_on_dashboard
@@ -59,9 +59,12 @@ defmodule ExMoney.Mobile.DashboardController do
 
   defp fetch_last_login_at do
     case :ets.lookup(:ex_money_cache, "last_login_at") do
-      [] -> Ecto.DateTime.from_erl(:calendar.universal_time)
-      [{_key, nil}] -> Ecto.DateTime.from_erl(:calendar.universal_time)
-      [{_key, value}] -> value
+      [] ->
+        NaiveDateTime.from_erl!(:calendar.universal_time)
+      [{_key, nil}] ->
+        NaiveDateTime.from_erl!(:calendar.universal_time)
+      [{_key, value}] ->
+        value
     end
   end
 end

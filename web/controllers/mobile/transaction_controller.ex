@@ -25,10 +25,10 @@ defmodule ExMoney.Mobile.TransactionController do
       transaction.made_on
     end)
     |> Enum.sort(fn({date_1, _transactions}, {date_2, _transaction}) ->
-      Ecto.Date.compare(date_1, date_2) != :lt
+      Date.compare(date_1, date_2) != :lt
     end)
 
-    {:ok, formatted_date} = Timex.DateFormat.format(parsed_date, "%b %Y", :strftime)
+    {:ok, formatted_date} = Timex.format(parsed_date, "%b %Y", :strftime)
 
     from = case transactions do
       [] -> "/m/accounts/#{account_id}"
@@ -71,10 +71,10 @@ defmodule ExMoney.Mobile.TransactionController do
       transaction.made_on
     end)
     |> Enum.sort(fn({date_1, _transactions}, {date_2, _transaction}) ->
-      Ecto.Date.compare(date_1, date_2) != :lt
+      Date.compare(date_1, date_2) != :lt
     end)
 
-    {:ok, formatted_date} = Timex.DateFormat.format(parsed_date, "%b %Y", :strftime)
+    {:ok, formatted_date} = Timex.format(parsed_date, "%b %Y", :strftime)
 
     from = URI.encode_www_form("/m/budget?date=#{date}")
 
@@ -87,7 +87,7 @@ defmodule ExMoney.Mobile.TransactionController do
   end
 
   def new(conn, _params) do
-    categories = categories_list
+    categories = categories_list()
     uncategorized = Map.keys(categories)
     |> Enum.find(fn({name, _id}) -> name == "Uncategorized" end)
     categories = Map.delete(categories, uncategorized)
@@ -105,7 +105,7 @@ defmodule ExMoney.Mobile.TransactionController do
 
   def edit(conn, %{"id" => id, "from" => from}) do
     transaction = Repo.get(Transaction, id)
-    categories = categories_list
+    categories = categories_list()
     changeset = Transaction.update_changeset(transaction)
 
     render conn, :edit,
@@ -156,7 +156,7 @@ defmodule ExMoney.Mobile.TransactionController do
       "user_id" => fav_tr.user_id,
       "category_id" => fav_tr.category_id,
       "account_id" => fav_tr.account_id,
-      "made_on" => Ecto.Date.from_erl(DateHelper.today),
+      "made_on" => Date.from_erl(DateHelper.today),
       "type" => "expense"
     }
     changeset = Transaction.changeset_custom(%Transaction{}, transaction_params)

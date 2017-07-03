@@ -29,27 +29,29 @@ defmodule ExMoney.Account do
     timestamps()
   end
 
-  @required_fields ~w(name nature balance currency_code saltedge_login_id saltedge_account_id user_id)
-  @optional_fields ~w()
+  @required_fields ~w(name nature balance currency_code saltedge_login_id saltedge_account_id user_id)a
 
   def changeset(model, params \\ %{}) do
     model
-    |> cast(params, @required_fields, @optional_fields)
+    |> cast(params, @required_fields)
+    |> validate_required(@required_fields)
   end
 
   def changeset_for_custom_account(model, params \\ %{}) do
     model
-    |> cast(params, ~w(name balance currency_code user_id), ~w())
+    |> cast(params, ~w(name balance currency_code user_id)a)
+    |> validate_required(~w(name balance currency_code user_id)a)
   end
 
   def update_custom_changeset(model, params \\ %{}) do
     model
-    |> cast(params, ~w(), ~w(name balance currency_code currency_label show_on_dashboard include_to_budget))
+    |> cast(params, ~w(name balance currency_code currency_label show_on_dashboard include_to_budget)a)
   end
 
   def update_saltedge_changeset(model, params \\ %{}) do
     model
-    |> cast(params, ~w(balance), ~w())
+    |> cast(params, ~w(balance)a)
+    |> validate_required(~w(balance)a)
   end
 
   def by_saltedge_login_id(login_ids) do

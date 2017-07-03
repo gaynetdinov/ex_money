@@ -13,7 +13,7 @@ defmodule ExMoney.Saltedge.LoginRefreshWorker do
   end
 
   def init(:ok) do
-    logins = Login.background_refresh |> Repo.all
+    logins = Login.background_refresh() |> Repo.all
 
     if @mix_env == :dev or logins == [] do
       :ignore
@@ -30,13 +30,13 @@ defmodule ExMoney.Saltedge.LoginRefreshWorker do
     login = Repo.get(Login, login_id)
     last_refreshed_at = last_refreshed_at(login.last_refreshed_at)
 
-    case Timex.Date.diff(last_refreshed_at, Timex.Date.now, :secs) do
-      secs when secs >= 3600 ->
+    case NaiveDateTime.diff(NaiveDateTime.utc_now(), last_refreshed_at, :second) do
+      seconds when seconds >= 3600 ->
         refresh_login(login)
 
         Process.send_after(self(), {:refresh, login_id}, @interval)
-      secs when secs < 3600 ->
-        next_run = 3600 - secs
+      seconds when seconds < 3600 ->
+        next_run = 3600 - seconds
 
         Process.send_after(self(), {:refresh, login_id}, next_run * 1000)
     end
@@ -70,11 +70,11 @@ defmodule ExMoney.Saltedge.LoginRefreshWorker do
 
   # Use now - 61 minutes to trigger syncing when last_refreshed_at is nil
   defp last_refreshed_at(nil) do
-    Timex.Date.subtract(Timex.Date.now, Timex.Time.to_timestamp(61, :mins))
+    NaiveDateTime.add(NaiveDateTime.utc_now(), -61 * 60)
   end
 
   defp last_refreshed_at(last_refreshed_at) do
-    Ecto.DateTime.to_erl(last_refreshed_at) |> Timex.Date.from
+    last_refreshed_at
   end
 
   defp fetch_type(fetch_all_tried) when fetch_all_tried == true, do: "recent"

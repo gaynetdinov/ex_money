@@ -14,7 +14,7 @@ defmodule ExMoney.Mobile.FavouriteTransactionController do
   end
 
   def new(conn, _params) do
-    categories = categories_list
+    categories = categories_list()
     uncategorized = Map.keys(categories)
     |> Enum.find(fn({name, _id}) -> name == "Uncategorized" end)
     categories = Map.delete(categories, uncategorized)

@@ -13,18 +13,18 @@ defmodule ExMoney.Login do
     field :interactive, :boolean, default: false
     field :provider_score, :string
     field :provider_name, :string
-    field :last_fail_at, Ecto.DateTime
+    field :last_fail_at, :naive_datetime
     field :last_fail_message, :string
     field :last_fail_error_class, :string
-    field :last_request_at, Ecto.DateTime
-    field :last_success_at, Ecto.DateTime
+    field :last_request_at, :naive_datetime
+    field :last_success_at, :naive_datetime
     field :status, :string
     field :country_code, :string
     field :interactive_html, :string
     field :interactive_fields_names, {:array, :string}
     field :stage, :string
     field :store_credentials, :boolean, default: false
-    field :last_refreshed_at, Ecto.DateTime
+    field :last_refreshed_at, :naive_datetime
 
     field :fetch_all_tried, :boolean, default: false
 
@@ -63,23 +63,27 @@ defmodule ExMoney.Login do
 
   def success_callback_changeset(model, params \\ %{}) do
     model
-    |> cast(params, ~w(saltedge_login_id user_id), ~w())
+    |> cast(params, ~w(saltedge_login_id user_id)a)
+    |> validate_required(~w(saltedge_login_id user_id)a)
     |> unique_constraint(:saltedge_login_id)
   end
 
   def failure_callback_changeset(model, params \\ %{}) do
     model
-    |> cast(params, ~w(saltedge_login_id), ~w(last_fail_error_class last_fail_message))
+    |> cast(params, ~w(saltedge_login_id last_fail_error_class last_fail_message)a)
+    |> validate_required(:saltedge_login_id)
   end
 
   def notify_callback_changeset(model, params \\ %{}) do
     model
-    |> cast(params, ~w(stage), ~w())
+    |> cast(params, ~w(stage)a)
+    |> validate_required(:stage)
   end
 
   def interactive_callback_changeset(model, params \\ %{}) do
     model
-    |> cast(params, ~w(stage interactive_fields_names), ~w(interactive_html))
+    |> cast(params, ~w(stage interactive_fields_names interactive_html)a)
+    |> validate_required(~w(stage interactive_fields_names)a)
   end
 
   @required_fields ~w(
@@ -96,7 +100,7 @@ defmodule ExMoney.Login do
     stage
     store_credentials
     user_id
-  )
+  )a
 
   @optional_fields ~w(
     interactive_fields_names
@@ -107,7 +111,7 @@ defmodule ExMoney.Login do
     last_fail_error_class
     last_request_at
     last_success_at
-  )
+  )a
 
   @update_fields ~w(
     finished
@@ -130,15 +134,16 @@ defmodule ExMoney.Login do
     last_success_at
     last_refreshed_at
     fetch_all_tried
-  )
+  )a
 
   def create_changeset(model, params \\ %{}) do
     model
-    |> cast(params, @required_fields, @optional_fields)
+    |> cast(params, @required_fields ++ @optional_fields)
+    |> validate_required(@required_fields)
   end
 
   def update_changeset(model, params \\ %{}) do
     model
-    |> cast(params, ~w(), @update_fields)
+    |> cast(params, @update_fields)
   end
 end

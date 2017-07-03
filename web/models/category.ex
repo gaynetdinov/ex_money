@@ -15,19 +15,17 @@ defmodule ExMoney.Category do
     belongs_to :parent, ExMoney.Category
   end
 
-  @required_fields ~w(name)
-  @optional_fields ~w(parent_id humanized_name)
-
   def changeset(model, params \\ %{}) do
     model
-    |> cast(params, @required_fields, @optional_fields)
-    |> Ecto.Changeset.put_change(:css_color, generate_color)
+    |> cast(params, ~w(name parent_id humanized_name)a)
+    |> validate_required(~w(name)a)
+    |> Ecto.Changeset.put_change(:css_color, generate_color())
     |> put_humanized_name
   end
 
   def update_changeset(model, params \\ %{}) do
     model
-    |> cast(params, ~w(), ~w(name humanized_name parent_id hidden))
+    |> cast(params, ~w(name humanized_name parent_id hidden)a)
   end
 
   def visible do

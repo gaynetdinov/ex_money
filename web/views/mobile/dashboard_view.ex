@@ -67,7 +67,7 @@ defmodule ExMoney.Mobile.DashboardView do
 
   def sort_by_inserted_at(transactions) do
     Enum.sort(transactions, fn(tr_1, tr_2) ->
-      Ecto.Date.compare(tr_1.inserted_at, tr_2.inserted_at) != :lt
+      NaiveDateTime.compare(tr_1.inserted_at, tr_2.inserted_at) != :lt
     end)
   end
 

@@ -14,7 +14,7 @@ defmodule ExMoney.DashboardController do
       transaction.made_on
     end)
     |> Enum.sort(fn({date_1, _transactions}, {date_2, _transaction}) ->
-      Ecto.Date.compare(date_1, date_2) != :lt
+      Date.compare(date_1, date_2) != :lt
     end)
 
     accounts = Account.show_on_dashboard
