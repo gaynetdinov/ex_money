@@ -151,12 +151,13 @@ defmodule ExMoney.Web.Mobile.TransactionController do
     fav_tr_id = params["transaction[fav_tr_id]"]
     fav_tr = Repo.get!(FavouriteTransaction, fav_tr_id)
 
+    {:ok, made_on} = Date.from_erl(DateHelper.today)
     transaction_params = %{
       "amount" => amount,
       "user_id" => fav_tr.user_id,
       "category_id" => fav_tr.category_id,
       "account_id" => fav_tr.account_id,
-      "made_on" => Date.from_erl(DateHelper.today),
+      "made_on" => made_on,
       "type" => "expense"
     }
     changeset = Transaction.changeset_custom(%Transaction{}, transaction_params)
