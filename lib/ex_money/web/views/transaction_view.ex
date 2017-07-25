@@ -1,5 +1,6 @@
 defmodule ExMoney.Web.TransactionView do
   use ExMoney.Web, :view
+  alias ExMoney.Transaction
 
   def disabled_previous_page?(page_number, total_pages) do
     if page_number == 1 or total_pages == 1 do
@@ -31,11 +32,12 @@ defmodule ExMoney.Web.TransactionView do
     end
   end
 
+  def payee(%Transaction{extra: nil}) do
+    ""
+  end
+
   def payee(transaction) do
-    case transaction.transaction_info do
-      nil -> ""
-      ti -> ti.payee
-    end
+    transaction.extra["payee"] || ""
   end
 
   def account(transaction) do

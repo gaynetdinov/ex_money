@@ -40,7 +40,7 @@
           </tbody>
         </table>
       </div>
-      <%= if @transaction.transaction_info do %>
+      <%= if @transaction.extra do %>
         <div class="data-table card">
           <table>
             <tbody>
@@ -49,23 +49,23 @@
               </tr>
               <tr>
                 <td>Payee</td>
-                <td><%= @transaction.transaction_info.payee %></td>
+                <td><%= @transaction.extra["payee"] %></td>
               </tr>
               <tr>
                 <td>Information</td>
-                <td><%= @transaction.transaction_info.information %></td>
+                <td><%= @transaction.extra["information"] %></td>
               </tr>
               <tr>
                 <td>Time</td>
-                <td><%= @transaction.transaction_info.time %></td>
+                <td><%= @transaction.extra["time"] %></td>
               </tr>
               <tr>
                 <td>Posting date</td>
-                <td><%= @transaction.transaction_info.posting_date %></td>
+                <td><%= @transaction.extra["posting_date"] %></td>
               </tr>
               <tr>
                 <td>Posting time</td>
-                <td><%= @transaction.transaction_info.posting_time %></td>
+                <td><%= @transaction.extra["posting_time"] %></td>
               </tr>
             </tbody>
           </table>

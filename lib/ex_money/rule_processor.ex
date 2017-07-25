@@ -1,7 +1,7 @@
 defmodule ExMoney.RuleProcessor do
   use GenServer
 
-  alias ExMoney.{Repo, Rule, Transaction, Category, Account, TransactionInfo}
+  alias ExMoney.{Repo, Rule, Transaction, Category, Account}
 
   import Ecto.Query
 
@@ -11,11 +11,8 @@ defmodule ExMoney.RuleProcessor do
 
   def handle_cast({:process, transaction_id}, _state) do
     transaction = Transaction
-    |> preload(:transaction_info)
     |> where([tr], tr.id == ^transaction_id)
     |> Repo.one
-
-    transaction_info = transaction.transaction_info
 
     Rule
     |> where([r], r.account_id == ^transaction.account_id)
@@ -23,8 +20,8 @@ defmodule ExMoney.RuleProcessor do
     |> Repo.all
     |> Enum.each(fn(rule) ->
       case rule.type do
-        "assign_category" -> assign_category(rule, transaction, transaction_info)
-        "withdraw_to_cash" -> withdraw_to_cash(rule, transaction, transaction_info)
+        "assign_category" -> assign_category(rule, transaction)
+        "withdraw_to_cash" -> withdraw_to_cash(rule, transaction)
       end
     end)
 
@@ -35,11 +32,9 @@ defmodule ExMoney.RuleProcessor do
     rule = Repo.get(Rule, rule_id)
 
     transactions = Repo.all(from tr in Transaction,
-      join: tr_info in TransactionInfo, on: tr.id == tr_info.transaction_id,
-      preload: [transaction_info: tr_info],
       where: tr.account_id == ^rule.account_id,
       where: tr.rule_applied == false,
-      where: fragment("description ~* ?", ^rule.pattern) or fragment("payee ~* ?", ^rule.pattern))
+      where: fragment("description ~* ?", ^rule.pattern) or fragment("extra->>'payee' ~* ?", ^rule.pattern))
 
     Enum.each(transactions, fn(tr) ->
       GenServer.cast(:rule_processor, {:process, tr.id})
@@ -48,22 +43,22 @@ defmodule ExMoney.RuleProcessor do
     {:noreply, %{}}
   end
 
-  defp assign_category(rule, transaction, transaction_info) do
+  defp assign_category(rule, transaction) do
     {:ok, re} = Regex.compile(rule.pattern, "i")
 
-    if Regex.match?(re, transaction_description(transaction, transaction_info)) do
+    if Regex.match?(re, transaction_description(transaction, transaction.extra)) do
       Transaction.update_changeset(transaction, %{category_id: rule.target_id, rule_applied: true})
       |> Repo.update!
     end
   end
 
-  defp withdraw_to_cash(rule, transaction, transaction_info) do
+  defp withdraw_to_cash(rule, transaction) do
     {:ok, re} = Regex.compile(rule.pattern, "i")
     withdraw_category = Category.by_name_with_hidden("withdraw") |> Repo.one
 
     account = Repo.get(Account, rule.target_id)
 
-    if Regex.match?(re, transaction_description(transaction, transaction_info)) &&
+    if Regex.match?(re, transaction_description(transaction, transaction.extra)) &&
       Decimal.compare(transaction.amount, Decimal.new(0)) == Decimal.new(-1) do
 
       Repo.transaction(fn ->
@@ -90,8 +85,8 @@ defmodule ExMoney.RuleProcessor do
     end
   end
 
-  defp transaction_description(transaction, nil), do: transaction.description
-  defp transaction_description(transaction, transaction_info) do
-    transaction.description <> " " <> to_string(transaction_info.payee)
+  defp transaction_description(transaction, extra) when extra == %{} or is_nil(extra), do: transaction.description
+  defp transaction_description(transaction, extra) do
+    transaction.description <> " " <> to_string(extra["payee"])
   end
 end

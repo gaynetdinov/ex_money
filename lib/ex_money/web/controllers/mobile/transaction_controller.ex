@@ -2,7 +2,7 @@ defmodule ExMoney.Web.Mobile.TransactionController do
   use ExMoney.Web, :controller
 
   alias ExMoney.DateHelper
-  alias ExMoney.{Repo, Transaction, Category, Account, TransactionInfo, FavouriteTransaction}
+  alias ExMoney.{Repo, Transaction, Category, Account, FavouriteTransaction}
 
   plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.Mobile.Unauthenticated
   plug :put_layout, "mobile.html"
@@ -177,7 +177,7 @@ defmodule ExMoney.Web.Mobile.TransactionController do
     transaction = Repo.one(
       from tr in Transaction,
         where: tr.id == ^id,
-        preload: [:account, :transaction_info, :category]
+        preload: [:account, :category]
       )
 
     render conn, :show, transaction: transaction
@@ -192,9 +192,6 @@ defmodule ExMoney.Web.Mobile.TransactionController do
         new_balance = Decimal.sub(account.balance, transaction.amount)
 
         Repo.transaction(fn ->
-          tr_info = TransactionInfo.by_transaction_id(id) |> Repo.one
-          if tr_info, do: Repo.delete!(tr_info)
-
           Repo.delete!(transaction)
 
           Account.update_custom_changeset(account, %{balance: new_balance})
@@ -206,9 +203,6 @@ defmodule ExMoney.Web.Mobile.TransactionController do
           new_balance: new_balance
       _ ->
         Repo.transaction(fn ->
-          tr_info = TransactionInfo.by_transaction_id(id) |> Repo.one
-          if tr_info, do: Repo.delete!(tr_info)
-
           Repo.delete!(transaction)
         end)
 

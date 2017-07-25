@@ -136,7 +136,7 @@ defmodule ExMoney.RuleProcessorTest do
         saltedge_account_id: rule.account.saltedge_account_id
       )
       tr_2 = insert(:transaction,
-        transaction_info: build(:transaction_info, payee: "foo"),
+        extra: %{payee: "foo"},
         account: rule.account,
         saltedge_account_id: rule.account.saltedge_account_id
       )

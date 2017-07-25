@@ -1,29 +1,31 @@
 defmodule ExMoney.Web.Mobile.DashboardView do
   use ExMoney.Web, :view
 
-   def categories_chart_data([]), do: []
+  alias ExMoney.Transaction
 
-   def categories_chart_data(categories) do
-     {_category, _color, max} = Enum.max_by(categories, fn({_category, _color, amount}) -> amount end)
+  def categories_chart_data([]), do: []
 
-     Enum.reduce(categories, [], fn({category, color, amount}, acc) ->
-       percent = (amount * 100) / max
-       |> Float.round(0)
-       |> :erlang.float_to_binary(decimals: 0)
+  def categories_chart_data(categories) do
+    {_category, _color, max} = Enum.max_by(categories, fn({_category, _color, amount}) -> amount end)
 
-       if percent == "0" do
-         acc
-       else
-         [{category, color, "#{percent}%", amount} | acc]
-       end
+    Enum.reduce(categories, [], fn({category, color, amount}, acc) ->
+      percent = (amount * 100) / max
+      |> Float.round(0)
+      |> :erlang.float_to_binary(decimals: 0)
 
-     end)
-     |> Enum.sort(fn(
-       {_cat_1, _color_1, _width_1, amount_1},
-       {_cat_2, _color_2, _width_2, amount_2}) ->
-       amount_1 > amount_2
-     end)
-   end
+      if percent == "0" do
+        acc
+      else
+        [{category, color, "#{percent}%", amount} | acc]
+      end
+
+    end)
+    |> Enum.sort(fn(
+      {_cat_1, _color_1, _width_1, amount_1},
+      {_cat_2, _color_2, _width_2, amount_2}) ->
+      amount_1 > amount_2
+    end)
+  end
 
   def expenses(transactions) do
     Enum.reject(transactions, fn(transaction) ->
@@ -43,11 +45,12 @@ defmodule ExMoney.Web.Mobile.DashboardView do
     end)
   end
 
+  def description(%Transaction{extra: nil} = transaction) do
+    transaction.description
+  end
+
   def description(transaction) do
-    case transaction.transaction_info do
-      nil -> transaction.description
-      ti -> ti.payee
-    end
+    transaction.extra["payee"]
   end
 
   def recent_diff(recent_diff, currency_label) do

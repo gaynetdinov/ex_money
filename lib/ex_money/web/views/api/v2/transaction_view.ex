@@ -16,16 +16,8 @@ defmodule ExMoney.Web.Api.V2.TransactionView do
        currency_code: transaction.currency_code,
        description: transaction.description,
        account_id: transaction.account_id,
-       transaction_info: render_one(transaction.transaction_info, TransactionView, "transaction_info.json", as: :transaction_info),
+       extra: transaction.extra,
        category: render_one(transaction.category, TransactionView, "category.json", as: :category)
-     }
-  end
-
-  def render("transaction_info.json", %{transaction_info: transaction_info}) do
-    %{
-       payee: transaction_info.payee,
-       information: transaction_info.information,
-       additional: transaction_info.additional
      }
   end
 
