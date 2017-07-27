@@ -15,8 +15,8 @@ defmodule ExMoney.Transaction do
     field :description, :string
     field :duplicated, :boolean, default: false
     field :rule_applied, :boolean, default: false
+    field :extra, :map
 
-    has_one :transaction_info, ExMoney.TransactionInfo, on_delete: :delete_all
     belongs_to :category, ExMoney.Category
     belongs_to :user, ExMoney.User
     belongs_to :account, ExMoney.Account
@@ -40,7 +40,7 @@ defmodule ExMoney.Transaction do
     account_id
     user_id
   )a
-  @optional_fields ~w(category_id rule_applied)a
+  @optional_fields ~w(category_id rule_applied extra)a
 
   def changeset(model, params \\ %{}) do
     model
@@ -50,14 +50,14 @@ defmodule ExMoney.Transaction do
 
   def changeset_custom(model, params \\ %{}) do
     model
-    |> cast(params, ~w(amount category_id account_id made_on user_id description)a)
+    |> cast(params, ~w(amount category_id account_id made_on user_id description extra)a)
     |> validate_required(~w(amount category_id account_id made_on user_id)a)
     |> negate_amount(params)
   end
 
   def update_changeset(model, params \\ %{}) do
     model
-    |> cast(params, ~w(category_id description rule_applied))
+    |> cast(params, ~w(category_id description rule_applied extra)a)
   end
 
   def negate_amount(changeset, params) when params == %{}, do: changeset
@@ -89,7 +89,7 @@ defmodule ExMoney.Transaction do
     from tr in Transaction,
       where: tr.made_on >= ^from,
       where: tr.user_id == ^user_id,
-      preload: [:transaction_info, :category, :account],
+      preload: [:category, :account],
       order_by: [desc: tr.inserted_at]
   end
 
@@ -118,13 +118,13 @@ defmodule ExMoney.Transaction do
     Transaction.by_month(account_id, from, to)
     |> where([tr], tr.amount < 0)
     |> where([tr], tr.category_id in ^(category_ids))
-    |> preload([:transaction_info, :category, :account])
+    |> preload([:category, :account])
   end
 
   def by_month_by_category(account_id, from, to, category_ids) do
     Transaction.by_month(account_id, from, to)
     |> where([tr], tr.category_id in ^(category_ids))
-    |> preload([:transaction_info, :category, :account])
+    |> preload([:category, :account])
   end
 
   def expenses_by_month(account_id, from, to) do
@@ -132,14 +132,14 @@ defmodule ExMoney.Transaction do
       join: c in assoc(tr, :category),
       where: tr.amount < 0,
       where: c.name != "withdraw",
-      preload: [:transaction_info, :category, :account]
+      preload: [:category, :account]
   end
 
   def income_by_month_by_category(account_id, from, to, category_ids) do
     Transaction.by_month(account_id, from, to)
     |> where([tr], tr.amount > 0 )
     |> where([tr], tr.category_id in ^(category_ids))
-    |> preload([:transaction_info, :category, :account])
+    |> preload([:category, :account])
   end
 
   def income_by_month(account_id, from ,to) do
@@ -147,7 +147,7 @@ defmodule ExMoney.Transaction do
       join: c in assoc(tr, :category),
       where: tr.amount > 0,
       where: c.name != "withdraw",
-      preload: [:transaction_info, :category, :account]
+      preload: [:category, :account]
   end
 
   def group_by_month_by_category_without_withdraw(account_ids, from, to) do

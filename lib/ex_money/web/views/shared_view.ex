@@ -1,5 +1,6 @@
 defmodule ExMoney.Web.SharedView do
   use ExMoney.Web, :view
+  alias ExMoney.Transaction
 
   def translate_error({message, values}) do
     Enum.reduce values, message, fn {k, v}, acc ->
@@ -15,11 +16,12 @@ defmodule ExMoney.Web.SharedView do
     end)
   end
 
+  def description(%Transaction{extra: nil} = transaction) do
+    transaction.description
+  end
+
   def description(transaction) do
-    case transaction.transaction_info do
-      nil -> transaction.description
-      ti -> ti.payee
-    end
+    transaction.extra["payee"]
   end
 
   def category_name(nil), do: ""

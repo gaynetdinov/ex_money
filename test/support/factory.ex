@@ -53,13 +53,8 @@ defmodule ExMoney.Factory do
       saltedge_account_id: account.saltedge_account_id,
       account: account,
       user: build(:user),
-      category: build(:category),
-      transaction_info: build(:transaction_info)
+      category: build(:category)
     }
-  end
-
-  def transaction_info_factory do
-    %ExMoney.TransactionInfo{}
   end
 
   def category_factory do

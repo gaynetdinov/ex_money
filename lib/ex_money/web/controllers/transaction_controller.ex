@@ -12,7 +12,7 @@ defmodule ExMoney.Web.TransactionController do
 
     paginator = Transaction.by_user_id(user.id)
     |> order_by(desc: :made_on)
-    |> preload([:transaction_info, :account, :saltedge_account, :category])
+    |> preload([:account, :saltedge_account, :category])
     |> Paginator.paginate(params)
 
     render conn, :index,
