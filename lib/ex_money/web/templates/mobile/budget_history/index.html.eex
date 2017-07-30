@@ -1,0 +1,42 @@
+<div class="pages">
+  <div class="page navbar-fixed" data-page="budget-history-screen">
+    <div class="navbar">
+      <div class="navbar-inner">
+        <div class="left">
+          <a href="#" class="link open-panel" data-panel="left">
+            <i class="icon icon-bars"></i>
+          </a>
+        </div>
+        <div class="center">Budget</div>
+      </div>
+    </div>
+    <div class="page-content hide-navbar-on-scroll">
+      <%= if is_nil(@current_budget) && @budgets == [] do %>
+        <div align='center' class="content-block-title">There are no budgets yet</div>
+      <% else %>
+        <div class="list-block reduced-margin">
+          <ul>
+            <%= if @current_budget do %>
+              <a href="/m/budget_history/<%= @current_budget.id %>" data-ignore-cache="true" class="item-link">
+                <div class="item-content">
+                  <div class="item-inner">
+                    <div class="item-title">Current month budget</div>
+                  </div>
+                </div>
+              </a>
+            <% end %>
+
+            <%= for budget <- @budgets do %>
+              <a href="/m/budget_history/<%= budget.id %>" data-ignore-cache="true" class="item-link">
+                <div class="item-content">
+                  <div class="item-inner">
+                    <div class="item-title"><%= budget.start_date %> - <%= budget.end_date %></div>
+                  </div>
+                </div>
+              </a>
+            <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,8 @@
+<select multiple class="form-control" id="budget_template_accounts" name="budget_template[accounts][]">
+  <%= for account <- @accounts do %>
+    <option <%= if account.id in @selected, do: "selected" %> value="<%= account.id %>">
+      <%= account.name %>
+    </option>
+  <% end %>
+</select>
+

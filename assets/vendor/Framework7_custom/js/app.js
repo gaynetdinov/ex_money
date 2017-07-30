@@ -257,37 +257,159 @@ exMoney.onPageInit('budget-income-screen', function(page) {
   deleteTransaction();
 });
 
-exMoney.onPageInit('settings-budget-page', function(page) {
-  console.log('foo');
-  $$('.budget-account').on('click', function (e) {
-    var id = $$(this).data('id');
-    var swipeout_line = $$(this);
+exMoney.onPageInit('settings-new-budget-page', function(page) {
+  var items = $$("#budget_items");
+  $$('#budget_template_category').on('change', function(e) {
+    setTimeout(function() { adjustSelectedCategory(); }, 100);
+    var chosen_category = $$(this).find('option:checked');
+
+    $$(
+      "<li><div class='item-content'><div class='item-inner'>" +
+      "<div class='item-title label'>" + chosen_category.text().replace(/\u21b3/g, '') + "</div>" +
+      "<div class='item-input'>" +
+      "<input id='budget_item_" + chosen_category.val() + "'" +
+      "name='budget_items[" + chosen_category.val() +"]' style='text-align: right' type='text'>" +
+      "</div></div></div></li>"
+    ).prependTo(items);
+
+    var calculator = exMoney.keypad({
+      input: '#budget_item_' + chosen_category.val(),
+      toolbar: true,
+      type: 'calculator'
+    });
+
+    calculator.open();
+  });
+
+  $$('.budget-item-li').on('deleted', function (e) {
+    var id = $$(e.target).children("div.swipeout-actions-opened").find("a.delete-budget-item").data('id');
     var csrf = document.querySelector("meta[name=csrf]").content;
 
     $$.ajax({
-      url: '/m/settings/budget/setup',
+      url: '/m/settings/budget_items/' + id + "?_format=json",
       contentType: "application/json",
-      data: JSON.stringify({account_id: id}),
-      type: 'PUT',
+      type: 'DELETE',
+      headers: {
+        "X-CSRF-TOKEN": csrf
+      },
+      success: function(data, status, xhr) {},
+      error: function(xhr, status) {
+        alert("Something went wrong, check server logs");
+      }
+    });
+  });
+
+  $$('form.ajax-submit').on('submitted', function (e) {
+    var xhr = e.detail.xhr;
+
+    if (xhr.status == 200) {
+      mainView.router.back({
+        url: '/m/settings/budget',
+        ignoreCache: true,
+        force: true
+      });
+    } else {
+      exMoney.alert("Something went wrong, check server logs");
+    }
+  });
+});
+
+exMoney.onPageInit('settings-show-budget-page', function(page) {
+  $$('#apply_budget').on('click', function (e) {
+    var csrf = document.querySelector("meta[name=csrf]").content;
+
+    $$.ajax({
+      url: '/m/settings/budget/apply?_format=json',
+      contentType: "application/json",
+      type: 'POST',
       headers: {
         "X-CSRF-TOKEN": csrf
       },
       success: function(data, status, xhr) {
-        $$(swipeout_line.parent().parent()).find('.item-after').remove();
-        include_to_budget = JSON.parse(data).include_to_budget;
-        if (include_to_budget) {
-          $$(swipeout_line.parent()).find('i').text('close');
-          $$("<div class='item-after'><i class='f7-icons color-blue'>check</i></div>").insertAfter($$("#account_tr_"+id));
-        } else {
-          $$(swipeout_line.parent()).find('i').text('check');
-        }
-        exMoney.swipeoutClose($$(swipeout_line.parent().parent()));
+        $$('#apply_budget').remove();
+        exMoney.alert('The budget has been set for current month');
       },
       error: function(xhr, status) {
-        alert(JSON.parse(xhr.response).msg);
-        exMoney.swipeoutClose($$(swipeout_line.parent().parent()));
+        alert("Something went wrong, check server logs");
       }
     });
+  });
+});
+
+exMoney.onPageInit('settings-edit-budget-page', function(page) {
+  $$.each($$('.budget-item-amount'), function(index, value) {
+    exMoney.keypad({
+      input: value,
+      toolbar: true,
+      type: 'calculator'
+    });
+  });
+
+  exMoney.keypad({
+    input: '#budget-goal',
+    toolbar: true,
+    type: 'calculator'
+  });
+
+  exMoney.keypad({
+    input: '#budget-income',
+    toolbar: true,
+    type: 'calculator'
+  });
+
+  var items = $$("#budget_items");
+  $$('#budget_template_category').on('change', function(e) {
+    setTimeout(function() { adjustSelectedCategory(); }, 100);
+    var chosen_category = $$(this).find('option:checked');
+
+    $$(
+      "<li><div class='item-content'><div class='item-inner'>" +
+      "<div class='item-title label'>" + chosen_category.text().replace(/\u21b3/g, '') + "</div>" +
+      "<div class='item-input'>" +
+      "<input class='budget-item-input' id='budget_item_" + chosen_category.val() + "'" +
+      "name='budget_items[" + chosen_category.val() +"]' style='text-align: right' type='text'>" +
+      "</div></div></div></li>"
+    ).prependTo(items);
+
+    var calculator = exMoney.keypad({
+      input: '#budget_item_' + chosen_category.val(),
+      toolbar: true,
+      type: 'calculator'
+    });
+
+    calculator.open();
+  });
+
+  $$('.budget-item-li').on('deleted', function (e) {
+    var id = $$(e.target).children("div.swipeout-actions-opened").find("a.delete-budget-item").data('id');
+    var csrf = document.querySelector("meta[name=csrf]").content;
+
+    $$.ajax({
+      url: '/m/settings/budget_items/' + id + "?_format=json",
+      contentType: "application/json",
+      type: 'DELETE',
+      headers: {
+        "X-CSRF-TOKEN": csrf
+      },
+      success: function(data, status, xhr) {},
+      error: function(xhr, status) {
+        alert("Something went wrong, check server logs");
+      }
+    });
+  });
+
+  $$('form.ajax-submit').on('submitted', function (e) {
+    var xhr = e.detail.xhr;
+
+    if (xhr.status == 200) {
+      mainView.router.back({
+        url: '/m/settings/budget',
+        ignoreCache: true,
+        force: true
+      });
+    } else {
+      exMoney.alert("Something went wrong, check server logs");
+    }
   });
 });
 

@@ -64,23 +64,37 @@
         <div class="row">
           <div class="container horizontal flat">
             <h3>Top Expenses</h3>
-            <%= for {{id, category, color, width, amount}, sub_categories} <- categories_chart_data(@categories) do %>
+            <%= for {{id, category, color, width, amount, limit}, sub_categories} <- categories_chart_data(@categories, @categories_limits) do %>
               <div class="progress-bar horizontal accordion-item">
                 <a href="#" class="category-bar item-content item-link" style="color: black" data-category-id="<%= id %>">
                   <div class="progress-track">
-                    <div class="progress-fill" style="width:<%= width %>; background: <%= color %>">
-                      <span><%= :erlang.float_to_binary(amount, decimals: 1) %>&nbsp;<%= raw category %></span>
+                    <div class='row'>
+                      <div class='col-auto' align="left">
+                        <div class="progress-fill" style="width:<%= width %>; background: <%= color %>">
+                          <%= :erlang.float_to_binary(amount, decimals: 1) %>&nbsp;<%= raw category %>
+                        </div>
+                      </div>
+                      <div class='col-20 category-limit <%= if amount > limit, do: "limit-exceeded" %>'>
+                        <%= limit %>
+                      </div>
                     </div>
                   </div>
                 </a>
                 <div class="accordion-item-content" style="margin-left: 20px">
                   <%= if Enum.count(sub_categories) > 0 do %>
                     <div class="progress-bar horizontal">
-                      <%= for {id, category, _color, width, amount} <- sub_categories do %>
+                      <%= for {id, category, _color, width, amount, limit} <- sub_categories do %>
                         <a href="#" class="category-bar" style="color: black" data-category-id="<%= id %>">
                           <div class="progress-track" style="margin-top: 10px">
-                            <div class="progress-fill" style="width:<%= width %>; background: #b3b3b3">
-                              <span><%= :erlang.float_to_binary(amount, decimals: 1) %>&nbsp;<%= raw category %></span>
+                            <div class='row'>
+                              <div class='col-auto' align='left'>
+                                <div class="progress-fill" style="width:<%= width %>; background: #b3b3b3">
+                                  <%= :erlang.float_to_binary(amount, decimals: 1) %>&nbsp;<%= raw category %>
+                                </div>
+                              </div>
+                              <div class='col-20 category-limit'>
+                                <%= limit %>
+                              </div>
                             </div>
                           </div>
                         </a>

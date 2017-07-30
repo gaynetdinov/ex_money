@@ -85,11 +85,14 @@ defmodule ExMoney.Web.Router do
     get "/budget", BudgetController, :index
     get "/budget/expenses", BudgetController, :expenses
     get "/budget/income", BudgetController, :income
+    resources "/budget_history", BudgetHistoryController, only: [:index, :show]
 
     scope "/settings", as: :setting do
       get "/", SettingController, :index
-      resources "/budget", Setting.BudgetController, only: [:index]
-      put "/budget/setup", Setting.BudgetController, :setup
+      resources "/budget", Setting.BudgetController, only: [:new, :show, :edit, :update, :create], singleton: true do
+        post "/apply", Setting.BudgetController, :apply
+      end
+      resources "/budget_items", Setting.BudgetItemController, only: [:delete]
 
       resources "/categories", Setting.CategoryController, only: [:index, :edit, :update]
     end

@@ -35,6 +35,11 @@
                     <div class="item-title">Budget</div>
                   </div>
                 </a>
+                <a href="/m/budget_history" class="item-link item-content close-panel no-animation" data-ignore-cache="true">
+                  <div class="item-inner">
+                    <div class="item-title">Budget History</div>
+                  </div>
+                </a>
                 <a href="/m/settings" class="item-link item-content close-panel no-animation" data-ignore-cache="true">
                   <div class="item-inner">
                     <div class="item-title">Settings</div>

@@ -1,0 +1,14 @@
+<select class="form-control" id="budget_template_category">
+  <%= for {{name, id}, sub_categories} <- @categories do %>
+    <option value="<%= id %>">
+      <%= name %>
+    </option>
+
+    <%= for {name, id} <- sub_categories do %>
+      <option value="<%= id %>">
+        &#8627;&nbsp;<%= name %>
+      </option>
+    <% end %>
+  <% end %>
+</select>
+

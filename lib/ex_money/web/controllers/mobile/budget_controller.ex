@@ -2,27 +2,28 @@ defmodule ExMoney.Web.Mobile.BudgetController do
   use ExMoney.Web, :controller
 
   alias ExMoney.DateHelper
-  alias ExMoney.{Repo, Transaction, Account}
+  alias ExMoney.{Repo, Transaction, Budget}
 
   plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.Mobile.Unauthenticated
   plug :put_layout, "mobile.html"
 
   def index(conn, params) do
-    accounts = Account.in_budget |> Repo.all
+    user = Guardian.Plug.current_resource(conn)
+    current_budget = Budget.current_by_user_id(user.id) |> Repo.one
 
-    _index(conn, params, accounts)
+    if current_budget do
+      _index(conn, params, current_budget)
+    else
+      render conn, :setup
+    end
   end
 
-  defp _index(conn, _, []) do
-    render conn, :setup
-  end
-
-  defp _index(conn, params, accounts) do
+  defp _index(conn, params, current_budget) do
     parsed_date = DateHelper.parse_date(params["date"])
     from = DateHelper.first_day_of_month(parsed_date)
     to = DateHelper.last_day_of_month(parsed_date)
 
-    account_ids = Enum.map(accounts, fn(acc) -> acc.id end)
+    account_ids = current_budget.accounts
     month_transactions = Transaction.by_month(account_ids, from, to)
     |> Repo.all
 
@@ -40,7 +41,7 @@ defmodule ExMoney.Web.Mobile.BudgetController do
           humanized_name: category.humanized_name,
           css_color: category.css_color,
           amount: positive_float,
-          parent_id: category.parent_id
+          parent_id: category.parent_id,
         })
     end)
 
@@ -54,8 +55,15 @@ defmodule ExMoney.Web.Mobile.BudgetController do
       ""
     end
 
+    categories_limits = Enum.reduce current_budget.items, %{}, fn({item_id, limit}, acc) ->
+      {item_id, _} = Integer.parse(item_id)
+      {limit, _} = Integer.parse(limit)
+      Map.put(acc, item_id, limit)
+    end
+
     render conn, :index,
       month_transactions: month_transactions,
+      categories_limits: categories_limits,
       currency_label: currency_label,
       categories: categories,
       current_month: current_month,
@@ -64,15 +72,13 @@ defmodule ExMoney.Web.Mobile.BudgetController do
   end
 
   def expenses(conn, %{"date" => date}) do
+    user = Guardian.Plug.current_resource(conn)
+    current_budget = Budget.current_by_user_id(user.id) |> Repo.one
     parsed_date = DateHelper.parse_date(date)
     from = DateHelper.first_day_of_month(parsed_date)
     to = DateHelper.last_day_of_month(parsed_date)
 
-    budget_account_ids = Account.in_budget
-    |> Repo.all
-    |> Enum.map(fn(acc) -> acc.id end)
-
-    scope = Transaction.expenses_by_month(budget_account_ids, from, to)
+    scope = Transaction.expenses_by_month(current_budget.accounts, from, to)
     expenses = fetch_and_process_transactions(scope)
 
     {:ok, formatted_date} = Timex.format(parsed_date, "%b %Y", :strftime)
@@ -86,15 +92,13 @@ defmodule ExMoney.Web.Mobile.BudgetController do
   end
 
   def income(conn, %{"date" => date}) do
+    user = Guardian.Plug.current_resource(conn)
+    current_budget = Budget.current_by_user_id(user.id) |> Repo.one
     parsed_date = DateHelper.parse_date(date)
     from = DateHelper.first_day_of_month(parsed_date)
     to = DateHelper.last_day_of_month(parsed_date)
 
-    budget_account_ids = Account.in_budget
-    |> Repo.all
-    |> Enum.map(fn(acc) -> acc.id end)
-
-    scope = Transaction.income_by_month(budget_account_ids, from, to)
+    scope = Transaction.income_by_month(current_budget.account, from, to)
     income = fetch_and_process_transactions(scope)
 
     {:ok, formatted_date} = Timex.format(parsed_date, "%b %Y", :strftime)

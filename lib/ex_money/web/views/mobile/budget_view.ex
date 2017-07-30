@@ -3,13 +3,14 @@ defmodule ExMoney.Web.Mobile.BudgetView do
 
   alias ExMoney.{Category, Repo}
 
-  def categories_chart_data(categories) when map_size(categories) == 0 do
+  def categories_chart_data(categories, _) when map_size(categories) == 0 do
     []
   end
 
   # FIXME Oh my, that's got complicated.
   # I hope there is a better way to generate data for the chart.
-  def categories_chart_data(categories) do
+  def categories_chart_data(categories, limits) do
+    parents_with_children = Category.parents_with_children() |> Repo.all |> Enum.into(%{})
     parent_categories = Enum.map(categories, fn({_id, category}) -> category.parent_id end)
     |> Enum.reject(&(is_nil(&1)))
     |> Category.by_ids
@@ -79,6 +80,7 @@ defmodule ExMoney.Web.Mobile.BudgetView do
       sub_categories = Enum.reduce(sub_category_ids, [], fn(sub_category_id, acc) ->
         sub_category = categories[sub_category_id]
         sub_category = add_width(sub_category, sub_category.amount, amount)
+        sub_category = add_limit(sub_category, limits)
 
         if sub_category do
           [sub_category | acc]
@@ -87,12 +89,13 @@ defmodule ExMoney.Web.Mobile.BudgetView do
         end
       end)
       |> Enum.sort(fn(
-        {_id_1, _cat_1, _color_1, _width_1, amount_1},
-        {_id_2, _cat_2, _color_2, _width_2, amount_2}) ->
+        {_id_1, _cat_1, _color_1, _width_1, amount_1, _limit_1},
+        {_id_2, _cat_2, _color_2, _width_2, amount_2, _limit_2}) ->
           amount_1 > amount_2
       end)
 
       category = add_width(category, amount, max_amount)
+      category = add_limit_to_top_category(category, limits, parents_with_children)
 
       if category do
         [{category, sub_categories} | acc]
@@ -101,8 +104,8 @@ defmodule ExMoney.Web.Mobile.BudgetView do
       end
     end)
     |> Enum.sort(fn(
-      {{_id_1, _cat_1, _color_1, _width_1, amount_1}, _sub_categories_1},
-      {{_id_2, _cat_2, _color_2, _width_2, amount_2}, _sub_categories_2}) ->
+      {{_id_1, _cat_1, _color_1, _width_1, amount_1, _limit_1}, _sub_categories_1},
+      {{_id_2, _cat_2, _color_2, _width_2, amount_2, _limit_2}, _sub_categories_2}) ->
         amount_1 > amount_2
     end)
   end
@@ -117,6 +120,27 @@ defmodule ExMoney.Web.Mobile.BudgetView do
     else
       html_name = String.replace(category.humanized_name, " ", "&nbsp;")
       {category.id, html_name, category.css_color, "#{percent}%", amount}
+    end
+  end
+
+  defp add_limit(nil, _), do: nil
+  defp add_limit(category, limits) do
+    Tuple.append(category, limits[elem(category, 0)])
+  end
+
+  defp add_limit_to_top_category(nil, _, _), do: nil
+  defp add_limit_to_top_category({id, _, _, _, _} = category, limits, parents_with_children) do
+    children_categories = parents_with_children[id] || []
+    limit =
+      limits
+      |> Enum.filter(fn({k, v}) -> Enum.member?(children_categories, k) end)
+      |> Enum.map(fn({_k, v}) -> v end)
+      |> Enum.sum
+
+    if limit == 0 do
+      Tuple.append(category, nil)
+    else
+      Tuple.append(category, limit)
     end
   end
 

@@ -67,6 +67,14 @@ defmodule ExMoney.Category do
       select: {c.humanized_name, c.id}
   end
 
+  def parents_with_children do
+    from c in Category,
+      where: c.hidden != true,
+      where: not is_nil(c.parent_id),
+      group_by: c.parent_id,
+      select: {c.parent_id, fragment("array_agg(id)")}
+  end
+
   def parents do
     from c in Category,
       where: is_nil(c.parent_id),
