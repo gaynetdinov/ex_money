@@ -29,21 +29,6 @@ defmodule ExMoney.Web.Mobile.BudgetController do
 
     categories = Transaction.group_by_month_by_category_without_withdraw(account_ids, from, to)
     |> Repo.all
-    |> Enum.reduce(%{}, fn({category, amount}, acc) ->
-      {float_amount, _} = Decimal.to_string(amount, :normal)
-      |> Float.parse
-
-      positive_float = float_amount * -1
-
-      Map.put(acc, category.id,
-        %{
-          id: category.id,
-          humanized_name: category.humanized_name,
-          css_color: category.css_color,
-          amount: positive_float,
-          parent_id: category.parent_id,
-        })
-    end)
 
     current_month = DateHelper.current_month(parsed_date)
     previous_month = DateHelper.previous_month(parsed_date)
