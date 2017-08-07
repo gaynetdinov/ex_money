@@ -68,7 +68,7 @@
               <div class="progress-bar horizontal accordion-item">
                 <a href="#" class="category-bar item-content item-link" style="color: black" data-category-id="<%= parent[:id] %>">
                   <div class="progress-track">
-                    <div style="<%= if parent[:limit], do: "background: linear-gradient(to right, gainsboro calc(#{parent[:limit_percent]} - 25px), mistyrose calc(#{parent[:limit_percent]} + 0.5px), transparent calc(#{parent[:limit_percent]}));"%>">
+                    <div style="<%= if parent[:limit], do: "background: linear-gradient(to right, whitesmoke, whitesmoke calc(#{parent[:limit_percent]} - 10px), lightpink  calc(#{parent[:limit_percent]} - 1px), whitesmoke calc(#{parent[:limit_percent]}));"%>">
                       <div class="progress-fill" style="width:<%= parent[:width] %>; background: <%= parent[:css_color] %>">
                         <%= :erlang.float_to_binary(parent[:amount], decimals: 1) %>&nbsp;<%= raw parent[:html_name] %>
                       </div>
