@@ -68,8 +68,8 @@
               <div class="progress-bar horizontal accordion-item">
                 <a href="#" class="category-bar item-content item-link" style="color: black" data-category-id="<%= parent[:id] %>">
                   <div class="progress-track">
-                    <div style="<%= if parent[:limit], do: "background: linear-gradient(to right, whitesmoke, whitesmoke calc(#{parent[:limit_percent]} - 10px), lightpink  calc(#{parent[:limit_percent]} - 1px), whitesmoke calc(#{parent[:limit_percent]}));"%>">
-                      <div class="progress-fill" style="width:<%= parent[:width] %>; background: <%= parent[:css_color] %>">
+                    <div style="<%= build_linear_gradient(parent) %>">
+                      <div class="progress-fill">
                         <%= :erlang.float_to_binary(parent[:amount], decimals: 1) %>&nbsp;<%= raw parent[:html_name] %>
                       </div>
                     </div>
@@ -81,8 +81,10 @@
                       <%= for sub_category <- sub_categories do %>
                         <a href="#" class="category-bar" style="color: black" data-category-id="<%= sub_category[:id] %>">
                           <div class="progress-track" style="margin-top: 10px">
-                            <div class="progress-fill" style="width:<%= sub_category[:width] %>; background: #b3b3b3">
-                              <%= :erlang.float_to_binary(sub_category[:amount], decimals: 1) %>&nbsp;<%= raw sub_category[:html_name] %>
+                            <div style="<%= draw_subcategory(sub_category) %>">
+                              <div class="progress-fill">
+                                <%= :erlang.float_to_binary(sub_category[:amount], decimals: 1) %>&nbsp;<%= raw sub_category[:html_name] %>
+                              </div>
                             </div>
                           </div>
                         </a>

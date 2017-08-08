@@ -26,20 +26,8 @@
   line-height: 30px;
 }
 
-.horizontal .category-limit {
-  line-height: 30px;
-  font-size: 16px;
-  text-align: right;
-  padding-right: 5px;
-}
-
 .reduced-margin {
   margin: 15px 0;
-}
-
-.limit-exceeded {
-  color: red;
-  font-weight: bold;
 }
 
 .new_transaction {

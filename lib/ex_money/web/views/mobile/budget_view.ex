@@ -3,16 +3,73 @@ defmodule ExMoney.Web.Mobile.BudgetView do
 
   alias ExMoney.{Category, Repo}
 
+  def draw_subcategory(%{width: "100%"} = category) do
+    "background: darkgrey;"
+  end
+
+  def draw_subcategory(category) do
+    """
+    background: linear-gradient(
+      to right,
+      darkgrey calc(#{category[:width]}),
+      darkgrey calc(#{category[:width]} - 1px),
+      gainsboro calc(#{category[:width]} + 1px),
+      gainsboro calc(100%)
+    )
+    """
+  end
+
+  def build_linear_gradient(%{width: "100%", limit: limit} = category) when not is_nil(limit) do
+    """
+    background: linear-gradient(
+      to right,
+      #{category[:css_color]} calc(#{category[:width]} - 5px),
+      coral calc(#{category[:limit_percent]})
+    )
+    """
+  end
+
+  def build_linear_gradient(%{limit: limit} = category) when not is_nil(limit) do
+    """
+    background: linear-gradient(
+      to right,
+      #{category[:css_color]} calc(#{category[:width]}),
+      whitesmoke calc(#{category[:width]} + 1px),
+      whitesmoke calc(#{category[:limit_percent]} - 1px),
+      coral calc(#{category[:limit_percent]} + 5px),
+      whitesmoke calc(#{category[:limit_percent]}),
+      whitesmoke calc(100%)
+    )
+    """
+  end
+
+  def build_linear_gradient(category) do
+    """
+    background: linear-gradient(
+      to right,
+      #{category[:css_color]} calc(#{category[:width]}),
+      whitesmoke calc(#{category[:width]}),
+      whitesmoke calc(100%)
+    )
+    """
+  end
+
   def categories_chart_data(categories, _) when map_size(categories) == 0 do
     []
   end
 
   def categories_chart_data(categories, limits) do
     category_ids = Enum.map(categories, fn({category, _}) -> category.id end)
+    categories = Enum.map categories, fn({category, amount}) ->
+      category
+      |> Map.from_struct()
+      |> Map.drop([:__meta__, :parent, :transactions, :hidden, :inserted_at, :updated_at])
+      |> Map.put(:amount, amount)
+    end
 
     missing_parents =
       categories
-      |> Enum.reduce([], fn({category, amount}, acc) ->
+      |> Enum.reduce([], fn(category, acc) ->
         if Enum.member?(category_ids, category.parent_id) do
           acc
         else
@@ -26,13 +83,6 @@ defmodule ExMoney.Web.Mobile.BudgetView do
         |> Map.from_struct()
         |> Map.drop([:__meta__, :parent, :transactions, :hidden, :inserted_at, :updated_at])
       end)
-
-    categories = Enum.map categories, fn({category, amount}) ->
-      category
-      |> Map.from_struct()
-      |> Map.drop([:__meta__, :parent, :transactions, :hidden, :inserted_at, :updated_at])
-      |> Map.put(:amount, amount)
-    end
 
     {parents, subcategories} =
       categories ++ missing_parents
@@ -75,12 +125,12 @@ defmodule ExMoney.Web.Mobile.BudgetView do
       parent =
         parent
         |> add_width(max_amount)
-        |> add_limit(children, limits)
+        |> add_limit(children, limits, max_amount)
 
       children = Enum.map(children, fn(child) ->
         child
         |> add_width(parent[:amount])
-        |> add_limit(limits)
+        |> add_limit(limits, parent[:amount])
       end)
 
       {parent, sort_subcategories(children)}
@@ -93,12 +143,12 @@ defmodule ExMoney.Web.Mobile.BudgetView do
     |> Float.round(0)
     |> :erlang.float_to_binary(decimals: 0)
 
+    category = Map.put(category, :html_name, String.replace(category[:humanized_name], " ", "&nbsp;"))
+
     if percent == "0" do
       category
     else
-      category
-      |> Map.put(:html_name, String.replace(category[:humanized_name], " ", "&nbsp;"))
-      |> Map.put(:width, "#{percent}%")
+      Map.put(category, :width, "#{percent}%")
     end
   end
 
@@ -114,12 +164,12 @@ defmodule ExMoney.Web.Mobile.BudgetView do
     end
   end
 
-  defp add_limit(category, limits) do
+  defp add_limit(category, limits, max_amount) do
     limit = limits[category[:id]]
     category = Map.put(category, :limit, limit)
 
     if limit do
-      percent = (category[:amount] * 100) / limit
+      percent = (limit * 100) / max_amount
       |> Float.round(0)
       |> :erlang.float_to_binary(decimals: 0)
       if percent == "0" do
@@ -132,12 +182,12 @@ defmodule ExMoney.Web.Mobile.BudgetView do
     end
   end
 
-  defp add_limit(category, children, limits) do
+  defp add_limit(category, children, limits, max_amount) do
     children_ids = Enum.map(children, fn(child) -> child[:id] end)
 
     limit =
       limits
-      |> Enum.filter(fn({k, v}) -> Enum.member?(children_ids, k) end)
+      |> Enum.filter(fn({k, _v}) -> Enum.member?(children_ids, k) end)
       |> Enum.map(fn({_k, v}) -> v end)
       |> Enum.sum
 
@@ -146,7 +196,7 @@ defmodule ExMoney.Web.Mobile.BudgetView do
     else
       category = Map.put(category, :limit, limit)
 
-      percent = (category[:amount] * 100) / limit
+      percent = (limit * 100) / max_amount
       |> Float.round(0)
       |> :erlang.float_to_binary(decimals: 0)
       if percent == "0" do
@@ -181,10 +231,5 @@ defmodule ExMoney.Web.Mobile.BudgetView do
     |> Enum.reduce(Decimal.new(0), fn(transaction, acc) ->
       Decimal.add(acc, transaction.amount)
     end)
-  end
-
-  defp items_sum([]), do: Decimal.new(0)
-  defp items_sum([item | items]) do
-    Decimal.add(item[:amount], items_sum(items))
   end
 end

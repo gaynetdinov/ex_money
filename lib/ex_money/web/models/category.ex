@@ -25,7 +25,7 @@ defmodule ExMoney.Category do
 
   def update_changeset(model, params \\ %{}) do
     model
-    |> cast(params, ~w(name humanized_name parent_id hidden)a)
+    |> cast(params, ~w(name humanized_name parent_id hidden css_color)a)
   end
 
   def visible do
@@ -109,32 +109,12 @@ defmodule ExMoney.Category do
       order_by: c.humanized_name
   end
 
-  def generate_color() do
-    h = :rand.uniform()
-    s = 0.5
-    v = 0.95
+  def generate_color do
+    red = div((:rand.uniform(256) + 255), 2)
+    green = div((:rand.uniform(256) + 255), 2)
+    blue = div((:rand.uniform(256) + 255), 2)
 
-    h_i = round(h * 6)
-    f = h * 6 - h_i
-    p = v * (1 - s)
-    q = v * (1 - f*s)
-    t = v * (1 - (1 - f) * s)
-
-    {r, g, b} = cond do
-      h_i == 0 -> {v, t, p}
-      h_i == 1 -> {q, v, p}
-      h_i == 2 -> {p, v, t}
-      h_i == 3 -> {p, q, v}
-      h_i == 4 -> {t, p, v}
-      h_i == 5 -> {v, p, q}
-      true -> {v, t, p}
-    end
-
-    r_int = round(r * 256)
-    g_int = round(g * 256)
-    b_int = round(b * 256)
-
-    "rgb(#{r_int}, #{g_int}, #{b_int})"
+    "rgb(#{red}, #{green}, #{blue})"
   end
 
   defp put_humanized_name(changeset) do
