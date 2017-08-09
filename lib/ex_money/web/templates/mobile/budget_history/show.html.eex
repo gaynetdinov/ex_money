@@ -1,0 +1,103 @@
+<div class="pages">
+  <div class="page navbar-fixed" data-page="settings-show-budget-history-page">
+    <div class="navbar">
+      <div class="navbar-inner">
+        <div class="left">
+          <a href="/m/budget_history" class="link back" data-reload="true" data-force="true" data-ignore-cache="true">
+            <i class="icon icon-back"></i>&nbsp; Back
+          </a>
+        </div>
+        <div class="center">Budget</div>
+      </div>
+    </div>
+    <div class="page-content">
+      <div class="list-block reduced-margin">
+        <ul>
+          <li>
+            <div class="item-content">
+              <div class="item-inner">
+                <div class="item-title">Accounts</div>
+                <div class="item-after" style="color: black">
+                  <%= @accounts %>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li>
+            <div class="item-content">
+              <div class="item-inner">
+                <div class="item-title">Start date</div>
+                <div class="item-after" style="color: black">
+                  <%= @budget.start_date %>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li>
+            <div class="item-content">
+              <div class="item-inner">
+                <div class="item-title">End date</div>
+                <div class="item-after" style="color: black">
+                  <%= @budget.end_date %>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li>
+            <div class="item-content">
+              <div class="item-inner">
+                <div class="item-title">Income</div>
+                <div class="item-after" style="color: black">
+                  <%= @budget.income %>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li>
+            <div class="item-content">
+              <div class="item-inner">
+                <div class="item-title">Goal</div>
+                <div class="item-after" style="color: black">
+                  <%= @budget.goal %>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li>
+            <div class="item-content">
+              <div class="item-inner">
+                <div class="item-title">Planned expenses</div>
+                <div class="item-after" style="color: black">
+                  <%= @budget_expenses %>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li>
+            <div class="item-content">
+              <div class="item-inner">
+                <div class="item-title">Expectation</div>
+                <div class="item-after" style="color: black">
+                  <%= @budget.expectation %>
+                </div>
+              </div>
+            </div>
+          </li>
+          <%= if @items != [] do %>
+            <li class="item-divider">Items</li>
+            <%= for {name, amount} <- @items do %>
+              <li>
+                <div class='item-content'>
+                  <div class='item-inner'>
+                    <div class='item-title'><%= name %></div>
+                    <div class='item-after'><%= amount %></div>
+                  </div>
+                </div>
+              </li>
+            <% end %>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

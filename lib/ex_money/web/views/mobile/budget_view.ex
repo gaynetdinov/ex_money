@@ -3,120 +3,207 @@ defmodule ExMoney.Web.Mobile.BudgetView do
 
   alias ExMoney.{Category, Repo}
 
-  def categories_chart_data(categories) when map_size(categories) == 0 do
+  def draw_subcategory(%{width: "100%"} = category) do
+    "background: darkgrey;"
+  end
+
+  def draw_subcategory(category) do
+    """
+    background: linear-gradient(
+      to right,
+      darkgrey calc(#{category[:width]}),
+      darkgrey calc(#{category[:width]} - 1px),
+      gainsboro calc(#{category[:width]} + 1px),
+      gainsboro calc(100%)
+    )
+    """
+  end
+
+  def build_linear_gradient(%{width: "100%", limit: limit} = category) when not is_nil(limit) do
+    """
+    background: linear-gradient(
+      to right,
+      #{category[:css_color]} calc(#{category[:width]} - 5px),
+      coral calc(#{category[:limit_percent]})
+    )
+    """
+  end
+
+  def build_linear_gradient(%{limit: limit} = category) when not is_nil(limit) do
+    """
+    background: linear-gradient(
+      to right,
+      #{category[:css_color]} calc(#{category[:width]}),
+      whitesmoke calc(#{category[:width]} + 1px),
+      whitesmoke calc(#{category[:limit_percent]} - 1px),
+      coral calc(#{category[:limit_percent]} + 5px),
+      whitesmoke calc(#{category[:limit_percent]}),
+      whitesmoke calc(100%)
+    )
+    """
+  end
+
+  def build_linear_gradient(category) do
+    """
+    background: linear-gradient(
+      to right,
+      #{category[:css_color]} calc(#{category[:width]}),
+      whitesmoke calc(#{category[:width]}),
+      whitesmoke calc(100%)
+    )
+    """
+  end
+
+  def categories_chart_data(categories, _) when map_size(categories) == 0 do
     []
   end
 
-  # FIXME Oh my, that's got complicated.
-  # I hope there is a better way to generate data for the chart.
-  def categories_chart_data(categories) do
-    parent_categories = Enum.map(categories, fn({_id, category}) -> category.parent_id end)
-    |> Enum.reject(&(is_nil(&1)))
-    |> Category.by_ids
-    |> Repo.all
-    |> Enum.reduce(%{}, fn(category, acc) ->
-      case Map.has_key?(acc, category.id) do
-        true -> acc
-        false -> Map.put(acc, category.id, category)
-      end
-    end)
+  def categories_chart_data(categories, limits) do
+    category_ids = Enum.map(categories, fn({category, _}) -> category.id end)
+    categories = Enum.map categories, fn({category, amount}) ->
+      category
+      |> Map.from_struct()
+      |> Map.drop([:__meta__, :parent, :transactions, :hidden, :inserted_at, :updated_at])
+      |> Map.put(:amount, amount)
+    end
 
-    categories_tree = Enum.reduce(categories, %{}, fn({id, category}, acc) ->
-      if is_nil(category.parent_id) do
-        case Map.has_key?(acc, id) do
-          false -> Map.put(acc, id, [])
-          true -> acc
-        end
-      else
-        case Map.has_key?(acc, category.parent_id) do
-          false ->
-            Map.put(acc, category.parent_id, [id])
-          true ->
-            sub_categories = Map.get(acc, category.parent_id, [])
-            Map.put(acc, category.parent_id, [id | sub_categories])
-        end
-      end
-    end)
-
-    max_amount = Enum.reduce(categories_tree, [], fn({id, sub_category_ids}, acc) ->
-      category = parent_categories[id] || categories[id]
-
-      case sub_category_ids do
-        [] ->
-          [category.amount | acc]
-        _ ->
-          sub_amount = Enum.reduce(sub_category_ids, 0, fn(sub_category_id, acc) ->
-            acc + categories[sub_category_id].amount
-          end)
-
-          total_amount = if categories[category.id] do
-            sub_amount + categories[category.id].amount
-          else
-            sub_amount
-          end
-
-          [total_amount | acc]
-      end
-    end) |> Enum.max
-
-    Enum.reduce(categories_tree, [], fn({id, sub_category_ids}, acc) ->
-      category = parent_categories[id] || categories[id]
-
-      amount = case sub_category_ids do
-        [] -> category.amount
-        _ ->
-          sub_categories_sum = Enum.reduce(sub_category_ids, 0, fn(sub_category_id, acc) ->
-            acc + categories[sub_category_id].amount
-          end)
-
-          if categories[category.id] do
-            sub_categories_sum + categories[category.id].amount
-          else
-            sub_categories_sum
-          end
-      end
-
-      sub_categories = Enum.reduce(sub_category_ids, [], fn(sub_category_id, acc) ->
-        sub_category = categories[sub_category_id]
-        sub_category = add_width(sub_category, sub_category.amount, amount)
-
-        if sub_category do
-          [sub_category | acc]
-        else
+    missing_parents =
+      categories
+      |> Enum.reduce([], fn(category, acc) ->
+        if Enum.member?(category_ids, category.parent_id) do
           acc
+        else
+          [category.parent_id | acc]
         end
       end)
-      |> Enum.sort(fn(
-        {_id_1, _cat_1, _color_1, _width_1, amount_1},
-        {_id_2, _cat_2, _color_2, _width_2, amount_2}) ->
-          amount_1 > amount_2
+      |> Category.by_ids
+      |> Repo.all
+      |> Enum.map(fn(category) ->
+        category
+        |> Map.from_struct()
+        |> Map.drop([:__meta__, :parent, :transactions, :hidden, :inserted_at, :updated_at])
       end)
 
-      category = add_width(category, amount, max_amount)
+    {parents, subcategories} =
+      categories ++ missing_parents
+      |> Enum.split_with(fn(category) -> is_nil(category.parent_id) end)
 
-      if category do
-        [{category, sub_categories} | acc]
-      else
-        acc
-      end
+    categories_tree =
+      Enum.reduce(parents, [], fn(parent_category, acc) ->
+        children = Enum.filter(subcategories, fn(subcategory) -> subcategory.parent_id == parent_category.id end)
+        children = if parent_category[:amount] do
+          [parent_category | children]
+        else
+          children
+        end
+
+        children = Enum.map(children, fn(child) ->
+          {float_amount, _} = Decimal.to_string(child[:amount], :normal)
+          |> Float.parse
+
+          positive_float = float_amount * -1
+          %{child | amount: positive_float}
+        end)
+
+        children_amount =
+          children
+          |> Enum.map(fn(child) -> child[:amount] end)
+          |> Enum.sum()
+
+        parent_category = Map.put(parent_category, :amount, children_amount)
+
+        [{parent_category, children} | acc]
+      end)
+
+    max_amount =
+      categories_tree
+      |> Enum.map(fn({parent, _}) -> parent[:amount] end)
+      |> Enum.max
+
+    categories_tree
+    |> Enum.map(fn({parent, children}) ->
+      parent =
+        parent
+        |> add_width(max_amount)
+        |> add_limit(children, limits, max_amount)
+
+      children = Enum.map(children, fn(child) ->
+        child
+        |> add_width(parent[:amount])
+        |> add_limit(limits, parent[:amount])
+      end)
+
+      {parent, sort_subcategories(children)}
     end)
-    |> Enum.sort(fn(
-      {{_id_1, _cat_1, _color_1, _width_1, amount_1}, _sub_categories_1},
-      {{_id_2, _cat_2, _color_2, _width_2, amount_2}, _sub_categories_2}) ->
-        amount_1 > amount_2
-    end)
+    |> sort_parent_categories()
   end
 
-  defp add_width(category, amount, max_amount) do
-    percent = (amount * 100) / max_amount
+  defp add_width(category, max_amount) do
+    percent = (category[:amount] * 100) / max_amount
     |> Float.round(0)
     |> :erlang.float_to_binary(decimals: 0)
 
+    category = Map.put(category, :html_name, String.replace(category[:humanized_name], " ", "&nbsp;"))
+
     if percent == "0" do
-      nil
+      category
     else
-      html_name = String.replace(category.humanized_name, " ", "&nbsp;")
-      {category.id, html_name, category.css_color, "#{percent}%", amount}
+      Map.put(category, :width, "#{percent}%")
+    end
+  end
+
+  defp sort_subcategories(categories) do
+    Enum.sort categories, fn(%{amount: amount_1}, %{amount: amount_2}) ->
+      amount_1 > amount_2
+    end
+  end
+
+  defp sort_parent_categories(categories) do
+    Enum.sort categories, fn({%{amount: amount_1}, _sub_1}, {%{amount: amount_2}, _sub_2}) ->
+      amount_1 > amount_2
+    end
+  end
+
+  defp add_limit(category, limits, max_amount) do
+    limit = limits[category[:id]]
+    category = Map.put(category, :limit, limit)
+
+    if limit do
+      percent = (limit * 100) / max_amount
+      |> Float.round(0)
+      |> :erlang.float_to_binary(decimals: 0)
+      if percent == "0" do
+        category
+      else
+        Map.put(category, :limit_percent, "#{percent}%")
+      end
+    else
+      category
+    end
+  end
+
+  defp add_limit(category, children, limits, max_amount) do
+    children_ids = Enum.map(children, fn(child) -> child[:id] end)
+
+    limit =
+      limits
+      |> Enum.filter(fn({k, _v}) -> Enum.member?(children_ids, k) end)
+      |> Enum.map(fn({_k, v}) -> v end)
+      |> Enum.sum
+
+    if limit == 0 do
+      category
+    else
+      category = Map.put(category, :limit, limit)
+
+      percent = (limit * 100) / max_amount
+      |> Float.round(0)
+      |> :erlang.float_to_binary(decimals: 0)
+      if percent == "0" do
+        category
+      else
+        Map.put(category, :limit_percent, "#{percent}%")
+      end
     end
   end
 

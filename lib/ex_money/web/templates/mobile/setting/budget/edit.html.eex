@@ -1,0 +1,95 @@
+<div class="pages">
+  <div class="page navbar-fixed" data-page="settings-edit-budget-page">
+    <div class="navbar">
+      <div class="navbar-inner">
+        <div class="left">
+          <a href="/m/settings/budget" class="link back" data-reload="true" data-force="true" data-ignore-cache="true">
+            <i class="icon icon-back"></i>&nbsp; Back
+          </a>
+        </div>
+        <div class="center">Settings &rarr; Update Budget</div>
+      </div>
+    </div>
+    <div class="page-content">
+      <div class="list-block reduced-margin">
+        <%= form_for @changeset, mobile_setting_budget_path(@conn, :update), [method: :put, class: "ajax-submit"], fn f -> %>
+          <ul>
+            <li>
+              <a href="#" class="item-link smart-select smart-accounts-select" data-open-in="popup" data-page-title="Choose Accounts">
+                <%= render "accounts_list.html", accounts: @accounts, selected: @budget_template.accounts %>
+                <div class="item-content">
+                  <div class="item-inner">
+                    <div class="item-title">Accounts</div>
+                  </div>
+                </div>
+              </a>
+            </li>
+            <li>
+              <div class="item-content">
+                <div class="item-inner">
+                  <div class="item-title" style="width: 100%">Income</div>
+                  <div class="item-input">
+                    <%= text_input(f, :income, placeholder: "0.00", id: "budget-income", style: "text-align: right") %>
+                  </div>
+                </div>
+              </div>
+            </li>
+            <li>
+              <div class="item-content">
+                <div class="item-inner">
+                  <div class="item-title" style="width: 100%">Goal</div>
+                  <div class="item-input">
+                    <%= text_input(f, :goal, placeholder: "0.00", id: "budget-goal", style: "text-align: right") %>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
+          <div class="content-block-title">Adding New Item</div>
+          <ul id='add-new-item'>
+            <li>
+              <a href="#" class="item-link smart-select smart-category-select" data-back-on-select="true" data-open-in="popup" data-searchbar="true" data-page-title="Choose Category">
+                <%= render "categories_list.html", categories: @categories %>
+                <div class="item-content">
+                  <div class="item-inner">
+                    <div class="item-title">Choose Category</div>
+                  </div>
+                </div>
+              </a>
+            </li>
+          </ul>
+
+          <%= if @items != [] do %>
+            <div class="content-block-title">Items</div>
+          <% end %>
+          <div class="list-block">
+            <ul id='budget_items'>
+              <%= for item <- @items do %>
+                <li class="swipeout budget-item-li">
+                  <div class="swipeout-content">
+                    <div class='item-content'>
+                      <div class='item-inner'>
+                        <div class='item-title' style='width: 100%'><%= item.category.humanized_name %></div>
+                        <div class='item-input'>
+                          <input class='budget-item-amount' name='budget_items[<%= item.category.id %>]' style='text-align: right' type='text' value='<%= item.amount %>'>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="swipeout-actions-right">
+                    <a href="#" data-id="<%= item.id %>" class="swipeout-delete bg-red delete-budget-item">Delete</a>
+                  </div>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+
+          <div class="content-block">
+            <p><button style="width: 100%" class="button active button-big" type="submit">Save</button></p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

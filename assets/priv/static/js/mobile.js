@@ -373,7 +373,6 @@ exMoney.onPageInit('budget-income-screen', function(page) {
 });
 
 exMoney.onPageInit('settings-budget-page', function(page) {
-  console.log('foo');
   $$('.budget-account').on('click', function (e) {
     var id = $$(this).data('id');
     var swipeout_line = $$(this);

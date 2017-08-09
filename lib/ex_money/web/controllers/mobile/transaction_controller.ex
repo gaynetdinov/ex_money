@@ -2,7 +2,7 @@ defmodule ExMoney.Web.Mobile.TransactionController do
   use ExMoney.Web, :controller
 
   alias ExMoney.DateHelper
-  alias ExMoney.{Repo, Transaction, Category, Account, FavouriteTransaction}
+  alias ExMoney.{Repo, Transaction, Category, Account, FavouriteTransaction, Budget}
 
   plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.Mobile.Unauthenticated
   plug :put_layout, "mobile.html"
@@ -44,6 +44,9 @@ defmodule ExMoney.Web.Mobile.TransactionController do
   end
 
   def index(conn, %{"date" => date, "category_id" => category_id, "type" => type}) do
+    user = Guardian.Plug.current_resource(conn)
+    current_budget = Budget.current_by_user_id(user.id) |> Repo.one
+
     category = Repo.get!(Category, category_id)
     category_ids = case category.parent_id do
       nil -> [category.id | Repo.all(Category.sub_categories_by_id(category.id))]
@@ -54,15 +57,11 @@ defmodule ExMoney.Web.Mobile.TransactionController do
     from = DateHelper.first_day_of_month(parsed_date)
     to = DateHelper.last_day_of_month(parsed_date)
 
-    budget_account_ids = Account.in_budget
-    |> Repo.all
-    |> Enum.map(fn(acc) -> acc.id end)
-
     query = case type do
       "expenses" ->
-        Transaction.expenses_by_month_by_category(budget_account_ids, from, to, category_ids)
+        Transaction.expenses_by_month_by_category(current_budget.accounts, from, to, category_ids)
       "income" ->
-        Transaction.income_by_month_by_category(budget_account_ids, from, to, category_ids)
+        Transaction.income_by_month_by_category(current_budget.accounts, from, to, category_ids)
     end
 
     transactions = query

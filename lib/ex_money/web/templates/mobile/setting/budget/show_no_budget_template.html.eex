@@ -1,0 +1,19 @@
+<div class="pages">
+  <div class="page navbar-fixed" data-page="settings-show-budget-page">
+    <div class="navbar">
+      <div class="navbar-inner">
+        <div class="left">
+          <a href="/m/settings" class="link back" data-reload="true" data-force="true" data-ignore-cache="true">
+            <i class="icon icon-back"></i>&nbsp; Back
+          </a>
+        </div>
+        <div class="center">Settings &rarr; Budget</div>
+      </div>
+    </div>
+    <div class="page-content">
+      <div align='center' class="content-block-title">
+        You don't have budget yet, <br/>you can create one <a href='/m/settings/budget/new'>here</a>.
+      </div>
+    </div>
+  </div>
+</div>
