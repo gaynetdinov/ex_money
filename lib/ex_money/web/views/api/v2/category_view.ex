@@ -11,6 +11,8 @@ defmodule ExMoney.Web.Api.V2.CategoryView do
     %{
        id: category.id,
        name: category.name,
+       human_name: category.humanized_name,
+       parent_id: category.parent_id
      }
   end
 end
