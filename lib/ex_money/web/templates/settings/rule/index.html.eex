@@ -35,7 +35,7 @@
                     method: :delete,
                     data: [confirm: "Are you sure?"],
                     class: "btn btn-danger btn-xs",
-                    form: [style: "display: inline"]
+                    style: "display: inline"
                 %>
               </td>
             </tr>
