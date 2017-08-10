@@ -13,8 +13,8 @@ config :ex_money, ExMoney.Web.Endpoint,
   live_reload: [
     patterns: [
       ~r{priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$},
-      ~r{lib/ex_money/web/views/.*(ex)$},
-      ~r{lib/ex_money/web/templates/.*(eex)$}
+      ~r{lib/ex_money_web/views/.*(ex)$},
+      ~r{lib/ex_money_web/templates/.*(eex)$}
     ]
   ]
 
