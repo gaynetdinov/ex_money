@@ -1,6 +1,6 @@
 defmodule ExMoney.Web.Settings.RuleController do
   use ExMoney.Web, :controller
-  alias ExMoney.{Repo, Rule, Account, Category}
+  alias ExMoney.{Repo, Rule, Account, Categories}
 
   plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.Unauthenticated
 
@@ -18,10 +18,10 @@ defmodule ExMoney.Web.Settings.RuleController do
       acc
     end)
 
-    categories = map.category_ids
-    |> Category.by_ids
-    |> Repo.all
-    |> Enum.reduce(%{}, fn(c, acc) -> Map.put(acc, c.id, c) end)
+    categories =
+      map.category_ids
+      |> Categories.get_categories_by_ids()
+      |> Enum.reduce(%{}, fn(c, acc) -> Map.put(acc, c.id, c) end)
 
     accounts = map.account_ids
     |> List.flatten
@@ -147,7 +147,7 @@ defmodule ExMoney.Web.Settings.RuleController do
     case type do
       nil -> []
       "assign_category" ->
-        categories = Repo.all(Category)
+        categories = Categories.all()
 
         Enum.reduce(categories, %{}, fn(category, acc) ->
           if is_nil(category.parent_id) do

@@ -1,13 +1,13 @@
 defmodule ExMoney.Web.Settings.CategoryController do
   use ExMoney.Web, :controller
 
-  alias ExMoney.{Repo, Category}
+  alias ExMoney.{Repo, Categories}
 
   plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.Unauthenticated
   plug :scrub_params, "category" when action in [:create, :update]
 
   def index(conn, _params) do
-    categories = Category.list |> Repo.all
+    categories = Categories.list()
 
     render conn, :index,
       topbar: "settings",
@@ -16,21 +16,18 @@ defmodule ExMoney.Web.Settings.CategoryController do
   end
 
   def new(conn, _params) do
-    categories = Repo.all(Category.parents)
-    changeset = Category.changeset(%Category{})
+    categories = Categories.parents()
+    changeset = Categories.category_changeset()
 
-    render(conn, :new,
+    render conn, :new,
       changeset: changeset,
       categories: categories,
       topbar: "settings",
       navigation: "categories"
-    )
   end
 
   def create(conn, %{"category" => category_params}) do
-    changeset = Category.changeset(%Category{}, category_params)
-
-    case Repo.insert(changeset) do
+    case Categories.create_category(category_params) do
       {:ok, _category} ->
         conn
         |> put_flash(:info, "Category created successfully.")
@@ -41,15 +38,18 @@ defmodule ExMoney.Web.Settings.CategoryController do
   end
 
   def show(conn, %{"id" => id}) do
-    category = Repo.get!(Category, id)
+    category = Categories.get_category!(id)
+
     render(conn, :show, category: category, topbar: "settings", navigation: "categories")
   end
 
   def edit(conn, %{"id" => id}) do
-    categories = Repo.all(Category.parents)
-    category = Repo.get!(Category, id)
-    changeset = Category.changeset(category)
-    render(conn, :edit,
+    categories = Categories.parents()
+    category = Categories.get_category!(id)
+    changeset = Categories.category_changeset(category)
+
+    render(
+      conn, :edit,
       category: category,
       categories: categories,
       changeset: changeset,
@@ -59,10 +59,9 @@ defmodule ExMoney.Web.Settings.CategoryController do
   end
 
   def update(conn, %{"id" => id, "category" => category_params}) do
-    category = Repo.get!(Category, id)
-    changeset = Category.changeset(category, category_params)
+    category = Categories.get_category!(id)
 
-    case Repo.update(changeset) do
+    case Categories.update_category(category, category_params) do
       {:ok, _category} ->
         conn
         |> put_flash(:info, "Category updated successfully.")
@@ -78,9 +77,7 @@ defmodule ExMoney.Web.Settings.CategoryController do
   end
 
   def delete(conn, %{"id" => id}) do
-    category = Repo.get!(Category, id)
-
-    Repo.delete!(category)
+    Categories.delete_category!(id)
 
     conn
     |> put_flash(:info, "Category deleted successfully.")
@@ -91,28 +88,26 @@ defmodule ExMoney.Web.Settings.CategoryController do
     categories = with {:ok, response} <- ExMoney.Saltedge.Client.request(:get, "categories"),
                   do: response["data"]
 
-    Repo.transaction(fn ->
-      Enum.each(categories, fn({main_category, sub_categories}) ->
+    Repo.transaction fn ->
+      Enum.each categories, fn({main_category, sub_categories}) ->
         category = create_or_update_category(main_category)
 
-        Enum.each(sub_categories, fn(sub_category) ->
+        Enum.each sub_categories, fn(sub_category) ->
           create_or_update_category(sub_category, category.id)
-        end)
-      end)
-    end)
+        end
+      end
+    end
 
     redirect(conn, to: settings_category_path(conn, :index))
   end
 
   defp create_or_update_category(name, parent_id \\ nil) do
-    case Category.by_name(name) |> Repo.one do
+    case Categories.get_category_by(name: name) do
       nil ->
-        Category.changeset(%Category{}, %{name: name, parent_id: parent_id})
-        |> Repo.insert!
+        Categories.create_category!(%{name: name, parent_id: parent_id})
 
       existing_category ->
-        Category.changeset(existing_category, %{parent_id: parent_id})
-        |> Repo.update!
+        Categories.update_category!(existing_category, %{parent_id: parent_id})
     end
   end
 end

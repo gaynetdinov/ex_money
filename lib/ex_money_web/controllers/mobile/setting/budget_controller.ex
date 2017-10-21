@@ -1,7 +1,7 @@
 defmodule ExMoney.Web.Mobile.Setting.BudgetController do
   use ExMoney.Web, :controller
 
-  alias ExMoney.{Account, Repo, Category, BudgetTemplate, BudgetItem, DateHelper, Budget}
+  alias ExMoney.{Account, Repo, Categories, BudgetTemplate, BudgetItem, DateHelper, Budget}
 
   plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.Mobile.Unauthenticated
   plug :put_layout, "mobile.html"
@@ -155,7 +155,7 @@ defmodule ExMoney.Web.Mobile.Setting.BudgetController do
   end
 
   defp categories_list do
-    categories_dict = Category.visible |> Repo.all
+    categories_dict = Categories.visible_categories()
 
     Enum.reduce(categories_dict, %{}, fn(category, acc) ->
       if is_nil(category.parent_id) do

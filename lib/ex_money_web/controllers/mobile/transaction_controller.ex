@@ -2,16 +2,16 @@ defmodule ExMoney.Web.Mobile.TransactionController do
   use ExMoney.Web, :controller
 
   alias ExMoney.DateHelper
-  alias ExMoney.{Repo, Transaction, Category, Account, FavouriteTransaction, Budget}
+  alias ExMoney.{Repo, Transaction, Categories, Account, FavouriteTransaction, Budget}
 
   plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.Mobile.Unauthenticated
   plug :put_layout, "mobile.html"
 
   def index(conn, %{"date" => date, "account_id" => account_id, "category_id" => category_id}) do
     account = Repo.get!(Account, account_id)
-    category = Repo.get!(Category, category_id)
+    category = Categories.get_category!(category_id)
     category_ids = case category.parent_id do
-      nil -> [category.id | Repo.all(Category.sub_categories_by_id(category.id))]
+      nil -> [category.id | Categories.get_sub_categories(category.id)]
       _parent_id -> [category.id]
     end
 
@@ -47,9 +47,9 @@ defmodule ExMoney.Web.Mobile.TransactionController do
     user = Guardian.Plug.current_resource(conn)
     current_budget = Budget.current_by_user_id(user.id) |> Repo.one
 
-    category = Repo.get!(Category, category_id)
+    category = Categories.get_category!(category_id)
     category_ids = case category.parent_id do
-      nil -> [category.id | Repo.all(Category.sub_categories_by_id(category.id))]
+      nil -> [category.id | Categories.get_sub_categories(category.id)]
       _parent_id -> [category.id]
     end
 
@@ -220,7 +220,7 @@ defmodule ExMoney.Web.Mobile.TransactionController do
   end
 
   defp categories_list do
-    categories_dict = Category.visible |> Repo.all
+    categories_dict = Categories.visible_categories()
 
     Enum.reduce(categories_dict, %{}, fn(category, acc) ->
       if is_nil(category.parent_id) do

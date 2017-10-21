@@ -3,7 +3,7 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
 
   require Logger
 
-  alias ExMoney.{Repo, Transaction, Category, Account}
+  alias ExMoney.{Repo, Transaction, Categories, Account}
 
   def start_link(_opts \\ []) do
     GenServer.start_link(__MODULE__, :ok, name: :transactions_worker)
@@ -140,19 +140,9 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
   end
 
   defp set_category_id(transaction) do
-    category = find_or_create_category(transaction["category"])
+    category = Categories.find_or_create_category_by_name(transaction["category"])
 
     Map.put(transaction, "category_id", category.id)
-  end
-
-  defp find_or_create_category(name) do
-    case Category.by_name_with_hidden(name) |> Repo.one do
-      nil ->
-        changeset = Category.changeset(%Category{}, %{name: name})
-        Repo.insert!(changeset)
-
-      existing_category -> existing_category
-    end
   end
 
   defp date_to_string(date) do

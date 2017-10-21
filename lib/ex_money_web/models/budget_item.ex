@@ -4,7 +4,7 @@ defmodule ExMoney.BudgetItem do
   schema "budget_items" do
     field :amount, :decimal
 
-    belongs_to :category, ExMoney.Category
+    belongs_to :category, ExMoney.Categories.Category
     belongs_to :budget_template, ExMoney.BudgetTemplate
 
     timestamps()

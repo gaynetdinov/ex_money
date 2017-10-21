@@ -1,7 +1,7 @@
 defmodule ExMoney.Web.TransactionController do
   use ExMoney.Web, :controller
 
-  alias ExMoney.{Transaction, Repo, Paginator, Account, Category}
+  alias ExMoney.{Transaction, Repo, Paginator, Account, Categories}
   import Ecto.Query
 
   plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.Unauthenticated
@@ -27,7 +27,7 @@ defmodule ExMoney.Web.TransactionController do
     changeset = Transaction.changeset_custom(%Transaction{})
     accounts = Account.only_custom |> Repo.all
 
-    categories_dict = Repo.all(Category)
+    categories_dict = Categories.all()
 
     categories = Enum.reduce(categories_dict, %{}, fn(category, acc) ->
       if is_nil(category.parent_id) do

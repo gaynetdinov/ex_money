@@ -1,6 +1,6 @@
 defmodule ExMoney.Web.Mobile.FavouriteTransactionController do
   use ExMoney.Web, :controller
-  alias ExMoney.{Repo, FavouriteTransaction, Category, Account}
+  alias ExMoney.{Repo, FavouriteTransaction, Categories, Account}
 
   plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.Mobile.Unauthenticated
   plug :put_layout, "mobile.html"
@@ -67,7 +67,7 @@ defmodule ExMoney.Web.Mobile.FavouriteTransactionController do
   end
 
   defp categories_list do
-    categories_dict = Repo.all(Category)
+    categories_dict = Categories.all()
 
     Enum.reduce(categories_dict, %{}, fn(category, acc) ->
       if is_nil(category.parent_id) do

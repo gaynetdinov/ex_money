@@ -17,7 +17,7 @@ defmodule ExMoney.Transaction do
     field :rule_applied, :boolean, default: false
     field :extra, :map
 
-    belongs_to :category, ExMoney.Category
+    belongs_to :category, ExMoney.Categories.Category
     belongs_to :user, ExMoney.User
     belongs_to :account, ExMoney.Account
     belongs_to :saltedge_account, ExMoney.Account,

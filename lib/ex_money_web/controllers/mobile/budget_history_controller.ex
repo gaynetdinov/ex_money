@@ -4,7 +4,7 @@ defmodule ExMoney.Web.Mobile.BudgetHistoryController do
   plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.Mobile.Unauthenticated
   plug :put_layout, "mobile.html"
 
-  alias ExMoney.{Repo, Budget, Account, Category}
+  alias ExMoney.{Repo, Budget, Account, Categories}
 
   def index(conn, _params) do
     user = Guardian.Plug.current_resource(conn)
@@ -29,7 +29,7 @@ defmodule ExMoney.Web.Mobile.BudgetHistoryController do
     items =
       budget.items
       |> Enum.map(fn({id, v}) ->
-        name = Repo.get(Category, id).humanized_name
+        name = Categories.get_category!(id).humanized_name
         {amount, _} = Integer.parse(v)
         {name, amount}
       end)

@@ -1,7 +1,7 @@
 defmodule ExMoney.Web.Mobile.AccountView do
   use ExMoney.Web, :view
 
-  alias ExMoney.{Category, Repo}
+  alias ExMoney.Categories
 
   def categories_chart_data(categories) when map_size(categories) == 0 do
     []
@@ -12,8 +12,7 @@ defmodule ExMoney.Web.Mobile.AccountView do
   def categories_chart_data(categories) do
     parent_categories = Enum.map(categories, fn({_id, category}) -> category.parent_id end)
     |> Enum.reject(&(is_nil(&1)))
-    |> Category.by_ids
-    |> Repo.all
+    |> Categories.get_categories_by_ids()
     |> Enum.reduce(%{}, fn(category, acc) ->
       case Map.has_key?(acc, category.id) do
         true -> acc

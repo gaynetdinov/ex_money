@@ -58,7 +58,7 @@ defmodule ExMoney.Factory do
   end
 
   def category_factory do
-    %ExMoney.Category{
+    %ExMoney.Categories.Category{
       name: sequence(:category_name, &("category-#{(&1)}"))
     }
   end

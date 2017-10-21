@@ -13,7 +13,7 @@ defmodule ExMoney.FavouriteTransaction do
     field :description, :string
     field :fav, :boolean, defaut: false
 
-    belongs_to :category, ExMoney.Category
+    belongs_to :category, ExMoney.Categories.Category
     belongs_to :user, ExMoney.User
     belongs_to :account, ExMoney.Account
 

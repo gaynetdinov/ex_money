@@ -1,7 +1,7 @@
 defmodule ExMoney.RuleProcessor do
   use GenServer
 
-  alias ExMoney.{Repo, Rule, Transaction, Category, Account}
+  alias ExMoney.{Repo, Rule, Transaction, Categories, Account}
 
   import Ecto.Query
 
@@ -54,7 +54,7 @@ defmodule ExMoney.RuleProcessor do
 
   defp withdraw_to_cash(rule, transaction) do
     {:ok, re} = Regex.compile(rule.pattern, "i")
-    withdraw_category = Category.by_name_with_hidden("withdraw") |> Repo.one
+    withdraw_category = Categories.get_category_by(name: "withdraw")
 
     account = Repo.get(Account, rule.target_id)
 

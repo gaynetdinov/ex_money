@@ -1,9 +1,9 @@
 defmodule ExMoney.Web.Mobile.BudgetView do
   use ExMoney.Web, :view
 
-  alias ExMoney.{Category, Repo}
+  alias ExMoney.Categories
 
-  def draw_subcategory(%{width: "100%"} = category) do
+  def draw_subcategory(%{width: "100%"} = _category) do
     "background: darkgrey;"
   end
 
@@ -91,8 +91,7 @@ defmodule ExMoney.Web.Mobile.BudgetView do
           [category.parent_id | acc]
         end
       end)
-      |> Category.by_ids
-      |> Repo.all
+      |> Categories.get_categories_by_ids()
       |> Enum.map(fn(category) ->
         category
         |> Map.from_struct()
