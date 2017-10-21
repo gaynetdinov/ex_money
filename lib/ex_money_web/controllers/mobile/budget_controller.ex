@@ -83,7 +83,7 @@ defmodule ExMoney.Web.Mobile.BudgetController do
     from = DateHelper.first_day_of_month(parsed_date)
     to = DateHelper.last_day_of_month(parsed_date)
 
-    scope = Transaction.income_by_month(current_budget.account, from, to)
+    scope = Transaction.income_by_month(current_budget.accounts, from, to)
     income = fetch_and_process_transactions(scope)
 
     {:ok, formatted_date} = Timex.format(parsed_date, "%b %Y", :strftime)
