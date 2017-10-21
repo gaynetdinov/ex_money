@@ -29,6 +29,21 @@ defmodule ExMoney.Web.Mobile.BudgetView do
     """
   end
 
+  def build_linear_gradient(%{limit: limit, amount: amount} = category) when not is_nil(limit) and amount > limit do
+    """
+    background: linear-gradient(
+      to right,
+      #{category[:css_color]} calc(#{category[:limit_percent]}),
+      #{category[:css_color]} calc(#{category[:limit_percent]} - 1px),
+      coral calc(#{category[:limit_percent]} + 5px),
+      #{category[:css_color]} calc(#{category[:limit_percent]} + 1px),
+      #{category[:css_color]} calc(#{category[:width]}),
+      whitesmoke calc(#{category[:width]} + 1px),
+      whitesmoke calc(100%)
+    )
+    """
+  end
+
   def build_linear_gradient(%{limit: limit} = category) when not is_nil(limit) do
     """
     background: linear-gradient(
