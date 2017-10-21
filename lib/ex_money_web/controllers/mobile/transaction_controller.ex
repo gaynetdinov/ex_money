@@ -145,6 +145,10 @@ defmodule ExMoney.Web.Mobile.TransactionController do
     send_resp(conn, 200, "")
   end
 
+  def create_from_fav(conn, %{"transaction[amount]" => ""}) do
+    send_resp(conn, 200, "")
+  end
+
   def create_from_fav(conn, params) do
     amount =  params["transaction[amount]"]
     fav_tr_id = params["transaction[fav_tr_id]"]
