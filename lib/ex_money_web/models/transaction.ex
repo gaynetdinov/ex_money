@@ -157,9 +157,9 @@ defmodule ExMoney.Transaction do
       where: tr.made_on >= ^from,
       where: tr.made_on <= ^to,
       where: tr.account_id in ^account_ids,
+      where: tr.amount < 0,
       group_by: [c.id],
-      select: {c, sum(tr.amount)},
-      having: sum(tr.amount) < 0
+      select: {c, sum(tr.amount)}
   end
 
   def group_by_month_by_category(account_id, from, to) do
