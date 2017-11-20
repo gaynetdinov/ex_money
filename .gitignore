@@ -26,4 +26,4 @@ erl_crash.dump
 /config/test.secret.exs
 *.pem
 /log
-
+assets/npm-debug.log
