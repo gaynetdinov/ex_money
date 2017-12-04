@@ -12,7 +12,7 @@ defmodule ExMoney.Web.Mobile.BudgetHistoryController do
     budgets = Budget.by_user_id(user.id) |> Repo.all()
 
     budgets = if current_budget do
-      Enum.reject(fn(budget) -> budget.id == current_budget.id end)
+      Enum.reject(budgets, fn(budget) -> budget.id == current_budget.id end)
     else
       budgets
     end
