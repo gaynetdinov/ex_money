@@ -21,7 +21,7 @@ defmodule ExMoney.Web.SharedView do
   end
 
   def description(transaction) do
-    transaction.extra["payee"]
+    String.replace(transaction.extra["payee"], ~r/\A[A-Z]{2}\w{15,32}/, "")
   end
 
   def category_name(nil), do: ""
