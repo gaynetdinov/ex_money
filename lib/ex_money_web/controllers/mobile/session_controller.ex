@@ -6,8 +6,14 @@ defmodule ExMoney.Web.Mobile.SessionController do
   plug :put_layout, "mobile.html"
 
   def new(conn, _params) do
-    changeset = User.login_changeset(%User{})
-    render(conn, ExMoney.Mobile.SessionView, :new, changeset: changeset)
+    user = Guardian.Plug.current_resource(conn)
+
+    if user do
+      redirect(conn, to: "/m")
+    else
+      changeset = User.login_changeset(%User{})
+      render(conn, ExMoney.Web.Mobile.SessionView, :new, changeset: changeset)
+    end
   end
 
   def create(conn, params = %{}) do

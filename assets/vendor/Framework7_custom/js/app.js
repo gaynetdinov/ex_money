@@ -143,27 +143,6 @@ var exMoney = new Framework7({
       }
     }
 
-    if (page.name == 'embedded-login-screen') {
-      $$('#embedded-login-form').on('submitted', function (e) {
-        var xhr = e.detail.xhr;
-        if (xhr.status == 200) {
-          exMoney.closeModal($$(".embedded-login-screen"));
-          setToken(xhr.responseText);
-          socketConnect(xhr.responseText);
-          mainView.router.load({ url: '/m/dashboard' });
-          window.history.pushState('m', '', '/m');
-        } else {
-          exMoney.alert(xhr.responseText);
-        }
-      });
-
-      $$('#login-form').on('submitError', function (e) {
-        var xhr = e.detail.xhr;
-
-        exMoney.alert(xhr.responseText);
-      });
-    }
-
     if (page.name == 'login-screen') {
       $$('#login-form').on('submitted', function (e) {
         var xhr = e.detail.xhr;
@@ -224,7 +203,6 @@ var exMoney = new Framework7({
         $$('#fav_tr_popup').on('opened', function() {
           fav_calculator.open();
         });
-
       });
     }
   }
