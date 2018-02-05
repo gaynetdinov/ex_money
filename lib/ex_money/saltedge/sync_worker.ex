@@ -43,24 +43,12 @@ defmodule ExMoney.Saltedge.SyncWorker do
       )
       send_notification(user_id, account, stored_transactions)
 
-      add_login_event(login.saltedge_login_id,
-        %{
-          fetched_transactions: fetched_transactions,
-          stored_transactions: stored_transactions,
-          account: account.name
-        }
-      )
-
       Logger.info("Fetched #{fetched_transactions}, stored #{stored_transactions}, fetched with type #{fetch_type} for #{account.name} account")
     end)
   end
 
   defp fetch_type(%{fetch_all: true}), do: :fetch_all
   defp fetch_type(_), do: :fetch_recent
-
-  defp add_login_event(saltedge_login_id, params) do
-    GenServer.cast(:login_logger, {:log, "", "transactions_synced", saltedge_login_id, params})
-  end
 
   defp send_notification(user_id, account, stored_transactions) do
     key = "refresh_channel_pid_user:#{user_id}"

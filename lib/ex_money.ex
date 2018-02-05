@@ -15,7 +15,6 @@ defmodule ExMoney do
       worker(ExMoney.Saltedge.SyncWorker, []),
       worker(ExMoney.Scheduler, []),
       worker(ExMoney.RuleProcessor, []),
-      worker(ExMoney.Saltedge.LoginLogger, []),
       worker(ExMoney.Saltedge.LoginRefreshWorker, [], restart: :transient),
       worker(ExMoney.Saltedge.SyncBuffer, [])
     ]

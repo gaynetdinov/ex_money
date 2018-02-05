@@ -1,8 +1,7 @@
 defmodule ExMoney.Web.Settings.LoginController do
   use ExMoney.Web, :controller
 
-  alias ExMoney.{Repo, Login, LoginLog, Paginator}
-  import Ecto.Query
+  alias ExMoney.{Repo, Login}
 
   plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.Unauthenticated
 
@@ -14,22 +13,6 @@ defmodule ExMoney.Web.Settings.LoginController do
       logins: logins,
       navigation: "logins",
       topbar: "settings"
-  end
-
-  def show(conn, %{"id" => id} = params) do
-    login = Repo.get!(Login, id)
-
-    paginator = LoginLog.by_login_id(id)
-    |> order_by(desc: :inserted_at)
-    |> Paginator.paginate(params)
-
-    render conn, :show,
-      navigation: "logins",
-      topbar: "settings",
-      login: login,
-      logs: paginator.entries,
-      page_number: paginator.page_number,
-      total_pages: paginator.total_pages
   end
 
   def delete(conn, %{"id" => id}) do

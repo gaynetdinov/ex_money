@@ -10,9 +10,6 @@ config :ex_money, ExMoney.Web.Endpoint,
 # Do not print debug messages in production
 config :logger, level: :debug
 
-config :ex_money, :login_logger_worker,
-  [name: ExMoney.Saltedge.LoginLogger, enabled: false]
-
 config :ex_money,
   saltedge_client_id: System.get_env("CLIENT_ID"),
   saltedge_service_secret: System.get_env("SERVICE_SECRET")

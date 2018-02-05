@@ -1,8 +1,6 @@
 defmodule ExMoney.Web.Callbacks.InteractiveCallbackController do
   use ExMoney.Web, :controller
 
-  @login_logger Application.get_env(:ex_money, :login_logger_worker)
-
   require Logger
 
   alias ExMoney.{Repo, Login, Web.Plugs}
@@ -16,7 +14,6 @@ defmodule ExMoney.Web.Callbacks.InteractiveCallbackController do
     interactive_fields_names = params["data"]["interactive_fields_names"]
 
     login = conn.assigns[:login]
-    @login_logger.log_event("interactive", "callback_received", login.saltedge_login_id, params)
 
     changeset = Login.interactive_callback_changeset(login, %{
       stage: stage,
@@ -24,16 +21,10 @@ defmodule ExMoney.Web.Callbacks.InteractiveCallbackController do
       interactive_html: html
     })
 
-    case Repo.update(changeset) do
-      {:ok, _} ->
-        pid = get_channel_pid(conn.assigns[:user].id)
-        store_interactive_field_names(conn.assigns[:user].id, interactive_fields_names)
-        Process.send_after(pid, {:interactive_callback_received, html, interactive_fields_names}, 10)
-
-        @login_logger.log_event("interactive", "login_updated", login.saltedge_login_id, params)
-
-      {:error, error_changeset} ->
-        @login_logger.log_event("interactive", "login_update_failed", login.saltedge_login_id, Enum.into(error_changeset.errors, %{}))
+    with {:ok, _} <- Repo.update(changeset) do
+      pid = get_channel_pid(conn.assigns[:user].id)
+      store_interactive_field_names(conn.assigns[:user].id, interactive_fields_names)
+      Process.send_after(pid, {:interactive_callback_received, html, interactive_fields_names}, 10)
     end
 
     put_resp_content_type(conn, "application/json")

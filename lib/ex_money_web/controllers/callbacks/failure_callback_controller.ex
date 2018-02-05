@@ -1,8 +1,6 @@
 defmodule ExMoney.Web.Callbacks.FailureCallbackController do
   use ExMoney.Web, :controller
 
-  @login_logger Application.get_env(:ex_money, :login_logger_worker)
-
   require Logger
 
   alias ExMoney.{Repo, Login, Web.Plugs}
@@ -29,12 +27,7 @@ defmodule ExMoney.Web.Callbacks.FailureCallbackController do
       last_fail_message: conn.params["data"]["error_message"]
     })
 
-    case Repo.insert(changeset) do
-      {:ok, login} ->
-        @login_logger.log_event("failure", "login_created", login.saltedge_login_id, params)
-      {:error, changeset} ->
-        @login_logger.log_event("failure", "login_create_failed", login_id, Enum.into(changeset.errors, %{}))
-    end
+    Repo.insert(changeset)
   end
 
   defp update_login(login, conn) do
@@ -43,11 +36,7 @@ defmodule ExMoney.Web.Callbacks.FailureCallbackController do
       last_fail_message: conn.params["data"]["error_message"]
     }
 
-    changeset = Login.failure_callback_changeset(login, params)
-    case Repo.update(changeset) do
-      {:ok, _} -> @login_logger.log_event("failure", "login_create_failed", login_id, params)
-      {:error, changeset} -> @login_logger.log_event("failure", "login_create_failed", login_id, Enum.into(changeset.errors, %{}))
-    end
+    Login.failure_callback_changeset(login, params) |> Repo.update
 
     interactive_done(conn.assigns[:user].id)
   end

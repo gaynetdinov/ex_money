@@ -1,8 +1,6 @@
 defmodule ExMoney.Web.Callbacks.SuccessCallbackController do
   use ExMoney.Web, :controller
 
-  @login_logger Application.get_env(:ex_money, :login_logger_worker)
-
   require Logger
 
   alias ExMoney.{Repo, Login, Web.Plugs}
@@ -25,27 +23,17 @@ defmodule ExMoney.Web.Callbacks.SuccessCallbackController do
     changeset = Ecto.build_assoc(user, :logins)
     |> Login.success_callback_changeset(%{saltedge_login_id: saltedge_login_id, user_id: user.id})
 
-    case Repo.insert(changeset) do
-      {:ok, login} ->
-        update_login_last_refreshed_at(login)
-        GenServer.cast(:sync_buffer, {:schedule, :sync, login})
-        schedule_login_refresh_worker(login)
-        @login_logger.log_event("success", "login_created", saltedge_login_id, conn.params)
-
-      {:error, changeset} ->
-        @login_logger.log_event("success", "login_create_failed", saltedge_login_id, Enum.into(changeset.errors, %{}))
+    with {:ok, login} <- Repo.insert(changeset) do
+      update_login_last_refreshed_at(login)
+      GenServer.cast(:sync_buffer, {:schedule, :sync, login})
+      schedule_login_refresh_worker(login)
     end
   end
 
   defp update_login(login, conn) do
     changeset = Login.update_changeset(login, conn.params["data"])
 
-    case Repo.update(changeset) do
-      {:ok, _} ->
-        @login_logger.log_event("success", "login_updated", login.saltedge_login_id, conn.params)
-      {:error, changeset} ->
-        @login_logger.log_event("success", "login_updated", login.saltedge_login_id, Enum.into(changeset.errors, %{}))
-    end
+    Repo.update(changeset)
 
     update_login_last_refreshed_at(login)
     GenServer.cast(:sync_buffer, {:schedule, :sync, login})

@@ -33,7 +33,6 @@ defmodule ExMoney.Login do
       on_delete: :delete_all,
       references: :saltedge_login_id,
       foreign_key: :saltedge_login_id
-    has_many :login_logs, ExMoney.LoginLog, on_delete: :delete_all
 
     timestamps()
   end
