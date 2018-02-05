@@ -11,9 +11,6 @@ config :ex_money, ExMoney.Repo,
   adapter: Ecto.Adapters.Postgres,
   pool: Ecto.Adapters.SQL.Sandbox
 
-config :ex_money, :login_logger_worker,
-  [name: ExMoney.Saltedge.Test.LoginLogger, enabled: true]
-
 config :ex_money, :saltedge,
   private_key_path: "test/support/fake_key"
 

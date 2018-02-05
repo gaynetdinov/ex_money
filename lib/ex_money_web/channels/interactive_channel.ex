@@ -53,16 +53,12 @@
 
     result = ExMoney.Saltedge.Client.request(:put, "logins/#{saltedge_login_id}/refresh", body)
     case result do
-      {:error, reason} ->
-        GenServer.cast(:login_logger, {:log, "", "refresh_request_failed", saltedge_login_id, reason})
-
+      {:error, _reason} ->
         push socket, "refresh_request_failed", %{msg: "Could not refresh login.<br/> Try again later."}
-      {:ok, response} ->
+      {:ok, _response} ->
         user = current_resource(socket)
         user_id = "user:#{user.id}"
         cache_ongoing_interactive(user_id)
-
-        GenServer.cast(:login_logger, {:log, "", "refresh_request_ok", saltedge_login_id, response})
 
         push socket, "refresh_request_ok", %{msg: "Request has been sent.<br/> Waiting for a response..."}
     end
@@ -76,7 +72,6 @@
     """
 
     {:ok, response} = ExMoney.Saltedge.Client.request(:put, "logins/#{saltedge_login_id}/interactive", body)
-    GenServer.cast(:login_logger, {:log, "", "interactive_sent", saltedge_login_id, response})
     Logger.info("OTP has been send with the following result => #{inspect(response)}")
 
     push socket, "otp_sent", %{title: "Transactions will by synced shortly", msg: "OTP has been sent"}

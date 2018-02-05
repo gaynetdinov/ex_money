@@ -3,7 +3,7 @@ defmodule ExMoney.Web.Mobile.BudgetView do
 
   alias ExMoney.{Category, Repo}
 
-  def draw_subcategory(%{width: "100%"} = category) do
+  def draw_subcategory(%{width: "100%"}) do
     "background: darkgrey;"
   end
 
@@ -69,7 +69,7 @@ defmodule ExMoney.Web.Mobile.BudgetView do
     """
   end
 
-  def categories_chart_data(categories, _) when map_size(categories) == 0 do
+  def categories_chart_data([], _) do
     []
   end
 

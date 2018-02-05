@@ -12,7 +12,7 @@
     </div>
     <div class="page-content">
       <div class="list-block reduced-margin">
-        <%= form_for @changeset, mobile_setting_budget_path(@conn, :create), [method: :post, class: "ajax-submit"], fn f -> %>
+        <%= form_for @changeset, mobile_setting_budget_path(@conn, :create), [method: :post, class: "ajax-submit"], fn _f -> %>
           <ul>
             <li>
               <a href="#" class="item-link smart-select smart-accounts-select" data-open-in="popup" data-page-title="Choose Accounts">

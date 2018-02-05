@@ -1,8 +1,6 @@
 defmodule ExMoney.Web.Callbacks.NotifyCallbackController do
   use ExMoney.Web, :controller
 
-  @login_logger Application.get_env(:ex_money, :login_logger_worker)
-
   require Logger
 
   alias ExMoney.{Repo, Login, Web.Plugs}
@@ -15,16 +13,10 @@ defmodule ExMoney.Web.Callbacks.NotifyCallbackController do
     login = conn.assigns[:login]
 
     if login do
-      @login_logger.log_event("notify", "callback_received", login.saltedge_login_id, params)
       changeset = Login.notify_callback_changeset(login, %{stage: stage})
 
-      case Repo.update(changeset) do
-        {:ok, updated_login} ->
-          sync_data(updated_login, stage)
-          @login_logger.log_event("notify", "login_updated", login.saltedge_login_id, params)
-
-        {:error, changeset} ->
-          @login_logger.log_event("notify", "login_update_failed", login.saltedge_login_id, Enum.into(changeset.errors, %{}))
+      with {:ok, updated_login} <- Repo.update(changeset) do
+        sync_data(updated_login, stage)
       end
     end
 

@@ -57,11 +57,9 @@ defmodule ExMoney.Saltedge.LoginRefreshWorker do
 
     result = ExMoney.Saltedge.Client.request(:put, "logins/#{login.saltedge_login_id}/refresh", body)
     case result do
-      {:error, reason} ->
-        GenServer.cast(:login_logger, {:log, "", "refresh_request_failed", login.saltedge_login_id, reason})
+      {:error, _reason} ->
         Logger.error("Could not refresh login #{login.saltedge_login_id} with fetch_type #{fetch_type}")
-      {:ok, response} ->
-        GenServer.cast(:login_logger, {:log, "", "refresh_request_ok", login.saltedge_login_id, response})
+      {:ok, _response} ->
         Logger.info("Login #{login.saltedge_login_id} has been successfully refreshed with fetch_type #{fetch_type}!")
     end
 
