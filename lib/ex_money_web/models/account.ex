@@ -22,9 +22,6 @@ defmodule ExMoney.Account do
       foreign_key: :saltedge_account_id,
       references: :saltedge_account_id
 
-    has_many :balance_history, ExMoney.AccountsBalanceHistory,
-      on_delete: :delete_all
-
     timestamps()
   end
 

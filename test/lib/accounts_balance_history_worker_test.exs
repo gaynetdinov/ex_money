@@ -1,7 +1,7 @@
 defmodule ExMoney.AccountsBalanceHistoryWorkerTest do
   use ExUnit.Case
 
-  alias ExMoney.{AccountsBalanceHistory, Repo}
+  alias ExMoney.{Accounts.BalanceHistory, Repo}
 
   import ExMoney.Factory
 
@@ -18,10 +18,8 @@ defmodule ExMoney.AccountsBalanceHistoryWorkerTest do
   test "store current balance", %{account_1: account_1, account_2: account_2} do
     assert :stored == GenServer.call(:accounts_balance_history_worker, :store_current_balance)
 
-    history_1 = Repo.get_by(AccountsBalanceHistory, account_id: account_1.id)
-    history_2 = Repo.get_by(AccountsBalanceHistory, account_id: account_2.id)
+    h = Repo.all(BalanceHistory) |> List.first
 
-    assert Decimal.new(10) == history_1.balance
-    assert Decimal.new(20) == history_2.balance
+    assert h.state == %{to_string(account_1.id) => "10", to_string(account_2.id) => "20"}
   end
 end

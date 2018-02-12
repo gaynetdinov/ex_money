@@ -21,7 +21,7 @@ defmodule ExMoney.Web.SharedView do
   end
 
   def description(transaction) do
-    String.replace(transaction.extra["payee"], ~r/\A[A-Z]{2}\w{15,32}/, "")
+    String.replace(transaction.extra["payee"] || "", ~r/\A[A-Z]{2}\w{15,32}/, "")
   end
 
   def category_name(nil), do: ""
@@ -33,9 +33,11 @@ defmodule ExMoney.Web.SharedView do
   def account_balance(_date, _, nil), do: ""
   def account_balance(date, account_balance, account) do
     date = to_string(date)
-    case account_balance[date] do
-      nil -> ""
-      balance -> "#{balance} #{account.currency_label}"
+    balance = account_balance[date]
+    if balance do
+      "#{balance} #{account.currency_label}"
+    else
+      ""
     end
   end
 end

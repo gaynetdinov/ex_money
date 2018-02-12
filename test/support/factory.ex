@@ -31,9 +31,8 @@ defmodule ExMoney.Factory do
   end
 
   def accounts_balance_history do
-    %ExMoney.AccountsBalanceHistory {
-      account: build(:account),
-      balance: Decimal.new(10)
+    %ExMoney.Accounts.BalanceHistory {
+      state: %{"1" => Decimal.new(10)}
     }
   end
 
