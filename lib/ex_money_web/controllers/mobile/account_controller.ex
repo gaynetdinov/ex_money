@@ -2,7 +2,7 @@ defmodule ExMoney.Web.Mobile.AccountController do
   use ExMoney.Web, :controller
 
   alias ExMoney.DateHelper
-  alias ExMoney.{Repo, Transaction, Account, AccountsBalanceHistory}
+  alias ExMoney.{Repo, Transaction, Account}
 
   plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.Mobile.Unauthenticated
   plug :put_layout, "mobile.html"
@@ -99,15 +99,14 @@ defmodule ExMoney.Web.Mobile.AccountController do
   end
 
   defp account_balance(from, to, account_id) do
-    AccountsBalanceHistory.history(from, to, account_id)
-    |> Repo.all
-    |> Enum.reduce(%{}, fn(h, acc) ->
+    ExMoney.Accounts.get_account_history_balance(from, to)
+    |> Enum.reduce(%{}, fn(history, acc) ->
       inserted_at =
-        h.inserted_at
+        history.inserted_at
         |> NaiveDateTime.to_date()
         |> Date.to_string()
 
-      Map.put(acc, inserted_at, h.balance)
+      Map.put(acc, inserted_at, history.state[to_string(account_id)])
     end)
   end
 
