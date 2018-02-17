@@ -3,7 +3,7 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
 
   require Logger
 
-  alias ExMoney.{Repo, Transaction, Category, Account}
+  alias ExMoney.{Repo, Transactions, Category, Account}
 
   def start_link(_opts \\ []) do
     GenServer.start_link(__MODULE__, :ok, name: :transactions_worker)
@@ -112,31 +112,27 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
   end
 
   defp store(transactions, account) do
-    Enum.reduce(transactions, 0, fn(se_tran, acc) ->
+    Enum.reduce transactions, 0, fn(se_tran, acc) ->
       se_tran = Map.put(se_tran, "saltedge_transaction_id", se_tran["id"])
       se_tran = Map.put(se_tran, "saltedge_account_id", se_tran["account_id"])
       se_tran = Map.put(se_tran, "user_id", account.user_id)
       se_tran = Map.drop(se_tran, ["id", "account_id"])
       se_tran = Map.put(se_tran, "account_id", account.id)
 
-      existing_transaction = Transaction.
+      existing_transaction = Transactions.
         by_saltedge_transaction_id(se_tran["saltedge_transaction_id"])
-        |> Repo.one
 
       if !existing_transaction and !se_tran["duplicated"] do
         se_tran = set_category_id(se_tran)
 
-        changeset = Transaction.changeset(%Transaction{}, se_tran)
-        {:ok, inserted_transaction} = Repo.transaction fn ->
-          Repo.insert!(changeset)
-        end
+        inserted_transaction = Transactions.create_transaction!(se_tran)
         GenServer.cast(:rule_processor, {:process, inserted_transaction.id})
-
+        GenServer.cast(:sync_log_worker, {:store_transaction, inserted_transaction.id})
         acc + 1
       else
         acc
       end
-    end)
+    end
   end
 
   defp set_category_id(transaction) do
@@ -162,7 +158,6 @@ defmodule ExMoney.Saltedge.TransactionsWorker do
 
   defp find_last_transaction(saltedge_account_id) do
     # FIXME: set last_transaction_id in cache during import
-    Transaction.newest(saltedge_account_id)
-    |> Repo.one
+    Transactions.newest(saltedge_account_id)
   end
 end

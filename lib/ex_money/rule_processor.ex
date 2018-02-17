@@ -1,7 +1,7 @@
 defmodule ExMoney.RuleProcessor do
   use GenServer
 
-  alias ExMoney.{Repo, Rule, Transaction, Category, Account}
+  alias ExMoney.{Repo, Rule, Transactions, Category, Account}
 
   import Ecto.Query
 
@@ -10,9 +10,7 @@ defmodule ExMoney.RuleProcessor do
   end
 
   def handle_cast({:process, transaction_id}, _state) do
-    transaction = Transaction
-    |> where([tr], tr.id == ^transaction_id)
-    |> Repo.one
+    transaction = Transactions.get_transaction(transaction_id)
 
     Rule
     |> where([r], r.account_id == ^transaction.account_id)
@@ -31,13 +29,10 @@ defmodule ExMoney.RuleProcessor do
   def handle_cast({:process_all, rule_id}, _state) do
     rule = Repo.get(Rule, rule_id)
 
-    transactions = Repo.all(from tr in Transaction,
-      where: tr.account_id == ^rule.account_id,
-      where: tr.rule_applied == false,
-      where: fragment("description ~* ?", ^rule.pattern) or fragment("extra->>'payee' ~* ?", ^rule.pattern))
+    transactions = Transactions.search(rule.account_id, rule.pattern)
 
-    Enum.each(transactions, fn(tr) ->
-      GenServer.cast(:rule_processor, {:process, tr.id})
+    Enum.each(transactions, fn(transaction) ->
+      GenServer.cast(:rule_processor, {:process, transaction.id})
     end)
 
     {:noreply, %{}}
@@ -47,8 +42,7 @@ defmodule ExMoney.RuleProcessor do
     {:ok, re} = Regex.compile(rule.pattern, "i")
 
     if Regex.match?(re, transaction_description(transaction, transaction.extra)) do
-      Transaction.update_changeset(transaction, %{category_id: rule.target_id, rule_applied: true})
-      |> Repo.update!
+      Transactions.update_transaction!(transaction, %{category_id: rule.target_id, rule_applied: true})
     end
   end
 
@@ -62,7 +56,7 @@ defmodule ExMoney.RuleProcessor do
       Decimal.compare(transaction.amount, Decimal.new(0)) == Decimal.new(-1) do
 
       Repo.transaction(fn ->
-        Transaction.changeset_custom(%Transaction{},
+        Transactions.create_custom_transaction!(
           %{
             "amount" => transaction.amount,
             "category_id" => withdraw_category.id,
@@ -72,10 +66,8 @@ defmodule ExMoney.RuleProcessor do
             "type" => "expense"
           }
         )
-        |> Repo.insert!
 
-        Transaction.update_changeset(transaction, %{rule_applied: true, category_id: withdraw_category.id})
-        |> Repo.update!
+        Transactions.update_transaction!(transaction, %{rule_applied: true, category_id: withdraw_category.id})
 
         # transaction.amount is negative, sub with something negative -> add
         new_balance = Decimal.sub(account.balance, transaction.amount)

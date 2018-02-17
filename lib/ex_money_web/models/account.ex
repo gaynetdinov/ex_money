@@ -17,7 +17,7 @@ defmodule ExMoney.Account do
       references: :saltedge_login_id
     belongs_to :user, ExMoney.User
     has_many :rules, ExMoney.Rule
-    has_many :transactions, ExMoney.Transaction,
+    has_many :transactions, ExMoney.Transactions.Transaction,
       on_delete: :delete_all,
       foreign_key: :saltedge_account_id,
       references: :saltedge_account_id

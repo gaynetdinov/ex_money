@@ -128,6 +128,7 @@ defmodule ExMoney.Web.Router do
     resources "/accounts", AccountController, only: [:index]
     resources "/categories", CategoryController, only: [:index]
     get "/transactions/recent", TransactionController, :recent, as: :recent
+    get "/sync", SyncController, :index
   end
 
   scope "/api/v1", ExMoney.Web.Api.V1, as: :api do

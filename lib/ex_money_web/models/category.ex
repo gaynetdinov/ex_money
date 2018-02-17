@@ -11,7 +11,7 @@ defmodule ExMoney.Category do
 
     timestamps()
 
-    has_many :transactions, ExMoney.Transaction
+    has_many :transactions, ExMoney.Transactions.Transaction
     belongs_to :parent, ExMoney.Category
   end
 

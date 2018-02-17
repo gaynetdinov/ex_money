@@ -1,6 +1,6 @@
 defmodule ExMoney.Web.SharedView do
   use ExMoney.Web, :view
-  alias ExMoney.Transaction
+  alias ExMoney.Transactions.Transaction
 
   def translate_error({message, values}) do
     Enum.reduce values, message, fn {k, v}, acc ->

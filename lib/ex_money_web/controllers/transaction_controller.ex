@@ -1,7 +1,8 @@
 defmodule ExMoney.Web.TransactionController do
   use ExMoney.Web, :controller
 
-  alias ExMoney.{Transaction, Repo, Paginator, Account, Category}
+  alias ExMoney.{Transactions.Transaction, Repo, Paginator, Account, Category}
+  alias ExMoney.Transactions
   import Ecto.Query
 
   plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.Unauthenticated
@@ -10,7 +11,7 @@ defmodule ExMoney.Web.TransactionController do
   def index(conn, params) do
     user = Guardian.Plug.current_resource(conn)
 
-    paginator = Transaction.by_user_id(user.id)
+    paginator = Transactions.by_user_id(user.id)
     |> order_by(desc: :made_on)
     |> preload([:account, :saltedge_account, :category])
     |> Paginator.paginate(params)
@@ -24,7 +25,7 @@ defmodule ExMoney.Web.TransactionController do
   end
 
   def new(conn, _params) do
-    changeset = Transaction.changeset_custom(%Transaction{})
+    changeset = Transactions.changeset_custom()
     accounts = Account.only_custom |> Repo.all
 
     categories_dict = Repo.all(Category)
@@ -50,9 +51,8 @@ defmodule ExMoney.Web.TransactionController do
   def create(conn, %{"transaction" => transaction_params}) do
     user = Guardian.Plug.current_resource(conn)
     transaction_params = Map.put(transaction_params, "user_id", user.id)
-    changeset = Transaction.changeset_custom(%Transaction{}, transaction_params)
 
-    case Repo.insert(changeset) do
+    case Transactions.create_custom_transaction(transaction_params) do
       {:ok, _transaction} ->
         redirect(conn, to: transaction_path(conn, :index))
       {:error, changeset} ->
@@ -64,7 +64,7 @@ defmodule ExMoney.Web.TransactionController do
   end
 
   def show(conn, %{"id" => id}) do
-    transaction = Repo.get!(Transaction, id)
+    transaction = Transactions.get_transaction(id)
 
     render conn, :show,
       transaction: transaction,
@@ -74,7 +74,7 @@ defmodule ExMoney.Web.TransactionController do
 
   def edit(conn, %{"id" => id}) do
     transaction = Repo.get!(Transaction, id)
-    changeset = Transaction.changeset(transaction)
+    changeset = Transactions.changeset(transaction)
 
     render conn, :edit,
       transaction: transaction,
@@ -84,10 +84,9 @@ defmodule ExMoney.Web.TransactionController do
   end
 
   def update(conn, %{"id" => id, "transaction" => transaction_params}) do
-    transaction = Repo.get!(Transaction, id)
-    changeset = Transaction.changeset(transaction, transaction_params)
+    transaction = Transactions.get_transaction!(id)
 
-    case Repo.update(changeset) do
+    case Transactions.update_transaction(transaction, transaction_params) do
       {:ok, transaction} ->
         redirect(conn, to: transaction_path(conn, :show, transaction))
       {:error, changeset} ->
@@ -100,7 +99,7 @@ defmodule ExMoney.Web.TransactionController do
   end
 
   def delete(conn, %{"id" => id}) do
-    Repo.get!(Transaction, id) |> Repo.delete!
+    Transactions.delete_transaction!(id)
 
     redirect(conn, to: transaction_path(conn, :index))
   end

@@ -2,7 +2,7 @@ defmodule Mix.Tasks.ExMoney.MigrateTransactionsInfo do
   use Mix.Task
   import Mix.Ecto
 
-  alias ExMoney.{Repo, Transaction, TransactionInfo}
+  alias ExMoney.{Repo, Transactions, TransactionInfo}
 
   @shortdoc "Migrate TransactionsInfo table to 'extra' jsonb column in Transaction"
 
@@ -20,10 +20,9 @@ defmodule Mix.Tasks.ExMoney.MigrateTransactionsInfo do
         |> Enum.filter(fn {_, v} -> v != nil end)
         |> Enum.into(%{})
 
-      transaction = Repo.get(Transaction, info.transaction_id)
+      transaction = Transactions.get_transaction!(info.transaction_id)
 
-      Transaction.update_changeset(transaction, %{extra: info_map})
-      |> Repo.update
+      Transactions.update_transaction!(transaction, %{extra: info_map})
     end
   end
 end

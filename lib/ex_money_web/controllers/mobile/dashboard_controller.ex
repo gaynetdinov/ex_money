@@ -1,7 +1,7 @@
 defmodule ExMoney.Web.Mobile.DashboardController do
   use ExMoney.Web, :controller
 
-  alias ExMoney.{Repo, Transaction, Account, FavouriteTransaction}
+  alias ExMoney.{Repo, Transactions, Account, FavouriteTransaction}
 
   plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.Mobile.Unauthenticated
   plug :put_layout, "mobile.html"
@@ -9,7 +9,7 @@ defmodule ExMoney.Web.Mobile.DashboardController do
   def overview(conn, _params) do
     user = Guardian.Plug.current_resource(conn)
     last_login_at = fetch_last_login_at()
-    transactions = Transaction.recent(user.id) |> Repo.all
+    transactions = Transactions.recent(user.id)
 
     new_recent_transactions = Enum.filter(transactions, fn(tr) ->
       NaiveDateTime.compare(tr.inserted_at, last_login_at) != :lt
@@ -27,7 +27,7 @@ defmodule ExMoney.Web.Mobile.DashboardController do
     accounts = Account.show_on_dashboard
     |> Repo.all
     |> Enum.reduce([], fn(account, acc) ->
-      new_transactions = Transaction.new_since(last_login_at, account.id) |> Repo.all
+      new_transactions = Transactions.new_since(last_login_at, account.id)
 
       recent_diff = Enum.reduce(new_transactions, Decimal.new(0), fn(transaction, acc) ->
         Decimal.add(acc, transaction.amount)
@@ -41,7 +41,7 @@ defmodule ExMoney.Web.Mobile.DashboardController do
       accounts: accounts,
       new_transaction_ids: new_transaction_ids,
       fav_transaction: fav_transaction(user.id),
-      changeset: Transaction.changeset_custom(%Transaction{})
+      changeset: Transactions.changeset_custom()
   end
 
   defp fav_transaction(user_id) do

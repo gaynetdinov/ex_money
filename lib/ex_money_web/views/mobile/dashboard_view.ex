@@ -1,7 +1,7 @@
 defmodule ExMoney.Web.Mobile.DashboardView do
   use ExMoney.Web, :view
 
-  alias ExMoney.Transaction
+  alias ExMoney.Transactions.Transaction
 
   def categories_chart_data([]), do: []
 

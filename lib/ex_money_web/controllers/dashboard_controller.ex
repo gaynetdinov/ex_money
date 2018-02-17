@@ -1,15 +1,14 @@
 defmodule ExMoney.Web.DashboardController do
   use ExMoney.Web, :controller
 
-  alias ExMoney.{Repo, Transaction, Account}
+  alias ExMoney.{Repo, Transactions, Account}
 
   plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.Unauthenticated
 
   def overview(conn, _params) do
     user = Guardian.Plug.current_resource(conn)
 
-    recent_transactions = Transaction.recent(user.id)
-    |> Repo.all
+    recent_transactions = Transactions.recent(user.id)
     |> Enum.group_by(fn(transaction) ->
       transaction.made_on
     end)

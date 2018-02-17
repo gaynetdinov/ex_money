@@ -2,7 +2,7 @@ defmodule ExMoney.Web.Mobile.TransactionController do
   use ExMoney.Web, :controller
 
   alias ExMoney.DateHelper
-  alias ExMoney.{Repo, Transaction, Category, Account, FavouriteTransaction, Budget}
+  alias ExMoney.{Repo, Transactions, Category, Account, FavouriteTransaction, Budget}
 
   plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.Mobile.Unauthenticated
   plug :put_layout, "mobile.html"
@@ -19,8 +19,7 @@ defmodule ExMoney.Web.Mobile.TransactionController do
     from = DateHelper.first_day_of_month(parsed_date)
     to = DateHelper.last_day_of_month(parsed_date)
 
-    transactions = Transaction.by_month_by_category(account_id, from, to, category_ids)
-    |> Repo.all
+    transactions = Transactions.by_month_by_category(account_id, from, to, category_ids)
     |> Enum.group_by(fn(transaction) ->
       transaction.made_on
     end)
@@ -57,21 +56,21 @@ defmodule ExMoney.Web.Mobile.TransactionController do
     from = DateHelper.first_day_of_month(parsed_date)
     to = DateHelper.last_day_of_month(parsed_date)
 
-    query = case type do
+    transactions = case type do
       "expenses" ->
-        Transaction.expenses_by_month_by_category(current_budget.accounts, from, to, category_ids)
+        Transactions.expenses_by_month_by_category(current_budget.accounts, from, to, category_ids)
       "income" ->
-        Transaction.income_by_month_by_category(current_budget.accounts, from, to, category_ids)
+        Transactions.income_by_month_by_category(current_budget.accounts, from, to, category_ids)
     end
 
-    transactions = query
-    |> Repo.all
-    |> Enum.group_by(fn(transaction) ->
-      transaction.made_on
-    end)
-    |> Enum.sort(fn({date_1, _transactions}, {date_2, _transaction}) ->
-      Date.compare(date_1, date_2) != :lt
-    end)
+    transactions =
+      transactions
+      |> Enum.group_by(fn(transaction) ->
+        transaction.made_on
+      end)
+      |> Enum.sort(fn({date_1, _transactions}, {date_2, _transaction}) ->
+        Date.compare(date_1, date_2) != :lt
+      end)
 
     {:ok, formatted_date} = Timex.format(parsed_date, "%b %Y", :strftime)
 
@@ -94,7 +93,7 @@ defmodule ExMoney.Web.Mobile.TransactionController do
 
     accounts = Account.only_custom |> Repo.all
 
-    changeset = Transaction.changeset_custom(%Transaction{})
+    changeset = Transactions.changeset_custom()
 
     render conn, :new,
       categories: categories,
@@ -103,9 +102,9 @@ defmodule ExMoney.Web.Mobile.TransactionController do
   end
 
   def edit(conn, %{"id" => id, "from" => from}) do
-    transaction = Repo.get(Transaction, id)
+    transaction = Transactions.get_transaction(id)
     categories = categories_list()
-    changeset = Transaction.update_changeset(transaction)
+    changeset = Transactions.update_changeset(transaction)
 
     render conn, :edit,
       transaction: transaction,
@@ -115,13 +114,11 @@ defmodule ExMoney.Web.Mobile.TransactionController do
   end
 
   def update(conn, %{"id" => id, "transaction" => transaction_params}) do
-    transaction = Repo.get!(Transaction, id)
+    transaction = Transactions.get_transaction!(id)
 
     from = validate_from_param(transaction_params["from"])
 
-    changeset = Transaction.update_changeset(transaction, transaction_params)
-
-    case Repo.update(changeset) do
+    case Transactions.update_transaction(transaction, transaction_params) do
       {:ok, _transaction} ->
         send_resp(conn, 200, from)
       {:error, _changeset} ->
@@ -132,10 +129,9 @@ defmodule ExMoney.Web.Mobile.TransactionController do
   def create(conn, %{"transaction" => transaction_params}) do
     user = Guardian.Plug.current_resource(conn)
     transaction_params = Map.put(transaction_params, "user_id", user.id)
-    changeset = Transaction.changeset_custom(%Transaction{}, transaction_params)
 
     Repo.transaction fn ->
-      transaction = Repo.insert!(changeset)
+      transaction = Transactions.create_custom_transaction!(transaction_params)
       account = Repo.get!(Account, transaction.account_id)
       new_balance = Decimal.add(account.balance, transaction.amount)
       Account.update_custom_changeset(account, %{balance: new_balance})
@@ -163,10 +159,9 @@ defmodule ExMoney.Web.Mobile.TransactionController do
       "made_on" => made_on,
       "type" => "expense"
     }
-    changeset = Transaction.changeset_custom(%Transaction{}, transaction_params)
 
     Repo.transaction fn ->
-      transaction = Repo.insert!(changeset)
+      transaction = Transactions.create_custom_transaction!(transaction_params)
       account = Repo.get!(Account, transaction.account_id)
       new_balance = Decimal.add(account.balance, transaction.amount)
       Account.update_custom_changeset(account, %{balance: new_balance})
@@ -177,17 +172,13 @@ defmodule ExMoney.Web.Mobile.TransactionController do
   end
 
   def show(conn, %{"id" => id}) do
-    transaction = Repo.one(
-      from tr in Transaction,
-        where: tr.id == ^id,
-        preload: [:account, :category]
-      )
+    transaction = Transactions.get_transaction_with_includes!(id, [:account, :category])
 
     render conn, :show, transaction: transaction
   end
 
   def delete(conn, %{"id" => id}) do
-    transaction = Repo.get!(Transaction, id)
+    transaction = Transactions.get_transaction!(id)
     account = Repo.get!(Account, transaction.account_id)
 
     case transaction.saltedge_transaction_id do

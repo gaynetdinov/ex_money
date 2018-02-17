@@ -40,7 +40,7 @@ defmodule ExMoney.Factory do
     account = build(:account)
     {:ok, made_on} = Date.new(2016, 09, 01)
 
-    %ExMoney.Transaction{
+    %ExMoney.Transactions.Transaction{
       saltedge_transaction_id: sequence(:saltedge_transaction_id, &(&1)) + 1,
       mode: "normal",
       status: "post",

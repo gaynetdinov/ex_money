@@ -1,7 +1,7 @@
 defmodule ExMoney.RuleProcessorTest do
   use ExUnit.Case
 
-  alias ExMoney.{RuleProcessor, Repo, Transaction}
+  alias ExMoney.{RuleProcessor, Transactions}
 
   import ExMoney.Factory
 
@@ -46,7 +46,7 @@ defmodule ExMoney.RuleProcessorTest do
 
       RuleProcessor.handle_cast({:process, transaction.id}, %{})
 
-      updated_transaction = Repo.get(Transaction, transaction.id)
+      updated_transaction = Transactions.get_transaction!(transaction.id)
 
       assert updated_transaction.category_id == category_2.id
       assert updated_transaction.rule_applied
@@ -64,7 +64,7 @@ defmodule ExMoney.RuleProcessorTest do
 
       RuleProcessor.handle_cast({:process, transaction.id}, %{})
 
-      updated_transaction = Repo.get(Transaction, transaction.id)
+      updated_transaction = Transactions.get_transaction!(transaction.id)
 
       refute updated_transaction.category_id == category.id
       refute updated_transaction.rule_applied
@@ -83,7 +83,7 @@ defmodule ExMoney.RuleProcessorTest do
 
       RuleProcessor.handle_cast({:process, transaction.id}, %{})
 
-      updated_transaction = Repo.get(Transaction, transaction.id)
+      updated_transaction = Transactions.get_transaction!(transaction.id)
 
       refute updated_transaction.category_id == category.id
       refute updated_transaction.rule_applied
@@ -111,14 +111,14 @@ defmodule ExMoney.RuleProcessorTest do
 
       RuleProcessor.handle_cast({:process, transfer_transaction.id}, %{})
 
-      updated_transaction = Repo.get(Transaction, transfer_transaction.id)
-      cash_transaction = Repo.get_by(Transaction, category_id: category.id, account_id: cash_account.id)
-      saltedge_transaction = Repo.get_by(Transaction, id: transfer_transaction.id)
+      updated_transaction = Transactions.get_transaction!(transfer_transaction.id)
+      cash_transaction = Transactions.get_transaction_by!(category_id: category.id, account_id: cash_account.id)
 
       assert updated_transaction.rule_applied
+      assert updated_transaction.category_id == category.id
+
       assert cash_transaction.account_id == cash_account.id
       assert cash_transaction.amount == Decimal.mult(updated_transaction.amount, Decimal.new(-1))
-      assert saltedge_transaction.category_id == category.id
     end
   end
 
@@ -156,10 +156,10 @@ defmodule ExMoney.RuleProcessorTest do
 
       :timer.sleep(500)
 
-      tr_1 = Repo.get(Transaction, tr_1.id)
-      tr_2 = Repo.get(Transaction, tr_2.id)
-      tr_3 = Repo.get(Transaction, tr_3.id)
-      tr_4 = Repo.get(Transaction, tr_4.id)
+      tr_1 = Transactions.get_transaction!(tr_1.id)
+      tr_2 = Transactions.get_transaction!(tr_2.id)
+      tr_3 = Transactions.get_transaction!(tr_3.id)
+      tr_4 = Transactions.get_transaction!(tr_4.id)
 
       assert tr_1.rule_applied
       assert tr_1.category_id == rule.target_id

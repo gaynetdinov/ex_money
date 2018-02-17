@@ -1,6 +1,6 @@
 defmodule ExMoney.Web.TransactionView do
   use ExMoney.Web, :view
-  alias ExMoney.Transaction
+  alias ExMoney.Transactions.Transaction
 
   def disabled_previous_page?(page_number, total_pages) do
     if page_number == 1 or total_pages == 1 do

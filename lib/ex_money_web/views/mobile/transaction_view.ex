@@ -1,6 +1,6 @@
 defmodule ExMoney.Web.Mobile.TransactionView do
   use ExMoney.Web, :view
-  alias ExMoney.Transaction
+  alias ExMoney.Transactions.Transaction
 
   def balance(transactions) do
     Enum.reduce(transactions, Decimal.new(0), fn(transaction, acc) ->
