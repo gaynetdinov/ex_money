@@ -2,9 +2,10 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="theme-color" content="#2196f3">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="format-detection" content="telephone=no">
     <meta name="csrf" content="<%= Plug.CSRFProtection.get_csrf_token %>">
     <%= if Guardian.Plug.current_token(@conn) do %>
@@ -13,13 +14,14 @@
     <link rel="apple-touch-icon" sizes="120x120" href="/images/apple-touch-icon.png">
     <title>ExMoney</title>
 
-    <link href="<%= static_path(@conn, "/css/framework7.css") %>" rel="stylesheet">
+    <link href="<%= static_path(@conn, "/css/app.css") %>" rel="stylesheet">
     <link href="<%= static_path(@conn, "/css/mobile.css") %>" rel="stylesheet">
   </head>
 
   <body>
-    <div class="panel-overlay"></div>
-    <div class="panel panel-left panel-reveal" style="background: #bfbfc5;">
+    <div id="app">
+      <div class="statusbar"></div>
+      <div class="panel panel-left panel-reveal" style="background: #bfbfc5;">
         <div class="card">
           <div class="card-header"><strong>ExMoney</strong></div>
           <div class="card-content">
@@ -49,11 +51,10 @@
             </div>
           </div>
         </div>
+      </div>
+      <%= render @view_module, @view_template, assigns %>
     </div>
-    <%= render @view_module, @view_template, assigns %>
 
     <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
-    <script src="<%= static_path(@conn, "/js/framework7.js") %>"></script>
-    <script src="<%= static_path(@conn, "/js/mobile.js") %>"></script>
   </body>
 </html>

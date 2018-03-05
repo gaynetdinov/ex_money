@@ -1,0 +1,42 @@
+{
+  "name": "Template7",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nolimits4web/Template7.git"
+  },
+  "description": "Mobile-first JavaScript template engine",
+  "version": "1.3.5",
+  "author": "Vladimir Kharlampidi",
+  "homepage": "http://www.idangero.us/template7/",
+  "keywords": [
+    "mobile",
+    "template",
+    "javascript",
+    "ios7",
+    "ios8",
+    "ios 8",
+    "iphone",
+    "ipad",
+    "phonegap",
+    "framework7",
+    "handlebars",
+    "mustache"
+  ],
+  "scripts": [
+    "dist/template7.js",
+    "dist/template7.min.js"
+  ],
+  "main": [
+    "dist/template7.js"
+  ],
+  "license": ["MIT"],
+  "dependencies": {
+  },
+  "ignore": [
+    ".*",
+    "build",
+    "Gruntfile.js",
+    "node_modules",
+    "package.json"
+  ]
+}

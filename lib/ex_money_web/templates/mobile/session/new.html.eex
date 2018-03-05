@@ -1,41 +1,36 @@
-<div class="views">
-  <div class="view view-main">
-    <div class="pages">
-      <div class="page" data-page="login-screen">
-        <div class="page-content login-screen-content">
-          <div class="login-screen-title">ExMoney</div>
-          <%= form_for @changeset, mobile_login_path(@conn, :create), [id: "login-form", method: :post, class: "ajax-submit"], fn f -> %>
-            <div class="list-block">
-              <ul>
-                <li class="item-content">
-                  <div class="item-inner">
-                    <div class="item-title label">Username</div>
-                    <div class="item-input">
-                      <%= email_input f, :email, placeholder: "Email" %>
-                    </div>
-                  </div>
-                </li>
-                <li class="item-content">
-                  <div class="item-inner">
-                    <div class="item-title label">Password</div>
-                    <div class="item-input">
-                      <%= password_input :user, :password, placeholder: "Password" %>
-                    </div>
-                  </div>
-                </li>
-              </ul>
-            </div>
-
-            <div class="row">
-              <div class="col-25"></div>
-              <div class="col-50" align="center">
-                  <button class="button button-big button-round active" type="submit">Let me in!</button>
+<div class="view view-main">
+  <div class="page no-navbar no-toolbar no-swipeback" data-name="login-screen">
+    <div class="page-content login-screen-content">
+      <div class="login-screen-title">ExMoney</div>
+      <%= form_for @changeset, mobile_login_path(@conn, :create), [id: "login-form", method: :post, class: "form-ajax-submit"], fn f -> %>
+        <div class="list">
+          <ul>
+            <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title label">Username</div>
+                <div class="item-input-wrap">
+                  <%= email_input f, :email, placeholder: "Email" %>
+                </div>
               </div>
-              <div class="col-25"></div>
-            </div>
-          <% end %>
+            </li>
+            <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title label">Password</div>
+                <div class="item-input-wrap">
+                  <%= password_input :user, :password, placeholder: "Password" %>
+                </div>
+              </div>
+            </li>
+          </ul>
         </div>
-      </div>
+        <div class="list">
+          <ul>
+            <li>
+              <button class="button button-big button-round active" type="submit">Let me in!</button>
+            </li>
+          </ul>
+        </div>
+      <% end %>
     </div>
   </div>
 </div>

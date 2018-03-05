@@ -9,7 +9,7 @@ defmodule ExMoney.Web.Mobile.SessionController do
     user = Guardian.Plug.current_resource(conn)
 
     if user do
-      redirect(conn, to: "/m")
+      redirect(conn, to: "/m/dashboard")
     else
       changeset = User.login_changeset(%User{})
       render(conn, ExMoney.Web.Mobile.SessionView, :new, changeset: changeset)
@@ -25,7 +25,10 @@ defmodule ExMoney.Web.Mobile.SessionController do
         update_last_login_at(user)
 
         conn = Guardian.Plug.sign_in(conn, user)
-        send_resp(conn, 200, Guardian.Plug.current_token(conn))
+
+        conn
+        |> put_resp_header("content-type", "application/json")
+        |> send_resp(200, Poison.encode!(%{token: Guardian.Plug.current_token(conn)}))
       else
         send_resp(conn, 401, "Unauthenticated")
       end

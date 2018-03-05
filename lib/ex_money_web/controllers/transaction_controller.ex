@@ -52,7 +52,7 @@ defmodule ExMoney.Web.TransactionController do
     user = Guardian.Plug.current_resource(conn)
     transaction_params = Map.put(transaction_params, "user_id", user.id)
 
-    case Transactions.create_custom_transaction(transaction_params) do
+    case Transactions.create_custom_transaction!(transaction_params) do
       {:ok, _transaction} ->
         redirect(conn, to: transaction_path(conn, :index))
       {:error, changeset} ->
