@@ -3,7 +3,7 @@ defmodule ExMoney.SyncLogApi.SyncLog do
   import Ecto.Changeset
 
   schema "sync_log" do
-    field :uid, :string
+    field :uuid, :string
     field :action, :string
     field :entity, :string
     field :payload, :map
@@ -16,10 +16,10 @@ defmodule ExMoney.SyncLogApi.SyncLog do
     model
     |> cast(params, [:action, :entity, :payload, :synced_at])
     |> validate_required([:action, :entity, :payload])
-    |> generate_uid()
+    |> generate_uuid()
   end
 
-  defp generate_uid(changeset) do
-    Ecto.Changeset.put_change(changeset, :uid, Ecto.UUID.generate())
+  defp generate_uuid(changeset) do
+    Ecto.Changeset.put_change(changeset, :uuid, Ecto.UUID.generate())
   end
 end

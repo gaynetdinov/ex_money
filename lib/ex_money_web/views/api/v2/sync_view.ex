@@ -9,7 +9,7 @@ defmodule ExMoney.Web.Api.V2.SyncView do
 
   def render("entry.json", %{sync: entry}) do
     %{
-      uid: entry.uid,
+      uuid: entry.uuid,
       entity: entry.entity,
       action: entry.action,
       payload: entry.payload

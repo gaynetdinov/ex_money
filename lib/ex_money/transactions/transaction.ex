@@ -13,7 +13,7 @@ defmodule ExMoney.Transactions.Transaction do
     field :duplicated, :boolean, default: false
     field :rule_applied, :boolean, default: false
     field :extra, :map
-    field :uid, :string
+    field :uuid, :string
 
     belongs_to :category, ExMoney.Category
     belongs_to :user, ExMoney.User
@@ -44,7 +44,7 @@ defmodule ExMoney.Transactions.Transaction do
     model
     |> cast(params, @required_fields ++ @optional_fields)
     |> validate_required(@required_fields)
-    |> generate_uid()
+    |> generate_uuid()
   end
 
   def changeset_custom(model, params \\ %{}) do
@@ -52,7 +52,7 @@ defmodule ExMoney.Transactions.Transaction do
     |> cast(params, ~w(amount category_id account_id made_on user_id description extra)a)
     |> validate_required(~w(amount category_id account_id made_on user_id)a)
     |> negate_amount(params)
-    |> generate_uid()
+    |> generate_uuid()
   end
 
   def update_changeset(model, params \\ %{}) do
@@ -71,7 +71,7 @@ defmodule ExMoney.Transactions.Transaction do
     end
   end
 
-  defp generate_uid(changeset) do
-    Ecto.Changeset.put_change(changeset, :uid, Ecto.UUID.generate())
+  defp generate_uuid(changeset) do
+    Ecto.Changeset.put_change(changeset, :uuid, Ecto.UUID.generate())
   end
 end
