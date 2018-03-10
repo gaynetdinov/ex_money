@@ -23,4 +23,13 @@ defmodule ExMoney.SyncLogApi do
 
     Repo.all(query)
   end
+
+  def get_entry!(uuid) do
+    Repo.get_by!(SyncLog, uuid: uuid)
+  end
+
+  def mark_synced!(entry) do
+    SyncLog.changeset(entry, %{synced_at: DateTime.utc_now()})
+    |> Repo.update!
+  end
 end

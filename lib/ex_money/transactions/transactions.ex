@@ -28,6 +28,10 @@ defmodule ExMoney.Transactions do
     Repo.get!(Transaction, id)
   end
 
+  def get_transaction_by(params) do
+    Repo.get_by(Transaction, params)
+  end
+
   def get_transaction_by!(params) do
     Repo.get_by!(Transaction, params)
   end
