@@ -2,7 +2,6 @@ defmodule ExMoney.Web.Api.V2.SyncController do
   use ExMoney.Web, :controller
 
   alias ExMoney.SyncLogApi
-  alias ExMoney.Transactions
 
   plug Guardian.Plug.EnsureAuthenticated, handler: ExMoney.Guardian.ApiUnauthenticated
 
