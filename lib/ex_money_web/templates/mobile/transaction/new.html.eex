@@ -1,5 +1,5 @@
-<div class="pages">
-  <div class="page navbar-fixed" data-page="new-transaction-screen">
+<div class="view view-main">
+  <div class="page navbar-fixed" data-name="new-transaction-screen">
     <div class="navbar">
       <div class="navbar-inner">
         <div class="left">
@@ -8,11 +8,12 @@
           </a>
         </div>
         <div class="center">New transaction</div>
+        <div class='right'></div>
       </div>
     </div>
     <div class="page-content">
-      <div class="list-block reduced-margin">
-        <%= form_for @changeset, mobile_transaction_path(@conn, :create), [method: :post, class: "ajax-submit"], fn f -> %>
+      <div class="list reduced-margin">
+        <%= form_for @changeset, mobile_transaction_path(@conn, :create), [method: :post, class: "form-ajax-submit"], fn f -> %>
           <ul>
             <li>
               <div class="item-content">
@@ -27,18 +28,18 @@
             <li>
               <div class="item-content">
                 <div class="item-inner">
+                  <p class="segmented segmented-raised" style='width:100%'>
+                    <a href='#' id='expense-button' class="button button-active">Expense</a>
+                    <a href='#' id='income-button' class="button button">Income</a>
+                  </p>
                   <div class="item-input">
-                    <p class="buttons-row">
-                      <a href="#" id="expense-button" class="button button active">Expense</a>
-                      <a href="#" id="income-button" class="button button">Income</a>
-                    </p>
                     <%= hidden_input(f, :type, value: "expense") %>
                   </div>
                 </div>
               </div>
             </li>
             <li>
-              <a href="#" class="item-link smart-select" data-back-on-select="true" data-open-in="picker">
+              <a href="#" class="item-link smart-select smart-select-init" data-close-on-select="true" data-open-in="popup">
                 <%= select(f, :account_id, @accounts) %>
                 <div class="item-content">
                   <div class="item-inner">
@@ -48,7 +49,7 @@
               </a>
             </li>
             <li>
-              <a href="#" class="item-link smart-select smart-category-select" data-back-on-select="true" data-open-in="popup" data-searchbar="true" data-page-title="Choose Category">
+              <a href="#" class="item-link smart-select smart-category-init" data-close-on-select="true" data-open-in="popup" data-searchbar="true" data-page-title="Choose Category">
                 <%= render "categories_list.html", categories: @categories, selected: nil %>
                 <div class="item-content">
                   <div class="item-inner">
@@ -79,13 +80,11 @@
             </li>
           </ul>
 
-          <div class="content-block">
+          <div class="block">
             <div class="row">
-              <div class="col-25"></div>
-              <div class="col-50" align="center">
-                <button class="button active button-big" type="submit">Add</button>
+              <div class="col-100" align="center">
+                <button class="button active button-big button-fill" type="submit">Add</button>
               </div>
-              <div class="col-25"></div>
             </div>
           </div>
         <% end %>

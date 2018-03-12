@@ -1,5 +1,5 @@
-<div class="pages">
-  <div class="page navbar-fixed" data-page="account-expenses-screen">
+<div class="view view-main">
+  <div class="page navbar-fixed" data-name="account-expenses-screen">
     <div class="navbar">
       <div class="navbar-inner">
         <div class="left">
@@ -8,10 +8,11 @@
           </a>
         </div>
         <div class="center">Expenses for <%= @date.label %></div>
+        <div class='right'></div>
       </div>
     </div>
     <div class="page-content hide-navbar-on-scroll">
-      <div class="list-block reduced-margin media-list">
+      <div class="list reduced-margin media-list">
         <%= render ExMoney.Web.SharedView, "transactions_list.html",
           transactions: @expenses,
           new_transaction_ids: [],

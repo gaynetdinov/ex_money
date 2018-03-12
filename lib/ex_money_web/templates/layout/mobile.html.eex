@@ -15,34 +15,36 @@
     <title>ExMoney</title>
 
     <link href="<%= static_path(@conn, "/css/app.css") %>" rel="stylesheet">
-    <link href="<%= static_path(@conn, "/css/mobile.css") %>" rel="stylesheet">
+    <link href="<%= static_path(@conn, "/css/framework7.css") %>" rel="stylesheet">
+    <link href="<%= static_path(@conn, "/css/framework7-keypad.css") %>" rel="stylesheet">
   </head>
 
   <body>
     <div id="app">
       <div class="statusbar"></div>
+
       <div class="panel panel-left panel-reveal" style="background: #bfbfc5;">
         <div class="card">
           <div class="card-header"><strong>ExMoney</strong></div>
           <div class="card-content">
-            <div class="list-block">
+            <div class="list">
               <ul>
-                <a href="/m/dashboard" class="item-link item-content close-panel no-animation" data-ignore-cache="true">
+                <a href="/m/dashboard" class="link item-link item-content panel-close no-animation">
                   <div class="item-inner">
                     <div class="item-title">Dashboard</div>
                   </div>
                 </a>
-                <a href="/m/budget" class="item-link item-content close-panel no-animation" data-ignore-cache="true">
+                <a href="/m/budget" class="link item-link item-content panel-close" data-animate="false" data-ignore-cache="true">
                   <div class="item-inner">
                     <div class="item-title">Budget</div>
                   </div>
                 </a>
-                <a href="/m/budget_history" class="item-link item-content close-panel no-animation" data-ignore-cache="true">
+                <a href="/m/budget_history" class="link item-link item-content panel-close no-animation" data-ignore-cache="true">
                   <div class="item-inner">
                     <div class="item-title">Budget History</div>
                   </div>
                 </a>
-                <a href="/m/settings" class="item-link item-content close-panel no-animation" data-ignore-cache="true">
+                <a href="/m/settings" class="link item-link item-content panel-close no-animation" data-ignore-cache="true">
                   <div class="item-inner">
                     <div class="item-title">Settings</div>
                   </div>
@@ -52,6 +54,7 @@
           </div>
         </div>
       </div>
+
       <%= render @view_module, @view_template, assigns %>
     </div>
 

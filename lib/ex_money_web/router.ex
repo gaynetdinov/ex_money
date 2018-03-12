@@ -82,6 +82,7 @@ defmodule ExMoney.Web.Router do
       put "/fav", FavouriteTransactionController, :fav, as: :fav, param: "id"
     end
 
+    get "/logged_in", LoggedInController, :index
     get "/budget", BudgetController, :index
     get "/budget/expenses", BudgetController, :expenses
     get "/budget/income", BudgetController, :income
@@ -133,6 +134,7 @@ defmodule ExMoney.Web.Router do
 
   scope "/api/v1", ExMoney.Web.Api.V1, as: :api do
     pipe_through [:api]
+
     get "/session/relogin", SessionController, :relogin
   end
 end

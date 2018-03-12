@@ -1,5 +1,5 @@
-<div class="pages">
-  <div class="page navbar-fixed" data-page="transactions-screen">
+<div class="view view-main">
+  <div class="page navbar-fixed" data-name="transactions-screen">
     <div class="navbar">
       <div class="navbar-inner">
         <div class="left">
@@ -8,10 +8,11 @@
           </a>
         </div>
         <div class="center"><%= @category %></div>
+        <div class="right"></div>
       </div>
     </div>
     <div class="page-content hide-navbar-on-scroll">
-      <div class="list-block reduced-margin media-list">
+      <div class="list reduced-margin media-list">
         <%= if length(@transactions) == 0 do %>
           <div class="content-block">
             There are no transactions for such category anymore.

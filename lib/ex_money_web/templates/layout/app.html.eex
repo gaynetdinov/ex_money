@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>ExMoney</title>
 
-    <link href="<%= static_path(@conn, "/css/vendor.css") %>" rel="stylesheet">
+    <link href="<%= static_path(@conn, "/css/bootstrap.css") %>" rel="stylesheet">
     <link href="<%= static_path(@conn, "/css/app.css") %>" rel="stylesheet">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
   </head>

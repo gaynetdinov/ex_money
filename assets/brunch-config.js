@@ -3,37 +3,28 @@ exports.config = {
     javascripts: {
       joinTo: {
         'js/app.js': /^(js)(\/|\\)|(node_modules)/,
-        //'js/app.js': /^(js)/,
-        //'js/mobile.js': /^node_modules\/framework7/
-        //"js/vendor.js": /^(vendor)(\/|\\)(?!Framework7)/
-        //"js/framework7.js": /^(vendor\/Framework7\/)/
-        //"js/mobile.js": /^(vendor\/Framework7_custom\/js)/
+        'js/vendor.js': /^(vendor)(\/|\\)(?!Framework7)/
       },
       //
       // To change the order of concatenation of files, explicitly mention here
       // https://github.com/brunch/brunch/tree/master/docs#concatenation
       order: {
         before: [
-          //"node_modules/dom7/dist/dom7.modular.js"
-          //"node_modules/template7/dist/template7.js",
-          //"node_modules/framework7/dist/framework7.js"
-          //"vendor/jquery-2.1.4.min.js",
-          //"vendor/bootstrap-3.3.6-dist/js/bootstrap.js"
-          //"vendor/Framework7/js/framework7.js",
-          //"vendor/Framework7/js/framework7.keypad.js"
+          'vendor/jquery-2.1.4.min.js',
+          'vendor/bootstrap-3.3.6-dist/js/bootstrap.js'
         ]
       }
     },
     stylesheets: {
       joinTo: {
-        "css/app.css": /^css/,
-        //'css/mobile.css': /^node_modules\/framework7\/dist\/css/
-        //"css/vendor.css": /^(vendor)(\/|\\)(?!Framework7)|(deps)/,
-        //"css/framework7.css": /^(vendor\/Framework7\/)/,
+        'css/app.css': /^css/,
+        'css/framework7.css': 'node_modules/framework7/dist/css/framework7.css',
+        'css/framework7-keypad.css': 'node_modules/framework7-plugin-keypad/dist/framework7.keypad.css',
+        'css/bootstrap.css': /^(vendor\/bootstrap-3.3.6-dist\/css)/
       }
     },
     templates: {
-      joinTo: "js/app.js"
+      joinTo: 'js/app.js'
     }
   },
 
@@ -68,6 +59,10 @@ exports.config = {
   },
 
   npm: {
+    styles: {
+      framework7: ['dist/css/framework7.css'],
+      'framework7-plugin-keypad': ['dist/framework7.keypad.css']
+    },
     enabled: true
   }
 };

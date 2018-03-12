@@ -34,9 +34,9 @@
           </div>
         </div>
         <div class="swipeout-actions-right">
-          <a href="/m/transactions/<%= transaction.id %>" class="bg-blue show-transaction" data-ignore-cache="true">Show</a>
-          <a href="/m/transactions/<%= transaction.id %>/edit?from=<%= @from %>" class="bg-orange edit-transaction" data-ignore-cache="true">Edit</a>
-          <a href="#" data-id="<%= transaction.id %>" class="swipeout-delete bg-red delete-transaction">Delete</a>
+          <a href="/m/transactions/<%= transaction.id %>" class="color-blue link show-transaction" data-ignore-cache="true">Show</a>
+          <a href="/m/transactions/<%= transaction.id %>/edit?from=<%= @from %>" class="color-orange link edit-transaction" data-ignore-cache="true">Edit</a>
+          <a href="#" data-id="<%= transaction.id %>" class="swipeout-delete bg-red link delete-transaction">Delete</a>
         </div>
       </li>
     <% end %>

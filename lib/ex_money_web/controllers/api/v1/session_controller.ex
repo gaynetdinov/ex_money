@@ -9,7 +9,7 @@ defmodule ExMoney.Web.Api.V1.SessionController do
   def relogin(conn, _params) do
     case Guardian.Plug.current_resource(conn) do
       nil ->
-        send_resp(conn, 200, "Unauthenticated")
+        send_resp(conn, 401, Poison.encode!(%{error: "Unauthenticated"}))
       user ->
         {:ok, claims} = Guardian.Plug.claims(conn)
         jwt = Guardian.Plug.current_token(conn)
@@ -20,7 +20,7 @@ defmodule ExMoney.Web.Api.V1.SessionController do
         update_last_login_at(user)
 
         conn = Guardian.Plug.sign_in(conn, user)
-        send_resp(conn, 200, Guardian.Plug.current_token(conn))
+        send_resp(conn, 200, Poison.encode!(%{token: Guardian.Plug.current_token(conn)}))
     end
   end
 

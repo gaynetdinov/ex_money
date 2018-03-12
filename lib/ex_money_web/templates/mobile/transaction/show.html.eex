@@ -1,5 +1,5 @@
-<div class="pages">
-  <div class="page navbar-fixed" data-page="show-transaction-screen">
+<div class="view view-main">
+  <div class="page navbar-fixed" data-name="show-transaction-screen">
     <div class="navbar">
       <div class="navbar-inner">
         <div class="left">
@@ -8,6 +8,7 @@
           </a>
         </div>
         <div class="center">Transaction</div>
+        <div class='right'></div>
       </div>
     </div>
     <div class="page-content">

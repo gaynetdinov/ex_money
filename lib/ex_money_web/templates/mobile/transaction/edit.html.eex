@@ -1,5 +1,5 @@
-<div class="pages">
-  <div class="page navbar-fixed" data-page="edit-transaction-screen">
+<div class="view view-main">
+  <div class="page navbar-fixed" data-name="edit-transaction-screen">
     <div class="navbar">
       <div class="navbar-inner">
         <div class="left">
@@ -8,15 +8,16 @@
           </a>
         </div>
         <div class="center">Edit transaction</div>
+        <div class='right'></div>
       </div>
     </div>
     <div class="page-content">
-      <div class="list-block reduced-margin">
-        <%= form_for @changeset, mobile_transaction_path(@conn, :update, @transaction), [method: :put, class: "ajax-submit"], fn f -> %>
+      <div class="list reduced-margin">
+        <%= form_for @changeset, mobile_transaction_path(@conn, :update, @transaction), [method: :put, class: "form-ajax-submit"], fn f -> %>
           <%= hidden_input(f, :from, value: @from) %>
           <ul>
             <li>
-              <a href="#" class="item-link smart-select smart-category-select" data-back-on-select="true" data-open-in="popup" data-searchbar="true" data-page-title="Choose Category">
+              <a href="#" class="item-link smart-select smart-select-init" data-close-on-select="true" data-open-in="popup" data-searchbar="true" data-page-title="Choose Category">
                 <%= render "categories_list.html", categories: @categories, selected: @transaction.category_id %>
                 <div class="item-content">
                   <div class="item-inner">
@@ -37,13 +38,11 @@
             </li>
           </ul>
 
-          <div class="content-block">
+          <div class="block">
             <div class="row">
-              <div class="col-25"></div>
-              <div class="col-50" align="center">
-                <button class="button active button-big" type="submit">Update</button>
+              <div class="col-100" align="center">
+                <button class="button active button-fill button-big" type="submit">Update</button>
               </div>
-              <div class="col-25"></div>
             </div>
           </div>
         <% end %>

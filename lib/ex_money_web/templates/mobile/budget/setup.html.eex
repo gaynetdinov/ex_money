@@ -1,13 +1,13 @@
-<div class="pages">
-  <div class="page navbar-fixed" data-page="budget-setup-page">
+  <div class="page navbar-fixed" data-name="budget-setup-page">
     <div class="navbar">
       <div class="navbar-inner">
         <div class="left">
-          <a href="#" class="link open-panel" data-panel="left">
-            <i class="icon icon-bars"></i>
+          <a href="#" class="link panel-open" data-panel="left">
+            <i class="f7-icons">bars</i>
           </a>
         </div>
         <div class="center">Budget</div>
+        <div class='right'></div>
       </div>
     </div>
     <div class="page-content">
@@ -20,4 +20,3 @@
       </div>
     </div>
   </div>
-</div>
