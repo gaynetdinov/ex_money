@@ -52,7 +52,7 @@ defmodule ExMoney.Saltedge.AccountTest do
       assert account.saltedge_account_id == 142
       assert account.name == "Fake account 1"
       assert account.nature == "card"
-      assert account.balance == Decimal.new(2007.2)
+      assert account.balance == Decimal.from_float(2007.2)
       assert account.currency_code == "EUR"
       assert account.currency_code == "EUR"
     end
@@ -68,7 +68,7 @@ defmodule ExMoney.Saltedge.AccountTest do
 
       account = Repo.get(Account, account.id)
 
-      assert account.balance == Decimal.new(2007.2)
+      assert account.balance == Decimal.from_float(2007.2)
     end
   end
 end

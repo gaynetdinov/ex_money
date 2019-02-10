@@ -55,4 +55,7 @@ config :ex_money, :saltedge,
   base_url: "https://www.saltedge.com/api/v3",
   private_key_path: "lib/saltedge_private.pem"
 
+# Use Jason for JSON parsing in Phoenix
+config :phoenix, :json_library, Jason
+
 import_config "#{Mix.env}.exs"

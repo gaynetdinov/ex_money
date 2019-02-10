@@ -5,10 +5,6 @@ defmodule ExMoney.RefreshSocket do
   ## Channels
   channel "login_refresh:*", ExMoney.InteractiveChannel
 
-  ## Transports
-  transport :websocket, Phoenix.Transports.WebSocket
-  transport :longpoll, Phoenix.Transports.LongPoll
-
   # Guardian handles authentication.
   def connect(_params, _socket), do: :error
 
