@@ -4,11 +4,13 @@ otp_release:
   - 20.0
 
 elixir:
-  - 1.5.1
+  - 1.5.3
 
 sudo: false
 
-script: mix test --trace
+script:
+  - rm -rf _build
+  - mix test --trace
 
 services:
   - postgresql
