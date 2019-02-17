@@ -11,9 +11,13 @@ defmodule ExMoney.Web.Plugs.VerifySaltedgeSignature do
   end
 
   defp signature(conn, callback) do
-    [saltedge_signature] = get_req_header(conn, "signature")
-    msg = "https://ex-money.herokuapp.com/callbacks/#{callback}|#{conn.assigns.raw_body}"
-    :public_key.verify(msg, :sha256, Base.decode64!(saltedge_signature), read_saltedge_public_key())
+    case get_req_header(conn, "signature") do
+      [] ->
+        conn
+      [saltedge_signature] ->
+        msg = "https://ex-money.herokuapp.com/callbacks/#{callback}|#{conn.assigns.raw_body}"
+        :public_key.verify(msg, :sha256, Base.decode64!(saltedge_signature), read_saltedge_public_key())
+    end
   end
 
   defp read_saltedge_public_key do
