@@ -6,8 +6,10 @@ defmodule ExMoney.Saltedge.ClientTest do
   setup do
     bypass = Bypass.open
 
-    new_config = Application.get_env(:ex_money, :saltedge)
-    |> put_in([:base_url], "http://localhost:#{bypass.port}")
+    new_config =
+      Application.get_env(:ex_money, :saltedge)
+      |> put_in([:base_url], "http://localhost:#{bypass.port}")
+
     Application.put_env(:ex_money, :saltedge, new_config)
 
     {:ok, bypass: bypass}
@@ -20,8 +22,8 @@ defmodule ExMoney.Saltedge.ClientTest do
 
       assert List.first(get_req_header(conn, "signature"))
       assert List.first(get_req_header(conn, "expires-at"))
-      assert List.first(get_req_header(conn, "client-id"))
-      assert List.first(get_req_header(conn, "service-secret"))
+      assert List.first(get_req_header(conn, "app-id"))
+      assert List.first(get_req_header(conn, "secret"))
 
       assert ["application/json"] == get_req_header(conn, "accept")
       assert ["application/json"] == get_req_header(conn, "content-type")

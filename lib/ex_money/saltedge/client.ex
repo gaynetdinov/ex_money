@@ -33,8 +33,8 @@ defmodule ExMoney.Saltedge.Client do
   iex> ExMoney.SaltedgeClient.request(:post, "logins", body)
   """
   def request(method, endpoint, body \\ "") do
-    client_id = Application.get_env(:ex_money, :saltedge_client_id)
-    service_secret = Application.get_env(:ex_money, :saltedge_service_secret)
+    app_id = Application.get_env(:ex_money, :saltedge_app_id)
+    secret = Application.get_env(:ex_money, :saltedge_secret)
 
     url = base_url() <> "/" <> endpoint
     str_method = to_string(method) |> String.upcase
@@ -45,8 +45,8 @@ defmodule ExMoney.Saltedge.Client do
       {"Content-type", "application/json"},
       {"Expires-at", expires_at()},
       {"Signature", signature(request)},
-      {"Client-id", client_id},
-      {"Service-secret", service_secret}
+      {"App-id", app_id},
+      {"Secret", secret}
     ]
 
     case HTTPoison.request(method, url, body, headers) do
@@ -60,7 +60,7 @@ defmodule ExMoney.Saltedge.Client do
   end
 
   def signature(url) do
-    :public_key.sign(url, :sha, read_private_key())
+    :public_key.sign(url, :sha256, read_private_key())
     |> Base.encode64
   end
 
