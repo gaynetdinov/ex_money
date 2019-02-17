@@ -3,6 +3,7 @@ defmodule ExMoney.Web.Callbacks.DestroyCallbackController do
 
   alias ExMoney.{Repo, Web.Plugs}
 
+  plug Plugs.VerifySaltedgeSignature, callback: :destroy
   plug Plugs.SetUser
   plug Plugs.SetLogin
 

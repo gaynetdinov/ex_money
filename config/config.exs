@@ -53,7 +53,8 @@ config :guardian_db, GuardianDb,
 
 config :ex_money, :saltedge,
   base_url: "https://www.saltedge.com/api/v4",
-  private_key_path: "lib/saltedge_private.pem"
+  private_key_path: "lib/saltedge_private.pem",
+  saltedge_public_key_path: "lib/saltedge_callbacks_public_key.pem"
 
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason

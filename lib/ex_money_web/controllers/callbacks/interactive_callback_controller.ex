@@ -5,6 +5,7 @@ defmodule ExMoney.Web.Callbacks.InteractiveCallbackController do
 
   alias ExMoney.{Repo, Login, Web.Plugs}
 
+  plug Plugs.VerifySaltedgeSignature, callback: :interactive
   plug Plugs.SetUser
   plug Plugs.SetLogin
 

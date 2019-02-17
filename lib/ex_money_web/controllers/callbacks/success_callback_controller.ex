@@ -5,6 +5,7 @@ defmodule ExMoney.Web.Callbacks.SuccessCallbackController do
 
   alias ExMoney.{Repo, Login, Web.Plugs}
 
+  plug Plugs.VerifySaltedgeSignature, callback: :success
   plug Plugs.SetUser
   plug Plugs.SetLogin
 

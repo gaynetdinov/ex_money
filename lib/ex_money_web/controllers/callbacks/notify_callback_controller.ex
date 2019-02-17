@@ -5,6 +5,7 @@ defmodule ExMoney.Web.Callbacks.NotifyCallbackController do
 
   alias ExMoney.{Repo, Login, Web.Plugs}
 
+  plug Plugs.VerifySaltedgeSignature, callback: :notify
   plug Plugs.SetUser
   plug Plugs.SetLogin
 

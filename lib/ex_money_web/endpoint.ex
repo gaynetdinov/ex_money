@@ -21,6 +21,7 @@ defmodule ExMoney.Web.Endpoint do
   plug Plug.Parsers,
     parsers: [:urlencoded, :multipart, :json],
     pass: ["*/*"],
+    body_reader: {ExMoney.CacheBodyReader, :read_body, []},
     json_decoder: Poison
 
   plug Plug.MethodOverride
