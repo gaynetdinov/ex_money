@@ -1,25 +1,9 @@
 defmodule ExMoney do
-  use Application
+  @moduledoc """
+  ExMoney keeps the contexts that define your domain
+  and business logic.
 
-  def start(_type, _args) do
-    import Supervisor.Spec, warn: false
-
-    :ets.new(:ex_money_cache, [:set, :public, :named_table])
-
-    children = [
-      supervisor(ExMoney.Web.Endpoint, []),
-      worker(ExMoney.Repo, []),
-      worker(ExMoney.Saltedge.TransactionsWorker, []),
-      worker(ExMoney.IdleWorker, [], restart: :transient),
-      worker(ExMoney.AccountsBalanceHistoryWorker, []),
-      worker(ExMoney.Saltedge.SyncWorker, []),
-      worker(ExMoney.Scheduler, []),
-      worker(ExMoney.RuleProcessor, []),
-      worker(ExMoney.Saltedge.LoginRefreshWorker, [], restart: :transient),
-      worker(ExMoney.Saltedge.SyncBuffer, [])
-    ]
-
-    opts = [strategy: :one_for_one, name: ExMoney.Supervisor]
-    Supervisor.start_link(children, opts)
-  end
+  Contexts are also responsible for managing your data, regardless
+  if it comes from the database, an external API or others.
+  """
 end

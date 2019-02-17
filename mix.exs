@@ -14,7 +14,7 @@ defmodule ExMoney.Mixfile do
   end
 
   def application do
-    [mod: {ExMoney, []},
+    [mod: {ExMoney.Application, []},
      applications: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger,
                     :phoenix_ecto, :postgrex, :httpoison, :tzdata]]
   end
@@ -24,13 +24,14 @@ defmodule ExMoney.Mixfile do
 
   defp deps do
     [
-      {:phoenix, "~> 1.3"},
+      {:phoenix, "~> 1.4"},
       {:phoenix_pubsub, "~> 1.0"},
-      {:phoenix_ecto, "~> 3.0"},
+      {:phoenix_ecto, "~> 3.6"},
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 2.10"},
       {:phoenix_live_reload, "~> 1.0", only: :dev},
-      {:cowboy, "~> 1.0"},
+      {:plug_cowboy, "~> 2.0"},
+      {:plug, "~> 1.7"},
       {:httpoison, "~> 0.12"},
       {:guardian, "~> 0.14"},
       {:guardian_db, "~> 0.8"},
@@ -39,7 +40,8 @@ defmodule ExMoney.Mixfile do
       {:faker, "~> 0.7", only: :test},
       {:logger_file_backend, "0.0.10"},
       {:timex, "~> 3.1"},
-      {:bypass, "~> 0.2", only: :test}
+      {:jason, "~> 1.0"},
+      {:bypass, "~> 1.0", only: :test}
     ]
   end
 
