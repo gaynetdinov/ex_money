@@ -11,8 +11,8 @@ config :ex_money, ExMoney.Web.Endpoint,
 config :logger, level: :debug
 
 config :ex_money,
-  saltedge_client_id: System.get_env("CLIENT_ID"),
-  saltedge_service_secret: System.get_env("SERVICE_SECRET")
+  saltedge_app_id: System.get_env("APP_ID"),
+  saltedge_secret: System.get_env("SECRET")
 
 config :ex_money, ExMoney.Repo,
   adapter: Ecto.Adapters.Postgres,
